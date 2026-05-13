@@ -1,0 +1,818 @@
+import type * as runtime from "@prisma/client/runtime/client";
+import type * as $Enums from "../enums";
+import type * as Prisma from "../internal/prismaNamespace";
+export type PromotionRecordModel = runtime.Types.Result.DefaultSelection<Prisma.$PromotionRecordPayload>;
+export type AggregatePromotionRecord = {
+    _count: PromotionRecordCountAggregateOutputType | null;
+    _min: PromotionRecordMinAggregateOutputType | null;
+    _max: PromotionRecordMaxAggregateOutputType | null;
+};
+export type PromotionRecordMinAggregateOutputType = {
+    id: string | null;
+    studentId: string | null;
+    academicYearId: string | null;
+    fromClass: $Enums.ClassLevel | null;
+    toClass: $Enums.ClassLevel | null;
+    status: $Enums.PromotionStatus | null;
+    notes: string | null;
+    performedById: string | null;
+    performedAt: Date | null;
+};
+export type PromotionRecordMaxAggregateOutputType = {
+    id: string | null;
+    studentId: string | null;
+    academicYearId: string | null;
+    fromClass: $Enums.ClassLevel | null;
+    toClass: $Enums.ClassLevel | null;
+    status: $Enums.PromotionStatus | null;
+    notes: string | null;
+    performedById: string | null;
+    performedAt: Date | null;
+};
+export type PromotionRecordCountAggregateOutputType = {
+    id: number;
+    studentId: number;
+    academicYearId: number;
+    fromClass: number;
+    toClass: number;
+    status: number;
+    notes: number;
+    performedById: number;
+    performedAt: number;
+    _all: number;
+};
+export type PromotionRecordMinAggregateInputType = {
+    id?: true;
+    studentId?: true;
+    academicYearId?: true;
+    fromClass?: true;
+    toClass?: true;
+    status?: true;
+    notes?: true;
+    performedById?: true;
+    performedAt?: true;
+};
+export type PromotionRecordMaxAggregateInputType = {
+    id?: true;
+    studentId?: true;
+    academicYearId?: true;
+    fromClass?: true;
+    toClass?: true;
+    status?: true;
+    notes?: true;
+    performedById?: true;
+    performedAt?: true;
+};
+export type PromotionRecordCountAggregateInputType = {
+    id?: true;
+    studentId?: true;
+    academicYearId?: true;
+    fromClass?: true;
+    toClass?: true;
+    status?: true;
+    notes?: true;
+    performedById?: true;
+    performedAt?: true;
+    _all?: true;
+};
+export type PromotionRecordAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.PromotionRecordWhereInput;
+    orderBy?: Prisma.PromotionRecordOrderByWithRelationInput | Prisma.PromotionRecordOrderByWithRelationInput[];
+    cursor?: Prisma.PromotionRecordWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    _count?: true | PromotionRecordCountAggregateInputType;
+    _min?: PromotionRecordMinAggregateInputType;
+    _max?: PromotionRecordMaxAggregateInputType;
+};
+export type GetPromotionRecordAggregateType<T extends PromotionRecordAggregateArgs> = {
+    [P in keyof T & keyof AggregatePromotionRecord]: P extends '_count' | 'count' ? T[P] extends true ? number : Prisma.GetScalarType<T[P], AggregatePromotionRecord[P]> : Prisma.GetScalarType<T[P], AggregatePromotionRecord[P]>;
+};
+export type PromotionRecordGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.PromotionRecordWhereInput;
+    orderBy?: Prisma.PromotionRecordOrderByWithAggregationInput | Prisma.PromotionRecordOrderByWithAggregationInput[];
+    by: Prisma.PromotionRecordScalarFieldEnum[] | Prisma.PromotionRecordScalarFieldEnum;
+    having?: Prisma.PromotionRecordScalarWhereWithAggregatesInput;
+    take?: number;
+    skip?: number;
+    _count?: PromotionRecordCountAggregateInputType | true;
+    _min?: PromotionRecordMinAggregateInputType;
+    _max?: PromotionRecordMaxAggregateInputType;
+};
+export type PromotionRecordGroupByOutputType = {
+    id: string;
+    studentId: string;
+    academicYearId: string;
+    fromClass: $Enums.ClassLevel;
+    toClass: $Enums.ClassLevel | null;
+    status: $Enums.PromotionStatus;
+    notes: string | null;
+    performedById: string;
+    performedAt: Date;
+    _count: PromotionRecordCountAggregateOutputType | null;
+    _min: PromotionRecordMinAggregateOutputType | null;
+    _max: PromotionRecordMaxAggregateOutputType | null;
+};
+export type GetPromotionRecordGroupByPayload<T extends PromotionRecordGroupByArgs> = Prisma.PrismaPromise<Array<Prisma.PickEnumerable<PromotionRecordGroupByOutputType, T['by']> & {
+    [P in ((keyof T) & (keyof PromotionRecordGroupByOutputType))]: P extends '_count' ? T[P] extends boolean ? number : Prisma.GetScalarType<T[P], PromotionRecordGroupByOutputType[P]> : Prisma.GetScalarType<T[P], PromotionRecordGroupByOutputType[P]>;
+}>>;
+export type PromotionRecordWhereInput = {
+    AND?: Prisma.PromotionRecordWhereInput | Prisma.PromotionRecordWhereInput[];
+    OR?: Prisma.PromotionRecordWhereInput[];
+    NOT?: Prisma.PromotionRecordWhereInput | Prisma.PromotionRecordWhereInput[];
+    id?: Prisma.StringFilter<"PromotionRecord"> | string;
+    studentId?: Prisma.StringFilter<"PromotionRecord"> | string;
+    academicYearId?: Prisma.StringFilter<"PromotionRecord"> | string;
+    fromClass?: Prisma.EnumClassLevelFilter<"PromotionRecord"> | $Enums.ClassLevel;
+    toClass?: Prisma.EnumClassLevelNullableFilter<"PromotionRecord"> | $Enums.ClassLevel | null;
+    status?: Prisma.EnumPromotionStatusFilter<"PromotionRecord"> | $Enums.PromotionStatus;
+    notes?: Prisma.StringNullableFilter<"PromotionRecord"> | string | null;
+    performedById?: Prisma.StringFilter<"PromotionRecord"> | string;
+    performedAt?: Prisma.DateTimeFilter<"PromotionRecord"> | Date | string;
+    student?: Prisma.XOR<Prisma.StudentProfileScalarRelationFilter, Prisma.StudentProfileWhereInput>;
+    academicYear?: Prisma.XOR<Prisma.AcademicYearScalarRelationFilter, Prisma.AcademicYearWhereInput>;
+};
+export type PromotionRecordOrderByWithRelationInput = {
+    id?: Prisma.SortOrder;
+    studentId?: Prisma.SortOrder;
+    academicYearId?: Prisma.SortOrder;
+    fromClass?: Prisma.SortOrder;
+    toClass?: Prisma.SortOrderInput | Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    notes?: Prisma.SortOrderInput | Prisma.SortOrder;
+    performedById?: Prisma.SortOrder;
+    performedAt?: Prisma.SortOrder;
+    student?: Prisma.StudentProfileOrderByWithRelationInput;
+    academicYear?: Prisma.AcademicYearOrderByWithRelationInput;
+};
+export type PromotionRecordWhereUniqueInput = Prisma.AtLeast<{
+    id?: string;
+    AND?: Prisma.PromotionRecordWhereInput | Prisma.PromotionRecordWhereInput[];
+    OR?: Prisma.PromotionRecordWhereInput[];
+    NOT?: Prisma.PromotionRecordWhereInput | Prisma.PromotionRecordWhereInput[];
+    studentId?: Prisma.StringFilter<"PromotionRecord"> | string;
+    academicYearId?: Prisma.StringFilter<"PromotionRecord"> | string;
+    fromClass?: Prisma.EnumClassLevelFilter<"PromotionRecord"> | $Enums.ClassLevel;
+    toClass?: Prisma.EnumClassLevelNullableFilter<"PromotionRecord"> | $Enums.ClassLevel | null;
+    status?: Prisma.EnumPromotionStatusFilter<"PromotionRecord"> | $Enums.PromotionStatus;
+    notes?: Prisma.StringNullableFilter<"PromotionRecord"> | string | null;
+    performedById?: Prisma.StringFilter<"PromotionRecord"> | string;
+    performedAt?: Prisma.DateTimeFilter<"PromotionRecord"> | Date | string;
+    student?: Prisma.XOR<Prisma.StudentProfileScalarRelationFilter, Prisma.StudentProfileWhereInput>;
+    academicYear?: Prisma.XOR<Prisma.AcademicYearScalarRelationFilter, Prisma.AcademicYearWhereInput>;
+}, "id">;
+export type PromotionRecordOrderByWithAggregationInput = {
+    id?: Prisma.SortOrder;
+    studentId?: Prisma.SortOrder;
+    academicYearId?: Prisma.SortOrder;
+    fromClass?: Prisma.SortOrder;
+    toClass?: Prisma.SortOrderInput | Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    notes?: Prisma.SortOrderInput | Prisma.SortOrder;
+    performedById?: Prisma.SortOrder;
+    performedAt?: Prisma.SortOrder;
+    _count?: Prisma.PromotionRecordCountOrderByAggregateInput;
+    _max?: Prisma.PromotionRecordMaxOrderByAggregateInput;
+    _min?: Prisma.PromotionRecordMinOrderByAggregateInput;
+};
+export type PromotionRecordScalarWhereWithAggregatesInput = {
+    AND?: Prisma.PromotionRecordScalarWhereWithAggregatesInput | Prisma.PromotionRecordScalarWhereWithAggregatesInput[];
+    OR?: Prisma.PromotionRecordScalarWhereWithAggregatesInput[];
+    NOT?: Prisma.PromotionRecordScalarWhereWithAggregatesInput | Prisma.PromotionRecordScalarWhereWithAggregatesInput[];
+    id?: Prisma.StringWithAggregatesFilter<"PromotionRecord"> | string;
+    studentId?: Prisma.StringWithAggregatesFilter<"PromotionRecord"> | string;
+    academicYearId?: Prisma.StringWithAggregatesFilter<"PromotionRecord"> | string;
+    fromClass?: Prisma.EnumClassLevelWithAggregatesFilter<"PromotionRecord"> | $Enums.ClassLevel;
+    toClass?: Prisma.EnumClassLevelNullableWithAggregatesFilter<"PromotionRecord"> | $Enums.ClassLevel | null;
+    status?: Prisma.EnumPromotionStatusWithAggregatesFilter<"PromotionRecord"> | $Enums.PromotionStatus;
+    notes?: Prisma.StringNullableWithAggregatesFilter<"PromotionRecord"> | string | null;
+    performedById?: Prisma.StringWithAggregatesFilter<"PromotionRecord"> | string;
+    performedAt?: Prisma.DateTimeWithAggregatesFilter<"PromotionRecord"> | Date | string;
+};
+export type PromotionRecordCreateInput = {
+    id?: string;
+    fromClass: $Enums.ClassLevel;
+    toClass?: $Enums.ClassLevel | null;
+    status: $Enums.PromotionStatus;
+    notes?: string | null;
+    performedById: string;
+    performedAt?: Date | string;
+    student: Prisma.StudentProfileCreateNestedOneWithoutPromotionsInput;
+    academicYear: Prisma.AcademicYearCreateNestedOneWithoutPromotionsInput;
+};
+export type PromotionRecordUncheckedCreateInput = {
+    id?: string;
+    studentId: string;
+    academicYearId: string;
+    fromClass: $Enums.ClassLevel;
+    toClass?: $Enums.ClassLevel | null;
+    status: $Enums.PromotionStatus;
+    notes?: string | null;
+    performedById: string;
+    performedAt?: Date | string;
+};
+export type PromotionRecordUpdateInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    fromClass?: Prisma.EnumClassLevelFieldUpdateOperationsInput | $Enums.ClassLevel;
+    toClass?: Prisma.NullableEnumClassLevelFieldUpdateOperationsInput | $Enums.ClassLevel | null;
+    status?: Prisma.EnumPromotionStatusFieldUpdateOperationsInput | $Enums.PromotionStatus;
+    notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    performedById?: Prisma.StringFieldUpdateOperationsInput | string;
+    performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    student?: Prisma.StudentProfileUpdateOneRequiredWithoutPromotionsNestedInput;
+    academicYear?: Prisma.AcademicYearUpdateOneRequiredWithoutPromotionsNestedInput;
+};
+export type PromotionRecordUncheckedUpdateInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    studentId?: Prisma.StringFieldUpdateOperationsInput | string;
+    academicYearId?: Prisma.StringFieldUpdateOperationsInput | string;
+    fromClass?: Prisma.EnumClassLevelFieldUpdateOperationsInput | $Enums.ClassLevel;
+    toClass?: Prisma.NullableEnumClassLevelFieldUpdateOperationsInput | $Enums.ClassLevel | null;
+    status?: Prisma.EnumPromotionStatusFieldUpdateOperationsInput | $Enums.PromotionStatus;
+    notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    performedById?: Prisma.StringFieldUpdateOperationsInput | string;
+    performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type PromotionRecordCreateManyInput = {
+    id?: string;
+    studentId: string;
+    academicYearId: string;
+    fromClass: $Enums.ClassLevel;
+    toClass?: $Enums.ClassLevel | null;
+    status: $Enums.PromotionStatus;
+    notes?: string | null;
+    performedById: string;
+    performedAt?: Date | string;
+};
+export type PromotionRecordUpdateManyMutationInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    fromClass?: Prisma.EnumClassLevelFieldUpdateOperationsInput | $Enums.ClassLevel;
+    toClass?: Prisma.NullableEnumClassLevelFieldUpdateOperationsInput | $Enums.ClassLevel | null;
+    status?: Prisma.EnumPromotionStatusFieldUpdateOperationsInput | $Enums.PromotionStatus;
+    notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    performedById?: Prisma.StringFieldUpdateOperationsInput | string;
+    performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type PromotionRecordUncheckedUpdateManyInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    studentId?: Prisma.StringFieldUpdateOperationsInput | string;
+    academicYearId?: Prisma.StringFieldUpdateOperationsInput | string;
+    fromClass?: Prisma.EnumClassLevelFieldUpdateOperationsInput | $Enums.ClassLevel;
+    toClass?: Prisma.NullableEnumClassLevelFieldUpdateOperationsInput | $Enums.ClassLevel | null;
+    status?: Prisma.EnumPromotionStatusFieldUpdateOperationsInput | $Enums.PromotionStatus;
+    notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    performedById?: Prisma.StringFieldUpdateOperationsInput | string;
+    performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type PromotionRecordListRelationFilter = {
+    every?: Prisma.PromotionRecordWhereInput;
+    some?: Prisma.PromotionRecordWhereInput;
+    none?: Prisma.PromotionRecordWhereInput;
+};
+export type PromotionRecordOrderByRelationAggregateInput = {
+    _count?: Prisma.SortOrder;
+};
+export type PromotionRecordCountOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    studentId?: Prisma.SortOrder;
+    academicYearId?: Prisma.SortOrder;
+    fromClass?: Prisma.SortOrder;
+    toClass?: Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    notes?: Prisma.SortOrder;
+    performedById?: Prisma.SortOrder;
+    performedAt?: Prisma.SortOrder;
+};
+export type PromotionRecordMaxOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    studentId?: Prisma.SortOrder;
+    academicYearId?: Prisma.SortOrder;
+    fromClass?: Prisma.SortOrder;
+    toClass?: Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    notes?: Prisma.SortOrder;
+    performedById?: Prisma.SortOrder;
+    performedAt?: Prisma.SortOrder;
+};
+export type PromotionRecordMinOrderByAggregateInput = {
+    id?: Prisma.SortOrder;
+    studentId?: Prisma.SortOrder;
+    academicYearId?: Prisma.SortOrder;
+    fromClass?: Prisma.SortOrder;
+    toClass?: Prisma.SortOrder;
+    status?: Prisma.SortOrder;
+    notes?: Prisma.SortOrder;
+    performedById?: Prisma.SortOrder;
+    performedAt?: Prisma.SortOrder;
+};
+export type PromotionRecordCreateNestedManyWithoutStudentInput = {
+    create?: Prisma.XOR<Prisma.PromotionRecordCreateWithoutStudentInput, Prisma.PromotionRecordUncheckedCreateWithoutStudentInput> | Prisma.PromotionRecordCreateWithoutStudentInput[] | Prisma.PromotionRecordUncheckedCreateWithoutStudentInput[];
+    connectOrCreate?: Prisma.PromotionRecordCreateOrConnectWithoutStudentInput | Prisma.PromotionRecordCreateOrConnectWithoutStudentInput[];
+    createMany?: Prisma.PromotionRecordCreateManyStudentInputEnvelope;
+    connect?: Prisma.PromotionRecordWhereUniqueInput | Prisma.PromotionRecordWhereUniqueInput[];
+};
+export type PromotionRecordUncheckedCreateNestedManyWithoutStudentInput = {
+    create?: Prisma.XOR<Prisma.PromotionRecordCreateWithoutStudentInput, Prisma.PromotionRecordUncheckedCreateWithoutStudentInput> | Prisma.PromotionRecordCreateWithoutStudentInput[] | Prisma.PromotionRecordUncheckedCreateWithoutStudentInput[];
+    connectOrCreate?: Prisma.PromotionRecordCreateOrConnectWithoutStudentInput | Prisma.PromotionRecordCreateOrConnectWithoutStudentInput[];
+    createMany?: Prisma.PromotionRecordCreateManyStudentInputEnvelope;
+    connect?: Prisma.PromotionRecordWhereUniqueInput | Prisma.PromotionRecordWhereUniqueInput[];
+};
+export type PromotionRecordUpdateManyWithoutStudentNestedInput = {
+    create?: Prisma.XOR<Prisma.PromotionRecordCreateWithoutStudentInput, Prisma.PromotionRecordUncheckedCreateWithoutStudentInput> | Prisma.PromotionRecordCreateWithoutStudentInput[] | Prisma.PromotionRecordUncheckedCreateWithoutStudentInput[];
+    connectOrCreate?: Prisma.PromotionRecordCreateOrConnectWithoutStudentInput | Prisma.PromotionRecordCreateOrConnectWithoutStudentInput[];
+    upsert?: Prisma.PromotionRecordUpsertWithWhereUniqueWithoutStudentInput | Prisma.PromotionRecordUpsertWithWhereUniqueWithoutStudentInput[];
+    createMany?: Prisma.PromotionRecordCreateManyStudentInputEnvelope;
+    set?: Prisma.PromotionRecordWhereUniqueInput | Prisma.PromotionRecordWhereUniqueInput[];
+    disconnect?: Prisma.PromotionRecordWhereUniqueInput | Prisma.PromotionRecordWhereUniqueInput[];
+    delete?: Prisma.PromotionRecordWhereUniqueInput | Prisma.PromotionRecordWhereUniqueInput[];
+    connect?: Prisma.PromotionRecordWhereUniqueInput | Prisma.PromotionRecordWhereUniqueInput[];
+    update?: Prisma.PromotionRecordUpdateWithWhereUniqueWithoutStudentInput | Prisma.PromotionRecordUpdateWithWhereUniqueWithoutStudentInput[];
+    updateMany?: Prisma.PromotionRecordUpdateManyWithWhereWithoutStudentInput | Prisma.PromotionRecordUpdateManyWithWhereWithoutStudentInput[];
+    deleteMany?: Prisma.PromotionRecordScalarWhereInput | Prisma.PromotionRecordScalarWhereInput[];
+};
+export type PromotionRecordUncheckedUpdateManyWithoutStudentNestedInput = {
+    create?: Prisma.XOR<Prisma.PromotionRecordCreateWithoutStudentInput, Prisma.PromotionRecordUncheckedCreateWithoutStudentInput> | Prisma.PromotionRecordCreateWithoutStudentInput[] | Prisma.PromotionRecordUncheckedCreateWithoutStudentInput[];
+    connectOrCreate?: Prisma.PromotionRecordCreateOrConnectWithoutStudentInput | Prisma.PromotionRecordCreateOrConnectWithoutStudentInput[];
+    upsert?: Prisma.PromotionRecordUpsertWithWhereUniqueWithoutStudentInput | Prisma.PromotionRecordUpsertWithWhereUniqueWithoutStudentInput[];
+    createMany?: Prisma.PromotionRecordCreateManyStudentInputEnvelope;
+    set?: Prisma.PromotionRecordWhereUniqueInput | Prisma.PromotionRecordWhereUniqueInput[];
+    disconnect?: Prisma.PromotionRecordWhereUniqueInput | Prisma.PromotionRecordWhereUniqueInput[];
+    delete?: Prisma.PromotionRecordWhereUniqueInput | Prisma.PromotionRecordWhereUniqueInput[];
+    connect?: Prisma.PromotionRecordWhereUniqueInput | Prisma.PromotionRecordWhereUniqueInput[];
+    update?: Prisma.PromotionRecordUpdateWithWhereUniqueWithoutStudentInput | Prisma.PromotionRecordUpdateWithWhereUniqueWithoutStudentInput[];
+    updateMany?: Prisma.PromotionRecordUpdateManyWithWhereWithoutStudentInput | Prisma.PromotionRecordUpdateManyWithWhereWithoutStudentInput[];
+    deleteMany?: Prisma.PromotionRecordScalarWhereInput | Prisma.PromotionRecordScalarWhereInput[];
+};
+export type PromotionRecordCreateNestedManyWithoutAcademicYearInput = {
+    create?: Prisma.XOR<Prisma.PromotionRecordCreateWithoutAcademicYearInput, Prisma.PromotionRecordUncheckedCreateWithoutAcademicYearInput> | Prisma.PromotionRecordCreateWithoutAcademicYearInput[] | Prisma.PromotionRecordUncheckedCreateWithoutAcademicYearInput[];
+    connectOrCreate?: Prisma.PromotionRecordCreateOrConnectWithoutAcademicYearInput | Prisma.PromotionRecordCreateOrConnectWithoutAcademicYearInput[];
+    createMany?: Prisma.PromotionRecordCreateManyAcademicYearInputEnvelope;
+    connect?: Prisma.PromotionRecordWhereUniqueInput | Prisma.PromotionRecordWhereUniqueInput[];
+};
+export type PromotionRecordUncheckedCreateNestedManyWithoutAcademicYearInput = {
+    create?: Prisma.XOR<Prisma.PromotionRecordCreateWithoutAcademicYearInput, Prisma.PromotionRecordUncheckedCreateWithoutAcademicYearInput> | Prisma.PromotionRecordCreateWithoutAcademicYearInput[] | Prisma.PromotionRecordUncheckedCreateWithoutAcademicYearInput[];
+    connectOrCreate?: Prisma.PromotionRecordCreateOrConnectWithoutAcademicYearInput | Prisma.PromotionRecordCreateOrConnectWithoutAcademicYearInput[];
+    createMany?: Prisma.PromotionRecordCreateManyAcademicYearInputEnvelope;
+    connect?: Prisma.PromotionRecordWhereUniqueInput | Prisma.PromotionRecordWhereUniqueInput[];
+};
+export type PromotionRecordUpdateManyWithoutAcademicYearNestedInput = {
+    create?: Prisma.XOR<Prisma.PromotionRecordCreateWithoutAcademicYearInput, Prisma.PromotionRecordUncheckedCreateWithoutAcademicYearInput> | Prisma.PromotionRecordCreateWithoutAcademicYearInput[] | Prisma.PromotionRecordUncheckedCreateWithoutAcademicYearInput[];
+    connectOrCreate?: Prisma.PromotionRecordCreateOrConnectWithoutAcademicYearInput | Prisma.PromotionRecordCreateOrConnectWithoutAcademicYearInput[];
+    upsert?: Prisma.PromotionRecordUpsertWithWhereUniqueWithoutAcademicYearInput | Prisma.PromotionRecordUpsertWithWhereUniqueWithoutAcademicYearInput[];
+    createMany?: Prisma.PromotionRecordCreateManyAcademicYearInputEnvelope;
+    set?: Prisma.PromotionRecordWhereUniqueInput | Prisma.PromotionRecordWhereUniqueInput[];
+    disconnect?: Prisma.PromotionRecordWhereUniqueInput | Prisma.PromotionRecordWhereUniqueInput[];
+    delete?: Prisma.PromotionRecordWhereUniqueInput | Prisma.PromotionRecordWhereUniqueInput[];
+    connect?: Prisma.PromotionRecordWhereUniqueInput | Prisma.PromotionRecordWhereUniqueInput[];
+    update?: Prisma.PromotionRecordUpdateWithWhereUniqueWithoutAcademicYearInput | Prisma.PromotionRecordUpdateWithWhereUniqueWithoutAcademicYearInput[];
+    updateMany?: Prisma.PromotionRecordUpdateManyWithWhereWithoutAcademicYearInput | Prisma.PromotionRecordUpdateManyWithWhereWithoutAcademicYearInput[];
+    deleteMany?: Prisma.PromotionRecordScalarWhereInput | Prisma.PromotionRecordScalarWhereInput[];
+};
+export type PromotionRecordUncheckedUpdateManyWithoutAcademicYearNestedInput = {
+    create?: Prisma.XOR<Prisma.PromotionRecordCreateWithoutAcademicYearInput, Prisma.PromotionRecordUncheckedCreateWithoutAcademicYearInput> | Prisma.PromotionRecordCreateWithoutAcademicYearInput[] | Prisma.PromotionRecordUncheckedCreateWithoutAcademicYearInput[];
+    connectOrCreate?: Prisma.PromotionRecordCreateOrConnectWithoutAcademicYearInput | Prisma.PromotionRecordCreateOrConnectWithoutAcademicYearInput[];
+    upsert?: Prisma.PromotionRecordUpsertWithWhereUniqueWithoutAcademicYearInput | Prisma.PromotionRecordUpsertWithWhereUniqueWithoutAcademicYearInput[];
+    createMany?: Prisma.PromotionRecordCreateManyAcademicYearInputEnvelope;
+    set?: Prisma.PromotionRecordWhereUniqueInput | Prisma.PromotionRecordWhereUniqueInput[];
+    disconnect?: Prisma.PromotionRecordWhereUniqueInput | Prisma.PromotionRecordWhereUniqueInput[];
+    delete?: Prisma.PromotionRecordWhereUniqueInput | Prisma.PromotionRecordWhereUniqueInput[];
+    connect?: Prisma.PromotionRecordWhereUniqueInput | Prisma.PromotionRecordWhereUniqueInput[];
+    update?: Prisma.PromotionRecordUpdateWithWhereUniqueWithoutAcademicYearInput | Prisma.PromotionRecordUpdateWithWhereUniqueWithoutAcademicYearInput[];
+    updateMany?: Prisma.PromotionRecordUpdateManyWithWhereWithoutAcademicYearInput | Prisma.PromotionRecordUpdateManyWithWhereWithoutAcademicYearInput[];
+    deleteMany?: Prisma.PromotionRecordScalarWhereInput | Prisma.PromotionRecordScalarWhereInput[];
+};
+export type NullableEnumClassLevelFieldUpdateOperationsInput = {
+    set?: $Enums.ClassLevel | null;
+};
+export type EnumPromotionStatusFieldUpdateOperationsInput = {
+    set?: $Enums.PromotionStatus;
+};
+export type PromotionRecordCreateWithoutStudentInput = {
+    id?: string;
+    fromClass: $Enums.ClassLevel;
+    toClass?: $Enums.ClassLevel | null;
+    status: $Enums.PromotionStatus;
+    notes?: string | null;
+    performedById: string;
+    performedAt?: Date | string;
+    academicYear: Prisma.AcademicYearCreateNestedOneWithoutPromotionsInput;
+};
+export type PromotionRecordUncheckedCreateWithoutStudentInput = {
+    id?: string;
+    academicYearId: string;
+    fromClass: $Enums.ClassLevel;
+    toClass?: $Enums.ClassLevel | null;
+    status: $Enums.PromotionStatus;
+    notes?: string | null;
+    performedById: string;
+    performedAt?: Date | string;
+};
+export type PromotionRecordCreateOrConnectWithoutStudentInput = {
+    where: Prisma.PromotionRecordWhereUniqueInput;
+    create: Prisma.XOR<Prisma.PromotionRecordCreateWithoutStudentInput, Prisma.PromotionRecordUncheckedCreateWithoutStudentInput>;
+};
+export type PromotionRecordCreateManyStudentInputEnvelope = {
+    data: Prisma.PromotionRecordCreateManyStudentInput | Prisma.PromotionRecordCreateManyStudentInput[];
+    skipDuplicates?: boolean;
+};
+export type PromotionRecordUpsertWithWhereUniqueWithoutStudentInput = {
+    where: Prisma.PromotionRecordWhereUniqueInput;
+    update: Prisma.XOR<Prisma.PromotionRecordUpdateWithoutStudentInput, Prisma.PromotionRecordUncheckedUpdateWithoutStudentInput>;
+    create: Prisma.XOR<Prisma.PromotionRecordCreateWithoutStudentInput, Prisma.PromotionRecordUncheckedCreateWithoutStudentInput>;
+};
+export type PromotionRecordUpdateWithWhereUniqueWithoutStudentInput = {
+    where: Prisma.PromotionRecordWhereUniqueInput;
+    data: Prisma.XOR<Prisma.PromotionRecordUpdateWithoutStudentInput, Prisma.PromotionRecordUncheckedUpdateWithoutStudentInput>;
+};
+export type PromotionRecordUpdateManyWithWhereWithoutStudentInput = {
+    where: Prisma.PromotionRecordScalarWhereInput;
+    data: Prisma.XOR<Prisma.PromotionRecordUpdateManyMutationInput, Prisma.PromotionRecordUncheckedUpdateManyWithoutStudentInput>;
+};
+export type PromotionRecordScalarWhereInput = {
+    AND?: Prisma.PromotionRecordScalarWhereInput | Prisma.PromotionRecordScalarWhereInput[];
+    OR?: Prisma.PromotionRecordScalarWhereInput[];
+    NOT?: Prisma.PromotionRecordScalarWhereInput | Prisma.PromotionRecordScalarWhereInput[];
+    id?: Prisma.StringFilter<"PromotionRecord"> | string;
+    studentId?: Prisma.StringFilter<"PromotionRecord"> | string;
+    academicYearId?: Prisma.StringFilter<"PromotionRecord"> | string;
+    fromClass?: Prisma.EnumClassLevelFilter<"PromotionRecord"> | $Enums.ClassLevel;
+    toClass?: Prisma.EnumClassLevelNullableFilter<"PromotionRecord"> | $Enums.ClassLevel | null;
+    status?: Prisma.EnumPromotionStatusFilter<"PromotionRecord"> | $Enums.PromotionStatus;
+    notes?: Prisma.StringNullableFilter<"PromotionRecord"> | string | null;
+    performedById?: Prisma.StringFilter<"PromotionRecord"> | string;
+    performedAt?: Prisma.DateTimeFilter<"PromotionRecord"> | Date | string;
+};
+export type PromotionRecordCreateWithoutAcademicYearInput = {
+    id?: string;
+    fromClass: $Enums.ClassLevel;
+    toClass?: $Enums.ClassLevel | null;
+    status: $Enums.PromotionStatus;
+    notes?: string | null;
+    performedById: string;
+    performedAt?: Date | string;
+    student: Prisma.StudentProfileCreateNestedOneWithoutPromotionsInput;
+};
+export type PromotionRecordUncheckedCreateWithoutAcademicYearInput = {
+    id?: string;
+    studentId: string;
+    fromClass: $Enums.ClassLevel;
+    toClass?: $Enums.ClassLevel | null;
+    status: $Enums.PromotionStatus;
+    notes?: string | null;
+    performedById: string;
+    performedAt?: Date | string;
+};
+export type PromotionRecordCreateOrConnectWithoutAcademicYearInput = {
+    where: Prisma.PromotionRecordWhereUniqueInput;
+    create: Prisma.XOR<Prisma.PromotionRecordCreateWithoutAcademicYearInput, Prisma.PromotionRecordUncheckedCreateWithoutAcademicYearInput>;
+};
+export type PromotionRecordCreateManyAcademicYearInputEnvelope = {
+    data: Prisma.PromotionRecordCreateManyAcademicYearInput | Prisma.PromotionRecordCreateManyAcademicYearInput[];
+    skipDuplicates?: boolean;
+};
+export type PromotionRecordUpsertWithWhereUniqueWithoutAcademicYearInput = {
+    where: Prisma.PromotionRecordWhereUniqueInput;
+    update: Prisma.XOR<Prisma.PromotionRecordUpdateWithoutAcademicYearInput, Prisma.PromotionRecordUncheckedUpdateWithoutAcademicYearInput>;
+    create: Prisma.XOR<Prisma.PromotionRecordCreateWithoutAcademicYearInput, Prisma.PromotionRecordUncheckedCreateWithoutAcademicYearInput>;
+};
+export type PromotionRecordUpdateWithWhereUniqueWithoutAcademicYearInput = {
+    where: Prisma.PromotionRecordWhereUniqueInput;
+    data: Prisma.XOR<Prisma.PromotionRecordUpdateWithoutAcademicYearInput, Prisma.PromotionRecordUncheckedUpdateWithoutAcademicYearInput>;
+};
+export type PromotionRecordUpdateManyWithWhereWithoutAcademicYearInput = {
+    where: Prisma.PromotionRecordScalarWhereInput;
+    data: Prisma.XOR<Prisma.PromotionRecordUpdateManyMutationInput, Prisma.PromotionRecordUncheckedUpdateManyWithoutAcademicYearInput>;
+};
+export type PromotionRecordCreateManyStudentInput = {
+    id?: string;
+    academicYearId: string;
+    fromClass: $Enums.ClassLevel;
+    toClass?: $Enums.ClassLevel | null;
+    status: $Enums.PromotionStatus;
+    notes?: string | null;
+    performedById: string;
+    performedAt?: Date | string;
+};
+export type PromotionRecordUpdateWithoutStudentInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    fromClass?: Prisma.EnumClassLevelFieldUpdateOperationsInput | $Enums.ClassLevel;
+    toClass?: Prisma.NullableEnumClassLevelFieldUpdateOperationsInput | $Enums.ClassLevel | null;
+    status?: Prisma.EnumPromotionStatusFieldUpdateOperationsInput | $Enums.PromotionStatus;
+    notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    performedById?: Prisma.StringFieldUpdateOperationsInput | string;
+    performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    academicYear?: Prisma.AcademicYearUpdateOneRequiredWithoutPromotionsNestedInput;
+};
+export type PromotionRecordUncheckedUpdateWithoutStudentInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    academicYearId?: Prisma.StringFieldUpdateOperationsInput | string;
+    fromClass?: Prisma.EnumClassLevelFieldUpdateOperationsInput | $Enums.ClassLevel;
+    toClass?: Prisma.NullableEnumClassLevelFieldUpdateOperationsInput | $Enums.ClassLevel | null;
+    status?: Prisma.EnumPromotionStatusFieldUpdateOperationsInput | $Enums.PromotionStatus;
+    notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    performedById?: Prisma.StringFieldUpdateOperationsInput | string;
+    performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type PromotionRecordUncheckedUpdateManyWithoutStudentInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    academicYearId?: Prisma.StringFieldUpdateOperationsInput | string;
+    fromClass?: Prisma.EnumClassLevelFieldUpdateOperationsInput | $Enums.ClassLevel;
+    toClass?: Prisma.NullableEnumClassLevelFieldUpdateOperationsInput | $Enums.ClassLevel | null;
+    status?: Prisma.EnumPromotionStatusFieldUpdateOperationsInput | $Enums.PromotionStatus;
+    notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    performedById?: Prisma.StringFieldUpdateOperationsInput | string;
+    performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type PromotionRecordCreateManyAcademicYearInput = {
+    id?: string;
+    studentId: string;
+    fromClass: $Enums.ClassLevel;
+    toClass?: $Enums.ClassLevel | null;
+    status: $Enums.PromotionStatus;
+    notes?: string | null;
+    performedById: string;
+    performedAt?: Date | string;
+};
+export type PromotionRecordUpdateWithoutAcademicYearInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    fromClass?: Prisma.EnumClassLevelFieldUpdateOperationsInput | $Enums.ClassLevel;
+    toClass?: Prisma.NullableEnumClassLevelFieldUpdateOperationsInput | $Enums.ClassLevel | null;
+    status?: Prisma.EnumPromotionStatusFieldUpdateOperationsInput | $Enums.PromotionStatus;
+    notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    performedById?: Prisma.StringFieldUpdateOperationsInput | string;
+    performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    student?: Prisma.StudentProfileUpdateOneRequiredWithoutPromotionsNestedInput;
+};
+export type PromotionRecordUncheckedUpdateWithoutAcademicYearInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    studentId?: Prisma.StringFieldUpdateOperationsInput | string;
+    fromClass?: Prisma.EnumClassLevelFieldUpdateOperationsInput | $Enums.ClassLevel;
+    toClass?: Prisma.NullableEnumClassLevelFieldUpdateOperationsInput | $Enums.ClassLevel | null;
+    status?: Prisma.EnumPromotionStatusFieldUpdateOperationsInput | $Enums.PromotionStatus;
+    notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    performedById?: Prisma.StringFieldUpdateOperationsInput | string;
+    performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type PromotionRecordUncheckedUpdateManyWithoutAcademicYearInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    studentId?: Prisma.StringFieldUpdateOperationsInput | string;
+    fromClass?: Prisma.EnumClassLevelFieldUpdateOperationsInput | $Enums.ClassLevel;
+    toClass?: Prisma.NullableEnumClassLevelFieldUpdateOperationsInput | $Enums.ClassLevel | null;
+    status?: Prisma.EnumPromotionStatusFieldUpdateOperationsInput | $Enums.PromotionStatus;
+    notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    performedById?: Prisma.StringFieldUpdateOperationsInput | string;
+    performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type PromotionRecordSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    studentId?: boolean;
+    academicYearId?: boolean;
+    fromClass?: boolean;
+    toClass?: boolean;
+    status?: boolean;
+    notes?: boolean;
+    performedById?: boolean;
+    performedAt?: boolean;
+    student?: boolean | Prisma.StudentProfileDefaultArgs<ExtArgs>;
+    academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>;
+}, ExtArgs["result"]["promotionRecord"]>;
+export type PromotionRecordSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    studentId?: boolean;
+    academicYearId?: boolean;
+    fromClass?: boolean;
+    toClass?: boolean;
+    status?: boolean;
+    notes?: boolean;
+    performedById?: boolean;
+    performedAt?: boolean;
+    student?: boolean | Prisma.StudentProfileDefaultArgs<ExtArgs>;
+    academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>;
+}, ExtArgs["result"]["promotionRecord"]>;
+export type PromotionRecordSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+    id?: boolean;
+    studentId?: boolean;
+    academicYearId?: boolean;
+    fromClass?: boolean;
+    toClass?: boolean;
+    status?: boolean;
+    notes?: boolean;
+    performedById?: boolean;
+    performedAt?: boolean;
+    student?: boolean | Prisma.StudentProfileDefaultArgs<ExtArgs>;
+    academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>;
+}, ExtArgs["result"]["promotionRecord"]>;
+export type PromotionRecordSelectScalar = {
+    id?: boolean;
+    studentId?: boolean;
+    academicYearId?: boolean;
+    fromClass?: boolean;
+    toClass?: boolean;
+    status?: boolean;
+    notes?: boolean;
+    performedById?: boolean;
+    performedAt?: boolean;
+};
+export type PromotionRecordOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "studentId" | "academicYearId" | "fromClass" | "toClass" | "status" | "notes" | "performedById" | "performedAt", ExtArgs["result"]["promotionRecord"]>;
+export type PromotionRecordInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    student?: boolean | Prisma.StudentProfileDefaultArgs<ExtArgs>;
+    academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>;
+};
+export type PromotionRecordIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    student?: boolean | Prisma.StudentProfileDefaultArgs<ExtArgs>;
+    academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>;
+};
+export type PromotionRecordIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    student?: boolean | Prisma.StudentProfileDefaultArgs<ExtArgs>;
+    academicYear?: boolean | Prisma.AcademicYearDefaultArgs<ExtArgs>;
+};
+export type $PromotionRecordPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    name: "PromotionRecord";
+    objects: {
+        student: Prisma.$StudentProfilePayload<ExtArgs>;
+        academicYear: Prisma.$AcademicYearPayload<ExtArgs>;
+    };
+    scalars: runtime.Types.Extensions.GetPayloadResult<{
+        id: string;
+        studentId: string;
+        academicYearId: string;
+        fromClass: $Enums.ClassLevel;
+        toClass: $Enums.ClassLevel | null;
+        status: $Enums.PromotionStatus;
+        notes: string | null;
+        performedById: string;
+        performedAt: Date;
+    }, ExtArgs["result"]["promotionRecord"]>;
+    composites: {};
+};
+export type PromotionRecordGetPayload<S extends boolean | null | undefined | PromotionRecordDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$PromotionRecordPayload, S>;
+export type PromotionRecordCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = Omit<PromotionRecordFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+    select?: PromotionRecordCountAggregateInputType | true;
+};
+export interface PromotionRecordDelegate<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: {
+        types: Prisma.TypeMap<ExtArgs>['model']['PromotionRecord'];
+        meta: {
+            name: 'PromotionRecord';
+        };
+    };
+    findUnique<T extends PromotionRecordFindUniqueArgs>(args: Prisma.SelectSubset<T, PromotionRecordFindUniqueArgs<ExtArgs>>): Prisma.Prisma__PromotionRecordClient<runtime.Types.Result.GetResult<Prisma.$PromotionRecordPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    findUniqueOrThrow<T extends PromotionRecordFindUniqueOrThrowArgs>(args: Prisma.SelectSubset<T, PromotionRecordFindUniqueOrThrowArgs<ExtArgs>>): Prisma.Prisma__PromotionRecordClient<runtime.Types.Result.GetResult<Prisma.$PromotionRecordPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    findFirst<T extends PromotionRecordFindFirstArgs>(args?: Prisma.SelectSubset<T, PromotionRecordFindFirstArgs<ExtArgs>>): Prisma.Prisma__PromotionRecordClient<runtime.Types.Result.GetResult<Prisma.$PromotionRecordPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    findFirstOrThrow<T extends PromotionRecordFindFirstOrThrowArgs>(args?: Prisma.SelectSubset<T, PromotionRecordFindFirstOrThrowArgs<ExtArgs>>): Prisma.Prisma__PromotionRecordClient<runtime.Types.Result.GetResult<Prisma.$PromotionRecordPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    findMany<T extends PromotionRecordFindManyArgs>(args?: Prisma.SelectSubset<T, PromotionRecordFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PromotionRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>;
+    create<T extends PromotionRecordCreateArgs>(args: Prisma.SelectSubset<T, PromotionRecordCreateArgs<ExtArgs>>): Prisma.Prisma__PromotionRecordClient<runtime.Types.Result.GetResult<Prisma.$PromotionRecordPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    createMany<T extends PromotionRecordCreateManyArgs>(args?: Prisma.SelectSubset<T, PromotionRecordCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    createManyAndReturn<T extends PromotionRecordCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, PromotionRecordCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PromotionRecordPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>;
+    delete<T extends PromotionRecordDeleteArgs>(args: Prisma.SelectSubset<T, PromotionRecordDeleteArgs<ExtArgs>>): Prisma.Prisma__PromotionRecordClient<runtime.Types.Result.GetResult<Prisma.$PromotionRecordPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    update<T extends PromotionRecordUpdateArgs>(args: Prisma.SelectSubset<T, PromotionRecordUpdateArgs<ExtArgs>>): Prisma.Prisma__PromotionRecordClient<runtime.Types.Result.GetResult<Prisma.$PromotionRecordPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    deleteMany<T extends PromotionRecordDeleteManyArgs>(args?: Prisma.SelectSubset<T, PromotionRecordDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    updateMany<T extends PromotionRecordUpdateManyArgs>(args: Prisma.SelectSubset<T, PromotionRecordUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>;
+    updateManyAndReturn<T extends PromotionRecordUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, PromotionRecordUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PromotionRecordPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>;
+    upsert<T extends PromotionRecordUpsertArgs>(args: Prisma.SelectSubset<T, PromotionRecordUpsertArgs<ExtArgs>>): Prisma.Prisma__PromotionRecordClient<runtime.Types.Result.GetResult<Prisma.$PromotionRecordPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>;
+    count<T extends PromotionRecordCountArgs>(args?: Prisma.Subset<T, PromotionRecordCountArgs>): Prisma.PrismaPromise<T extends runtime.Types.Utils.Record<'select', any> ? T['select'] extends true ? number : Prisma.GetScalarType<T['select'], PromotionRecordCountAggregateOutputType> : number>;
+    aggregate<T extends PromotionRecordAggregateArgs>(args: Prisma.Subset<T, PromotionRecordAggregateArgs>): Prisma.PrismaPromise<GetPromotionRecordAggregateType<T>>;
+    groupBy<T extends PromotionRecordGroupByArgs, HasSelectOrTake extends Prisma.Or<Prisma.Extends<'skip', Prisma.Keys<T>>, Prisma.Extends<'take', Prisma.Keys<T>>>, OrderByArg extends Prisma.True extends HasSelectOrTake ? {
+        orderBy: PromotionRecordGroupByArgs['orderBy'];
+    } : {
+        orderBy?: PromotionRecordGroupByArgs['orderBy'];
+    }, OrderFields extends Prisma.ExcludeUnderscoreKeys<Prisma.Keys<Prisma.MaybeTupleToUnion<T['orderBy']>>>, ByFields extends Prisma.MaybeTupleToUnion<T['by']>, ByValid extends Prisma.Has<ByFields, OrderFields>, HavingFields extends Prisma.GetHavingFields<T['having']>, HavingValid extends Prisma.Has<ByFields, HavingFields>, ByEmpty extends T['by'] extends never[] ? Prisma.True : Prisma.False, InputErrors extends ByEmpty extends Prisma.True ? `Error: "by" must not be empty.` : HavingValid extends Prisma.False ? {
+        [P in HavingFields]: P extends ByFields ? never : P extends string ? `Error: Field "${P}" used in "having" needs to be provided in "by".` : [
+            Error,
+            'Field ',
+            P,
+            ` in "having" needs to be provided in "by"`
+        ];
+    }[HavingFields] : 'take' extends Prisma.Keys<T> ? 'orderBy' extends Prisma.Keys<T> ? ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields] : 'Error: If you provide "take", you also need to provide "orderBy"' : 'skip' extends Prisma.Keys<T> ? 'orderBy' extends Prisma.Keys<T> ? ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields] : 'Error: If you provide "skip", you also need to provide "orderBy"' : ByValid extends Prisma.True ? {} : {
+        [P in OrderFields]: P extends ByFields ? never : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`;
+    }[OrderFields]>(args: Prisma.SubsetIntersection<T, PromotionRecordGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPromotionRecordGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>;
+    readonly fields: PromotionRecordFieldRefs;
+}
+export interface Prisma__PromotionRecordClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise";
+    student<T extends Prisma.StudentProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StudentProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__StudentProfileClient<runtime.Types.Result.GetResult<Prisma.$StudentProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
+    academicYear<T extends Prisma.AcademicYearDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicYearDefaultArgs<ExtArgs>>): Prisma.Prisma__AcademicYearClient<runtime.Types.Result.GetResult<Prisma.$AcademicYearPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): runtime.Types.Utils.JsPromise<TResult1 | TResult2>;
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): runtime.Types.Utils.JsPromise<T | TResult>;
+    finally(onfinally?: (() => void) | undefined | null): runtime.Types.Utils.JsPromise<T>;
+}
+export interface PromotionRecordFieldRefs {
+    readonly id: Prisma.FieldRef<"PromotionRecord", 'String'>;
+    readonly studentId: Prisma.FieldRef<"PromotionRecord", 'String'>;
+    readonly academicYearId: Prisma.FieldRef<"PromotionRecord", 'String'>;
+    readonly fromClass: Prisma.FieldRef<"PromotionRecord", 'ClassLevel'>;
+    readonly toClass: Prisma.FieldRef<"PromotionRecord", 'ClassLevel'>;
+    readonly status: Prisma.FieldRef<"PromotionRecord", 'PromotionStatus'>;
+    readonly notes: Prisma.FieldRef<"PromotionRecord", 'String'>;
+    readonly performedById: Prisma.FieldRef<"PromotionRecord", 'String'>;
+    readonly performedAt: Prisma.FieldRef<"PromotionRecord", 'DateTime'>;
+}
+export type PromotionRecordFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.PromotionRecordSelect<ExtArgs> | null;
+    omit?: Prisma.PromotionRecordOmit<ExtArgs> | null;
+    include?: Prisma.PromotionRecordInclude<ExtArgs> | null;
+    where: Prisma.PromotionRecordWhereUniqueInput;
+};
+export type PromotionRecordFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.PromotionRecordSelect<ExtArgs> | null;
+    omit?: Prisma.PromotionRecordOmit<ExtArgs> | null;
+    include?: Prisma.PromotionRecordInclude<ExtArgs> | null;
+    where: Prisma.PromotionRecordWhereUniqueInput;
+};
+export type PromotionRecordFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.PromotionRecordSelect<ExtArgs> | null;
+    omit?: Prisma.PromotionRecordOmit<ExtArgs> | null;
+    include?: Prisma.PromotionRecordInclude<ExtArgs> | null;
+    where?: Prisma.PromotionRecordWhereInput;
+    orderBy?: Prisma.PromotionRecordOrderByWithRelationInput | Prisma.PromotionRecordOrderByWithRelationInput[];
+    cursor?: Prisma.PromotionRecordWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.PromotionRecordScalarFieldEnum | Prisma.PromotionRecordScalarFieldEnum[];
+};
+export type PromotionRecordFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.PromotionRecordSelect<ExtArgs> | null;
+    omit?: Prisma.PromotionRecordOmit<ExtArgs> | null;
+    include?: Prisma.PromotionRecordInclude<ExtArgs> | null;
+    where?: Prisma.PromotionRecordWhereInput;
+    orderBy?: Prisma.PromotionRecordOrderByWithRelationInput | Prisma.PromotionRecordOrderByWithRelationInput[];
+    cursor?: Prisma.PromotionRecordWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.PromotionRecordScalarFieldEnum | Prisma.PromotionRecordScalarFieldEnum[];
+};
+export type PromotionRecordFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.PromotionRecordSelect<ExtArgs> | null;
+    omit?: Prisma.PromotionRecordOmit<ExtArgs> | null;
+    include?: Prisma.PromotionRecordInclude<ExtArgs> | null;
+    where?: Prisma.PromotionRecordWhereInput;
+    orderBy?: Prisma.PromotionRecordOrderByWithRelationInput | Prisma.PromotionRecordOrderByWithRelationInput[];
+    cursor?: Prisma.PromotionRecordWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.PromotionRecordScalarFieldEnum | Prisma.PromotionRecordScalarFieldEnum[];
+};
+export type PromotionRecordCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.PromotionRecordSelect<ExtArgs> | null;
+    omit?: Prisma.PromotionRecordOmit<ExtArgs> | null;
+    include?: Prisma.PromotionRecordInclude<ExtArgs> | null;
+    data: Prisma.XOR<Prisma.PromotionRecordCreateInput, Prisma.PromotionRecordUncheckedCreateInput>;
+};
+export type PromotionRecordCreateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    data: Prisma.PromotionRecordCreateManyInput | Prisma.PromotionRecordCreateManyInput[];
+    skipDuplicates?: boolean;
+};
+export type PromotionRecordCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.PromotionRecordSelectCreateManyAndReturn<ExtArgs> | null;
+    omit?: Prisma.PromotionRecordOmit<ExtArgs> | null;
+    data: Prisma.PromotionRecordCreateManyInput | Prisma.PromotionRecordCreateManyInput[];
+    skipDuplicates?: boolean;
+    include?: Prisma.PromotionRecordIncludeCreateManyAndReturn<ExtArgs> | null;
+};
+export type PromotionRecordUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.PromotionRecordSelect<ExtArgs> | null;
+    omit?: Prisma.PromotionRecordOmit<ExtArgs> | null;
+    include?: Prisma.PromotionRecordInclude<ExtArgs> | null;
+    data: Prisma.XOR<Prisma.PromotionRecordUpdateInput, Prisma.PromotionRecordUncheckedUpdateInput>;
+    where: Prisma.PromotionRecordWhereUniqueInput;
+};
+export type PromotionRecordUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    data: Prisma.XOR<Prisma.PromotionRecordUpdateManyMutationInput, Prisma.PromotionRecordUncheckedUpdateManyInput>;
+    where?: Prisma.PromotionRecordWhereInput;
+    limit?: number;
+};
+export type PromotionRecordUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.PromotionRecordSelectUpdateManyAndReturn<ExtArgs> | null;
+    omit?: Prisma.PromotionRecordOmit<ExtArgs> | null;
+    data: Prisma.XOR<Prisma.PromotionRecordUpdateManyMutationInput, Prisma.PromotionRecordUncheckedUpdateManyInput>;
+    where?: Prisma.PromotionRecordWhereInput;
+    limit?: number;
+    include?: Prisma.PromotionRecordIncludeUpdateManyAndReturn<ExtArgs> | null;
+};
+export type PromotionRecordUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.PromotionRecordSelect<ExtArgs> | null;
+    omit?: Prisma.PromotionRecordOmit<ExtArgs> | null;
+    include?: Prisma.PromotionRecordInclude<ExtArgs> | null;
+    where: Prisma.PromotionRecordWhereUniqueInput;
+    create: Prisma.XOR<Prisma.PromotionRecordCreateInput, Prisma.PromotionRecordUncheckedCreateInput>;
+    update: Prisma.XOR<Prisma.PromotionRecordUpdateInput, Prisma.PromotionRecordUncheckedUpdateInput>;
+};
+export type PromotionRecordDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.PromotionRecordSelect<ExtArgs> | null;
+    omit?: Prisma.PromotionRecordOmit<ExtArgs> | null;
+    include?: Prisma.PromotionRecordInclude<ExtArgs> | null;
+    where: Prisma.PromotionRecordWhereUniqueInput;
+};
+export type PromotionRecordDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.PromotionRecordWhereInput;
+    limit?: number;
+};
+export type PromotionRecordDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.PromotionRecordSelect<ExtArgs> | null;
+    omit?: Prisma.PromotionRecordOmit<ExtArgs> | null;
+    include?: Prisma.PromotionRecordInclude<ExtArgs> | null;
+};
