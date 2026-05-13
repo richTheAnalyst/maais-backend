@@ -4,7 +4,7 @@
   "description": "MAAIS - Academic Audit & Intervention System Backend",
   "private": true,
   "scripts": {
-    "build": "npx nest build",
+    "build": "nest build",
     "start": "node dist/main",
     "start:prod": "node dist/main",
     "start:debug": "nest start --debug --watch",
@@ -16,7 +16,7 @@
     "prisma:seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
-    "@neondatabase/serverlless": "^1.1.0",
+    "@neondatabase/serverless": "^1.1.0",
     "@nestjs/common": "^11.1.19",
     "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^11.1.19",
