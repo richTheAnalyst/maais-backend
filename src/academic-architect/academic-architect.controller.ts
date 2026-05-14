@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Patch, Body, Param } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
-import { Role } from '../generated/prisma';
+import { Role } from '@prisma/client';
 import { AcademicArchitectService } from './academic-architect.service';
 import { Roles, CurrentUser } from '../common/decorators/roles.decorator';
 import {

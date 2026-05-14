@@ -1,6 +1,6 @@
 import { Controller, Post, Get, Patch, Body, Param, Query } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
-import { Role } from '../generated/prisma';
+import { Role } from '@prisma/client';
 import { ArchiveService } from './archive.service';
 import { Roles, CurrentUser } from '../common/decorators/roles.decorator';
 import { PromotionDto } from '../comms/dto/comms.dto';

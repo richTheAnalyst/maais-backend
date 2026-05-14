@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Patch, Body, Param, Query } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
-import { Role } from '../generated/prisma';
+import { Role } from '@prisma/client';
 import { GradingService } from './grading.service';
 import { Roles, CurrentUser } from '../common/decorators/roles.decorator';
 import { UpsertGradeDto, BulkUpsertGradeDto, CorrectGradeDto } from './dto/grading.dto';

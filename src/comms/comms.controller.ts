@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Patch, Body, Param, Query } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
-import { Role } from '../generated/prisma';
+import { Role } from '@prisma/client';
 import { CommsService } from './comms.service';
 import { Roles, CurrentUser } from '../common/decorators/roles.decorator';
 import { SendNotificationDto, EmergencyNotificationDto } from './dto/comms.dto';

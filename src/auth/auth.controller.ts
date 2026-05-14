@@ -14,7 +14,7 @@ import { CurrentUser } from '../common/decorators/roles.decorator';
 import { Public } from '../common/decorators/public.decorator';
 import { RefreshDto } from './dto/refresh.dto';
 import { LoginDto } from './dto/login.dto';
-import { User } from '../../src/generated/prisma';
+import { User } from '@prisma/client';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 

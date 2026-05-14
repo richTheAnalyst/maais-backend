@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, IsEnum, IsOptional, IsDateString, IsInt } from 'class-validator';
-import { TermNumber, ClassLevel, SubjectType } from '../../generated/prisma';
+import { TermNumber, ClassLevel, SubjectType } from '@prisma/client';
 
 export class CreateAcademicYearDto {
   @ApiProperty({ example: '2024/2025' })
