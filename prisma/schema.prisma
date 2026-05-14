@@ -2,8 +2,7 @@
 // Prisma Schema for Neon (PostgreSQL)
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
