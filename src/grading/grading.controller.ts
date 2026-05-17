@@ -36,6 +36,28 @@ export class GradingController {
     return this.gradingService.lockGrade(id, userId, role);
   }
 
+  @Patch('entries/:id/approve')
+  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Approve a grade entry' })
+  approveGrade(
+    @Param('id') id: string,
+    @CurrentUser('id') userId: string,
+    @CurrentUser('role') role: Role,
+  ) {
+    return this.gradingService.approveGrade(id, userId, role);
+  }
+
+  @Post('entries/bulk-approve')
+  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Bulk approve grade entries' })
+  bulkApprove(
+    @Body('ids') ids: string[],
+    @CurrentUser('id') userId: string,
+    @CurrentUser('role') role: Role,
+  ) {
+    return this.gradingService.bulkApproveGrades(ids, userId, role);
+  }
+
   @Post('corrections')
   @Roles(Role.TEACHER, Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
   @ApiOperation({ summary: 'Submit a grade correction with audit trail' })
@@ -50,13 +72,21 @@ export class GradingController {
     return this.gradingService.getMissingObservationsTray(termId);
   }
 
+  @Get('class-summary/:classId')
+  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Get class performance summary' })
+  getClassSummary(@Param('classId') classId: string, @Query('termId') termId: string) {
+    return this.gradingService.getClassPerformanceSummary(classId, termId);
+  }
+
   @Get('students/:studentId/terms/:termId')
   @ApiOperation({ summary: 'Get all grades for a student in a term' })
   getStudentTermGrades(
     @Param('studentId') studentId: string,
     @Param('termId') termId: string,
+    @CurrentUser('role') role: Role,
   ) {
-    return this.gradingService.getStudentTermGrades(studentId, termId);
+    return this.gradingService.getStudentTermGrades(studentId, termId, role);
   }
 
   @Get('smart-remarks/:grade')

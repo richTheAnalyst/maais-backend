@@ -163,6 +163,8 @@ model StudentProfile {
   admissionDate    DateTime  @default(now())
   currentClassId   String?
   currentClass     ClassSection? @relation(fields: [currentClassId], references: [id])
+  departmentId     String?
+  department       Department? @relation(fields: [departmentId], references: [id])
 
   // Academic records
   grades           GradeEntry[]
@@ -253,6 +255,7 @@ model Department {
 
   staff       StaffProfile[]
   subjects    Subject[]
+  students    StudentProfile[]
 
   @@map("departments")
 }
@@ -357,6 +360,11 @@ model GradeEntry {
   lockedAt          DateTime?
   submittedById     String?
   submittedAt       DateTime?
+
+  // Approval
+  isApproved        Boolean    @default(false)
+  approvedById      String?
+  approvedAt        DateTime?
 
   // Corrections tracked
   corrections GradeCorrection[]

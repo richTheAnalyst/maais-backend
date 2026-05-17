@@ -16,7 +16,7 @@ exports.ArchiveController = void 0;
 const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
-const prisma_1 = require("../generated/prisma");
+const client_1 = require("@prisma/client");
 const archive_service_1 = require("./archive.service");
 const roles_decorator_1 = require("../common/decorators/roles.decorator");
 const comms_dto_1 = require("../comms/dto/comms.dto");
@@ -40,7 +40,7 @@ let ArchiveController = class ArchiveController {
 exports.ArchiveController = ArchiveController;
 __decorate([
     (0, common_1.Post)('promote'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.SUPER_ADMIN, prisma_1.Role.HEADMASTER),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER),
     (0, swagger_1.ApiOperation)({ summary: 'Run annual promotion cycle' }),
     openapi.ApiResponse({ status: 201 }),
     __param(0, (0, common_1.Body)()),
@@ -51,7 +51,7 @@ __decorate([
 ], ArchiveController.prototype, "runPromotion", null);
 __decorate([
     (0, common_1.Get)('vault/search'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.HEADMASTER, prisma_1.Role.SUPER_ADMIN, prisma_1.Role.HOD),
+    (0, roles_decorator_1.Roles)(client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN, client_1.Role.HOD),
     (0, swagger_1.ApiOperation)({ summary: 'Search The Vault for historical records' }),
     openapi.ApiResponse({ status: 200, type: [Object] }),
     __param(0, (0, common_1.Query)()),
@@ -61,7 +61,7 @@ __decorate([
 ], ArchiveController.prototype, "searchVault", null);
 __decorate([
     (0, common_1.Patch)('terms/:id/lock'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.HEADMASTER, prisma_1.Role.SUPER_ADMIN),
+    (0, roles_decorator_1.Roles)(client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN),
     (0, swagger_1.ApiOperation)({ summary: 'Lock a term' }),
     openapi.ApiResponse({ status: 200 }),
     __param(0, (0, common_1.Param)('id')),
@@ -71,7 +71,7 @@ __decorate([
 ], ArchiveController.prototype, "lockTerm", null);
 __decorate([
     (0, common_1.Get)('health'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.SUPER_ADMIN, prisma_1.Role.HEADMASTER),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER),
     (0, swagger_1.ApiOperation)({ summary: 'Database health check' }),
     openapi.ApiResponse({ status: 200 }),
     __metadata("design:type", Function),

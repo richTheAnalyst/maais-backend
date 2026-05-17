@@ -13,7 +13,7 @@ exports.CreateStaffDto = void 0;
 const openapi = require("@nestjs/swagger");
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
-const prisma_1 = require("../../generated/prisma");
+const client_1 = require("@prisma/client");
 class CreateStaffDto {
     static _OPENAPI_METADATA_FACTORY() {
         return { email: { required: true, type: () => String, format: "email" }, password: { required: true, type: () => String }, role: { required: true, type: () => Object }, staffId: { required: true, type: () => String }, firstName: { required: true, type: () => String }, lastName: { required: true, type: () => String }, middleName: { required: false, type: () => String }, gender: { required: true, type: () => Object }, phone: { required: false, type: () => String }, departmentId: { required: false, type: () => String } };
@@ -31,8 +31,8 @@ __decorate([
     __metadata("design:type", String)
 ], CreateStaffDto.prototype, "password", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ enum: prisma_1.Role, example: prisma_1.Role.TEACHER }),
-    (0, class_validator_1.IsEnum)(prisma_1.Role),
+    (0, swagger_1.ApiProperty)({ enum: client_1.Role, example: client_1.Role.TEACHER }),
+    (0, class_validator_1.IsEnum)(client_1.Role),
     __metadata("design:type", String)
 ], CreateStaffDto.prototype, "role", void 0);
 __decorate([
@@ -57,8 +57,8 @@ __decorate([
     __metadata("design:type", String)
 ], CreateStaffDto.prototype, "middleName", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ enum: prisma_1.Gender }),
-    (0, class_validator_1.IsEnum)(prisma_1.Gender),
+    (0, swagger_1.ApiProperty)({ enum: client_1.Gender }),
+    (0, class_validator_1.IsEnum)(client_1.Gender),
     __metadata("design:type", String)
 ], CreateStaffDto.prototype, "gender", void 0);
 __decorate([

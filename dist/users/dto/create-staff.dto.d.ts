@@ -1,4 +1,4 @@
-import { Gender, Role } from '../../generated/prisma';
+import { Gender, Role } from '@prisma/client';
 export declare class CreateStaffDto {
     email: string;
     password: string;

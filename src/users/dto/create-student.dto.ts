@@ -43,4 +43,35 @@ export class CreateStudentDto {
   @IsOptional()
   @IsString()
   currentClassId?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  departmentId?: string;
+
+  // Parent Info
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  parentFirstName?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  parentLastName?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  parentPhone?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsEmail()
+  parentEmail?: string;
+
+  @ApiPropertyOptional({ example: 'Father' })
+  @IsOptional()
+  @IsString()
+  parentRelationship?: string;
 }

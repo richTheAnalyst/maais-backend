@@ -171,6 +171,7 @@ let GradingService = class GradingService {
                 observationText: dto.observationText,
                 submittedById,
                 submittedAt: new Date(),
+                isApproved: false,
             },
             update: {
                 classScore: dto.classScore,
@@ -182,10 +183,57 @@ let GradingService = class GradingService {
                 observationText: dto.observationText,
                 submittedById,
                 submittedAt: new Date(),
+                isApproved: false,
             },
             include: { student: true, subject: true },
         });
         return entry;
+    }
+    async approveGrade(gradeEntryId, approvedById, userRole) {
+        if (userRole !== client_1.Role.HOD &&
+            userRole !== client_1.Role.HEADMASTER &&
+            userRole !== client_1.Role.SUPER_ADMIN) {
+            throw new common_1.ForbiddenException('Only HODs or above can approve grade entries');
+        }
+        return this.prisma.gradeEntry.update({
+            where: { id: gradeEntryId },
+            data: { isApproved: true, approvedById, approvedAt: new Date() },
+        });
+    }
+    async bulkApproveGrades(ids, approvedById, userRole) {
+        if (userRole !== client_1.Role.HOD &&
+            userRole !== client_1.Role.HEADMASTER &&
+            userRole !== client_1.Role.SUPER_ADMIN) {
+            throw new common_1.ForbiddenException('Only HODs or above can approve grade entries');
+        }
+        return this.prisma.gradeEntry.updateMany({
+            where: { id: { in: ids } },
+            data: { isApproved: true, approvedById, approvedAt: new Date() },
+        });
+    }
+    async getClassPerformanceSummary(classId, termId) {
+        const students = await this.prisma.studentProfile.findMany({
+            where: { currentClassId: classId },
+            include: {
+                grades: {
+                    where: { termId },
+                    include: { subject: true },
+                },
+            },
+        });
+        return students.map(s => {
+            const totalGrades = s.grades.length;
+            const approvedGrades = s.grades.filter(g => g.isApproved).length;
+            const progress = totalGrades > 0 ? (approvedGrades / totalGrades) * 100 : 0;
+            return {
+                id: s.id,
+                name: `${s.firstName} ${s.lastName}`,
+                indexNumber: s.indexNumber,
+                progress,
+                isFullyApproved: totalGrades > 0 && totalGrades === approvedGrades,
+                gradesCount: totalGrades,
+            };
+        });
     }
     async lockGrade(gradeEntryId, lockedById, userRole) {
         if (userRole !== client_1.Role.HOD &&
@@ -251,9 +299,13 @@ let GradingService = class GradingService {
             orderBy: { student: { lastName: 'asc' } },
         });
     }
-    async getStudentTermGrades(studentId, termId) {
+    async getStudentTermGrades(studentId, termId, userRole) {
+        const where = { studentId, termId };
+        if (userRole === client_1.Role.STUDENT) {
+            where.isApproved = true;
+        }
         return this.prisma.gradeEntry.findMany({
-            where: { studentId, termId },
+            where,
             include: { subject: true, corrections: true },
             orderBy: { subject: { name: 'asc' } },
         });

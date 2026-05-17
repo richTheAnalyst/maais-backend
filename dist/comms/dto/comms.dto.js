@@ -13,7 +13,7 @@ exports.PromotionDto = exports.EmergencyNotificationDto = exports.SendNotificati
 const openapi = require("@nestjs/swagger");
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
-const prisma_1 = require("../../generated/prisma");
+const client_1 = require("@prisma/client");
 class SendNotificationDto {
     static _OPENAPI_METADATA_FACTORY() {
         return { studentIds: { required: false, type: () => [String] }, title: { required: true, type: () => String }, body: { required: true, type: () => String }, channel: { required: true, type: () => Object } };
@@ -37,8 +37,8 @@ __decorate([
     __metadata("design:type", String)
 ], SendNotificationDto.prototype, "body", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ enum: prisma_1.NotificationChannel }),
-    (0, class_validator_1.IsEnum)(prisma_1.NotificationChannel),
+    (0, swagger_1.ApiProperty)({ enum: client_1.NotificationChannel }),
+    (0, class_validator_1.IsEnum)(client_1.NotificationChannel),
     __metadata("design:type", String)
 ], SendNotificationDto.prototype, "channel", void 0);
 class EmergencyNotificationDto {

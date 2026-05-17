@@ -19,7 +19,7 @@ export declare class CommsController {
         title: string;
         studentId: string | null;
         body: string;
-        channel: import("../generated/prisma").NotificationChannel;
+        channel: import(".prisma/client").$Enums.NotificationChannel;
         isRead: boolean;
         deliveredAt: Date | null;
         failedAt: Date | null;
@@ -32,7 +32,7 @@ export declare class CommsController {
         title: string;
         studentId: string | null;
         body: string;
-        channel: import("../generated/prisma").NotificationChannel;
+        channel: import(".prisma/client").$Enums.NotificationChannel;
         isRead: boolean;
         deliveredAt: Date | null;
         failedAt: Date | null;

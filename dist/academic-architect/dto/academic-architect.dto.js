@@ -13,7 +13,7 @@ exports.AssignClassTeacherDto = exports.AssignTeacherDto = exports.CreateClassSe
 const openapi = require("@nestjs/swagger");
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
-const prisma_1 = require("../../generated/prisma");
+const client_1 = require("@prisma/client");
 class CreateAcademicYearDto {
     static _OPENAPI_METADATA_FACTORY() {
         return { label: { required: true, type: () => String }, startDate: { required: true, type: () => String }, endDate: { required: true, type: () => String } };
@@ -47,8 +47,8 @@ __decorate([
     __metadata("design:type", String)
 ], CreateTermDto.prototype, "academicYearId", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ enum: prisma_1.TermNumber }),
-    (0, class_validator_1.IsEnum)(prisma_1.TermNumber),
+    (0, swagger_1.ApiProperty)({ enum: client_1.TermNumber }),
+    (0, class_validator_1.IsEnum)(client_1.TermNumber),
     __metadata("design:type", String)
 ], CreateTermDto.prototype, "termNumber", void 0);
 __decorate([
@@ -100,8 +100,8 @@ __decorate([
     __metadata("design:type", String)
 ], CreateSubjectDto.prototype, "code", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ enum: prisma_1.SubjectType }),
-    (0, class_validator_1.IsEnum)(prisma_1.SubjectType),
+    (0, swagger_1.ApiProperty)({ enum: client_1.SubjectType }),
+    (0, class_validator_1.IsEnum)(client_1.SubjectType),
     __metadata("design:type", String)
 ], CreateSubjectDto.prototype, "type", void 0);
 __decorate([
@@ -128,8 +128,8 @@ __decorate([
     __metadata("design:type", String)
 ], CreateClassSectionDto.prototype, "name", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ enum: prisma_1.ClassLevel }),
-    (0, class_validator_1.IsEnum)(prisma_1.ClassLevel),
+    (0, swagger_1.ApiProperty)({ enum: client_1.ClassLevel }),
+    (0, class_validator_1.IsEnum)(client_1.ClassLevel),
     __metadata("design:type", String)
 ], CreateClassSectionDto.prototype, "level", void 0);
 __decorate([

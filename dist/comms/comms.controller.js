@@ -16,7 +16,7 @@ exports.CommsController = void 0;
 const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
-const prisma_1 = require("../generated/prisma");
+const client_1 = require("@prisma/client");
 const comms_service_1 = require("./comms.service");
 const roles_decorator_1 = require("../common/decorators/roles.decorator");
 const comms_dto_1 = require("./dto/comms.dto");
@@ -43,7 +43,7 @@ let CommsController = class CommsController {
 exports.CommsController = CommsController;
 __decorate([
     (0, common_1.Post)('notify'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.HEADMASTER, prisma_1.Role.SUPER_ADMIN, prisma_1.Role.HOD),
+    (0, roles_decorator_1.Roles)(client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN, client_1.Role.HOD),
     (0, swagger_1.ApiOperation)({ summary: 'Send notification to students' }),
     openapi.ApiResponse({ status: 201 }),
     __param(0, (0, common_1.Body)()),
@@ -54,7 +54,7 @@ __decorate([
 ], CommsController.prototype, "sendNotification", null);
 __decorate([
     (0, common_1.Post)('emergency'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.HEADMASTER, prisma_1.Role.SUPER_ADMIN),
+    (0, roles_decorator_1.Roles)(client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN),
     (0, swagger_1.ApiOperation)({ summary: 'Broadcast emergency SMS to all parents' }),
     openapi.ApiResponse({ status: 201 }),
     __param(0, (0, common_1.Body)()),
@@ -85,7 +85,7 @@ __decorate([
 __decorate([
     openapi.ApiQuery({ name: "academicYearId", required: false }),
     (0, common_1.Get)('analytics/pulse'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.HEADMASTER, prisma_1.Role.SUPER_ADMIN, prisma_1.Role.HOD),
+    (0, roles_decorator_1.Roles)(client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN, client_1.Role.HOD),
     (0, swagger_1.ApiOperation)({ summary: 'Get academic pulse dashboard data' }),
     openapi.ApiResponse({ status: 200 }),
     __param(0, (0, common_1.Query)('academicYearId')),

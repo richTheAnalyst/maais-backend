@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
-import { UsersService } from './users.service';
-import { Roles } from '../common/decorators/roles.decorator';
+import { UsersService, CreateParentDto } from './users.service';
+import { Roles, CurrentUser } from '../common/decorators/roles.decorator';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
 
@@ -20,30 +20,37 @@ export class UsersController {
   }
 
   @Post('students')
-  @Roles(Role.SUPER_ADMIN, Role.HEADMASTER)
+  @Roles(Role.SUPER_ADMIN, Role.HEADMASTER, Role.TEACHER)
   @ApiOperation({ summary: 'Enrol a new student' })
   createStudent(@Body() dto: CreateStudentDto) {
     return this.usersService.createStudent(dto);
   }
 
+  @Post('parents')
+  @Roles(Role.SUPER_ADMIN, Role.HEADMASTER, Role.TEACHER)
+  @ApiOperation({ summary: 'Enrol a new parent' })
+  createParent(@Body() dto: CreateParentDto) {
+    return this.usersService.createParent(dto);
+  }
+
   @Get('students')
   @Roles(Role.SUPER_ADMIN, Role.HEADMASTER, Role.HOD, Role.TEACHER)
   @ApiOperation({ summary: 'List all active students' })
-  getAllStudents(@Query('classId') classId?: string) {
-    return this.usersService.getAllStudents(classId);
+  getAllStudents(@CurrentUser() user: { id: string, role: Role }) {
+    return this.usersService.getAllStudents(user);
   }
 
   @Get('students/:id')
   @ApiOperation({ summary: 'Get full student profile' })
-  getStudentProfile(@Param('id') id: string) {
-    return this.usersService.getStudentProfile(id);
+  getStudentProfile(@Param('id') id: string, @CurrentUser('role') role: Role) {
+    return this.usersService.getStudentProfile(id, role);
   }
 
   @Get('staff')
-  @Roles(Role.SUPER_ADMIN, Role.HEADMASTER)
+  @Roles(Role.SUPER_ADMIN, Role.HEADMASTER, Role.HOD)
   @ApiOperation({ summary: 'List all staff members' })
-  getAllStaff() {
-    return this.usersService.getAllStaff();
+  getAllStaff(@CurrentUser() user: { id: string, role: Role }) {
+    return this.usersService.getAllStaff(user);
   }
 
   @Delete(':id/deactivate')

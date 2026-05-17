@@ -1,4 +1,4 @@
-import { TermNumber, ClassLevel, SubjectType } from '../../generated/prisma';
+import { TermNumber, ClassLevel, SubjectType } from '@prisma/client';
 export declare class CreateAcademicYearDto {
     label: string;
     startDate: string;

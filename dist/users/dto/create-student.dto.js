@@ -13,10 +13,10 @@ exports.CreateStudentDto = void 0;
 const openapi = require("@nestjs/swagger");
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
-const prisma_1 = require("../../generated/prisma");
+const client_1 = require("@prisma/client");
 class CreateStudentDto {
     static _OPENAPI_METADATA_FACTORY() {
-        return { indexNumber: { required: true, type: () => String }, firstName: { required: true, type: () => String }, lastName: { required: true, type: () => String }, middleName: { required: false, type: () => String }, gender: { required: true, type: () => Object }, dateOfBirth: { required: false, type: () => String }, email: { required: false, type: () => String, format: "email" }, password: { required: true, type: () => String }, currentClassId: { required: false, type: () => String } };
+        return { indexNumber: { required: true, type: () => String }, firstName: { required: true, type: () => String }, lastName: { required: true, type: () => String }, middleName: { required: false, type: () => String }, gender: { required: true, type: () => Object }, dateOfBirth: { required: false, type: () => String }, email: { required: false, type: () => String, format: "email" }, password: { required: true, type: () => String }, currentClassId: { required: false, type: () => String }, departmentId: { required: false, type: () => String }, parentFirstName: { required: false, type: () => String }, parentLastName: { required: false, type: () => String }, parentPhone: { required: false, type: () => String }, parentEmail: { required: false, type: () => String, format: "email" }, parentRelationship: { required: false, type: () => String } };
     }
 }
 exports.CreateStudentDto = CreateStudentDto;
@@ -43,8 +43,8 @@ __decorate([
     __metadata("design:type", String)
 ], CreateStudentDto.prototype, "middleName", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ enum: prisma_1.Gender }),
-    (0, class_validator_1.IsEnum)(prisma_1.Gender),
+    (0, swagger_1.ApiProperty)({ enum: client_1.Gender }),
+    (0, class_validator_1.IsEnum)(client_1.Gender),
     __metadata("design:type", String)
 ], CreateStudentDto.prototype, "gender", void 0);
 __decorate([
@@ -70,4 +70,40 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateStudentDto.prototype, "currentClassId", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateStudentDto.prototype, "departmentId", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateStudentDto.prototype, "parentFirstName", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateStudentDto.prototype, "parentLastName", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateStudentDto.prototype, "parentPhone", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEmail)(),
+    __metadata("design:type", String)
+], CreateStudentDto.prototype, "parentEmail", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 'Father' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateStudentDto.prototype, "parentRelationship", void 0);
 //# sourceMappingURL=create-student.dto.js.map

@@ -16,7 +16,7 @@ exports.ReportsController = void 0;
 const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
-const prisma_1 = require("../generated/prisma");
+const client_1 = require("@prisma/client");
 const reports_service_1 = require("./reports.service");
 const roles_decorator_1 = require("../common/decorators/roles.decorator");
 const public_decorator_1 = require("../common/decorators/public.decorator");
@@ -41,7 +41,7 @@ let ReportsController = class ReportsController {
 exports.ReportsController = ReportsController;
 __decorate([
     (0, common_1.Post)('report-cards/generate'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.HEADMASTER, prisma_1.Role.SUPER_ADMIN, prisma_1.Role.HOD),
+    (0, roles_decorator_1.Roles)(client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN, client_1.Role.HOD),
     (0, swagger_1.ApiOperation)({ summary: 'Generate report card for a single student' }),
     openapi.ApiResponse({ status: 201 }),
     __param(0, (0, common_1.Body)()),
@@ -51,7 +51,7 @@ __decorate([
 ], ReportsController.prototype, "generateOne", null);
 __decorate([
     (0, common_1.Post)('report-cards/batch'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.HEADMASTER, prisma_1.Role.SUPER_ADMIN),
+    (0, roles_decorator_1.Roles)(client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN),
     (0, swagger_1.ApiOperation)({ summary: 'Batch generate report cards for entire class' }),
     openapi.ApiResponse({ status: 201 }),
     __param(0, (0, common_1.Body)()),
@@ -61,7 +61,7 @@ __decorate([
 ], ReportsController.prototype, "batchGenerate", null);
 __decorate([
     (0, common_1.Post)('transcripts/generate'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.HEADMASTER, prisma_1.Role.SUPER_ADMIN),
+    (0, roles_decorator_1.Roles)(client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN),
     (0, swagger_1.ApiOperation)({ summary: 'Build 3-year transcript' }),
     openapi.ApiResponse({ status: 201 }),
     __param(0, (0, common_1.Body)()),

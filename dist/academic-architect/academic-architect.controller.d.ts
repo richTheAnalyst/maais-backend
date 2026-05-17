@@ -23,11 +23,11 @@ export declare class AcademicArchitectController {
         terms: {
             id: string;
             isActive: boolean;
+            isLocked: boolean;
             startDate: Date;
             endDate: Date;
-            termNumber: import("../generated/prisma").TermNumber;
+            termNumber: import(".prisma/client").$Enums.TermNumber;
             academicYearId: string;
-            isLocked: boolean;
         }[];
     } & {
         id: string;
@@ -40,20 +40,20 @@ export declare class AcademicArchitectController {
     createTerm(dto: CreateTermDto): Promise<{
         id: string;
         isActive: boolean;
+        isLocked: boolean;
         startDate: Date;
         endDate: Date;
-        termNumber: import("../generated/prisma").TermNumber;
+        termNumber: import(".prisma/client").$Enums.TermNumber;
         academicYearId: string;
-        isLocked: boolean;
     }>;
     activateTerm(id: string): Promise<{
         id: string;
         isActive: boolean;
+        isLocked: boolean;
         startDate: Date;
         endDate: Date;
-        termNumber: import("../generated/prisma").TermNumber;
+        termNumber: import(".prisma/client").$Enums.TermNumber;
         academicYearId: string;
-        isLocked: boolean;
     }>;
     createDepartment(dto: CreateDepartmentDto): Promise<{
         name: string;
@@ -71,7 +71,7 @@ export declare class AcademicArchitectController {
             id: string;
             isActive: boolean;
             createdAt: Date;
-            type: import("../generated/prisma").SubjectType;
+            type: import(".prisma/client").$Enums.SubjectType;
             description: string | null;
             departmentId: string | null;
             code: string;
@@ -88,7 +88,7 @@ export declare class AcademicArchitectController {
         id: string;
         isActive: boolean;
         createdAt: Date;
-        type: import("../generated/prisma").SubjectType;
+        type: import(".prisma/client").$Enums.SubjectType;
         description: string | null;
         departmentId: string | null;
         code: string;
@@ -106,13 +106,13 @@ export declare class AcademicArchitectController {
         id: string;
         isActive: boolean;
         createdAt: Date;
-        type: import("../generated/prisma").SubjectType;
+        type: import(".prisma/client").$Enums.SubjectType;
         description: string | null;
         departmentId: string | null;
         code: string;
     })[]>;
     createClass(dto: CreateClassSectionDto): Promise<{
-        level: import("../generated/prisma").ClassLevel;
+        level: import(".prisma/client").$Enums.ClassLevel;
         name: string;
         id: string;
         capacity: number;
@@ -127,7 +127,7 @@ export declare class AcademicArchitectController {
             firstName: string;
             lastName: string;
             middleName: string | null;
-            gender: import("../generated/prisma").Gender;
+            gender: import(".prisma/client").$Enums.Gender;
             dateOfBirth: Date | null;
             photoUrl: string | null;
             hiredAt: Date;
@@ -137,14 +137,14 @@ export declare class AcademicArchitectController {
             students: number;
         };
     } & {
-        level: import("../generated/prisma").ClassLevel;
+        level: import(".prisma/client").$Enums.ClassLevel;
         name: string;
         id: string;
         capacity: number;
         classTeacherId: string | null;
     })[]>;
     assignClassTeacher(id: string, dto: AssignClassTeacherDto): Promise<{
-        level: import("../generated/prisma").ClassLevel;
+        level: import(".prisma/client").$Enums.ClassLevel;
         name: string;
         id: string;
         capacity: number;
@@ -152,9 +152,9 @@ export declare class AcademicArchitectController {
     }>;
     assignTeacher(dto: AssignTeacherDto): Promise<{
         id: string;
+        subjectId: string;
         academicYearId: string;
         teacherId: string;
-        subjectId: string;
         classSectionId: string;
     }>;
     getTeacherAssignments(teacherId: string): Promise<({
@@ -163,13 +163,13 @@ export declare class AcademicArchitectController {
             id: string;
             isActive: boolean;
             createdAt: Date;
-            type: import("../generated/prisma").SubjectType;
+            type: import(".prisma/client").$Enums.SubjectType;
             description: string | null;
             departmentId: string | null;
             code: string;
         };
         classSection: {
-            level: import("../generated/prisma").ClassLevel;
+            level: import(".prisma/client").$Enums.ClassLevel;
             name: string;
             id: string;
             capacity: number;
@@ -177,9 +177,9 @@ export declare class AcademicArchitectController {
         };
     } & {
         id: string;
+        subjectId: string;
         academicYearId: string;
         teacherId: string;
-        subjectId: string;
         classSectionId: string;
     })[]>;
     getMyAssignments(user: any): any[] | Promise<({
@@ -188,13 +188,13 @@ export declare class AcademicArchitectController {
             id: string;
             isActive: boolean;
             createdAt: Date;
-            type: import("../generated/prisma").SubjectType;
+            type: import(".prisma/client").$Enums.SubjectType;
             description: string | null;
             departmentId: string | null;
             code: string;
         };
         classSection: {
-            level: import("../generated/prisma").ClassLevel;
+            level: import(".prisma/client").$Enums.ClassLevel;
             name: string;
             id: string;
             capacity: number;
@@ -202,9 +202,9 @@ export declare class AcademicArchitectController {
         };
     } & {
         id: string;
+        subjectId: string;
         academicYearId: string;
         teacherId: string;
-        subjectId: string;
         classSectionId: string;
     })[]>;
 }

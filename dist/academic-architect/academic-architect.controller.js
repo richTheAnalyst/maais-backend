@@ -16,7 +16,7 @@ exports.AcademicArchitectController = void 0;
 const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
-const prisma_1 = require("../generated/prisma");
+const client_1 = require("@prisma/client");
 const academic_architect_service_1 = require("./academic-architect.service");
 const roles_decorator_1 = require("../common/decorators/roles.decorator");
 const academic_architect_dto_1 = require("./dto/academic-architect.dto");
@@ -75,7 +75,7 @@ let AcademicArchitectController = class AcademicArchitectController {
 exports.AcademicArchitectController = AcademicArchitectController;
 __decorate([
     (0, common_1.Post)('years'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.SUPER_ADMIN, prisma_1.Role.HEADMASTER),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new academic year' }),
     openapi.ApiResponse({ status: 201 }),
     __param(0, (0, common_1.Body)()),
@@ -85,7 +85,7 @@ __decorate([
 ], AcademicArchitectController.prototype, "createYear", null);
 __decorate([
     (0, common_1.Patch)('years/:id/activate'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.SUPER_ADMIN, prisma_1.Role.HEADMASTER),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER),
     (0, swagger_1.ApiOperation)({ summary: 'Set active academic year' }),
     openapi.ApiResponse({ status: 200 }),
     __param(0, (0, common_1.Param)('id')),
@@ -103,7 +103,7 @@ __decorate([
 ], AcademicArchitectController.prototype, "getActiveYear", null);
 __decorate([
     (0, common_1.Post)('terms'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.SUPER_ADMIN, prisma_1.Role.HEADMASTER),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER),
     (0, swagger_1.ApiOperation)({ summary: 'Create a term' }),
     openapi.ApiResponse({ status: 201 }),
     __param(0, (0, common_1.Body)()),
@@ -113,7 +113,7 @@ __decorate([
 ], AcademicArchitectController.prototype, "createTerm", null);
 __decorate([
     (0, common_1.Patch)('terms/:id/activate'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.SUPER_ADMIN, prisma_1.Role.HEADMASTER),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER),
     (0, swagger_1.ApiOperation)({ summary: 'Set active term' }),
     openapi.ApiResponse({ status: 200 }),
     __param(0, (0, common_1.Param)('id')),
@@ -123,7 +123,7 @@ __decorate([
 ], AcademicArchitectController.prototype, "activateTerm", null);
 __decorate([
     (0, common_1.Post)('departments'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.SUPER_ADMIN, prisma_1.Role.HEADMASTER),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER),
     (0, swagger_1.ApiOperation)({ summary: 'Create a department' }),
     openapi.ApiResponse({ status: 201 }),
     __param(0, (0, common_1.Body)()),
@@ -141,7 +141,7 @@ __decorate([
 ], AcademicArchitectController.prototype, "getAllDepartments", null);
 __decorate([
     (0, common_1.Post)('subjects'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.SUPER_ADMIN, prisma_1.Role.HEADMASTER, prisma_1.Role.HOD),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER, client_1.Role.HOD),
     (0, swagger_1.ApiOperation)({ summary: 'Create a subject' }),
     openapi.ApiResponse({ status: 201 }),
     __param(0, (0, common_1.Body)()),
@@ -159,7 +159,7 @@ __decorate([
 ], AcademicArchitectController.prototype, "getAllSubjects", null);
 __decorate([
     (0, common_1.Post)('classes'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.SUPER_ADMIN, prisma_1.Role.HEADMASTER),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER),
     (0, swagger_1.ApiOperation)({ summary: 'Create a class section' }),
     openapi.ApiResponse({ status: 201 }),
     __param(0, (0, common_1.Body)()),
@@ -177,7 +177,7 @@ __decorate([
 ], AcademicArchitectController.prototype, "getAllClasses", null);
 __decorate([
     (0, common_1.Patch)('classes/:id/teacher'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.SUPER_ADMIN, prisma_1.Role.HEADMASTER),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER),
     (0, swagger_1.ApiOperation)({ summary: 'Assign class teacher' }),
     openapi.ApiResponse({ status: 200 }),
     __param(0, (0, common_1.Param)('id')),
@@ -188,7 +188,7 @@ __decorate([
 ], AcademicArchitectController.prototype, "assignClassTeacher", null);
 __decorate([
     (0, common_1.Post)('assignments'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.SUPER_ADMIN, prisma_1.Role.HEADMASTER, prisma_1.Role.HOD),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER, client_1.Role.HOD),
     (0, swagger_1.ApiOperation)({ summary: 'Assign teacher to subject/class' }),
     openapi.ApiResponse({ status: 201 }),
     __param(0, (0, common_1.Body)()),

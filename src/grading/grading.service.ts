@@ -201,6 +201,7 @@ export class GradingService {
         observationText: dto.observationText,
         submittedById,
         submittedAt: new Date(),
+        isApproved: false, // Must be approved by HOD
       },
       update: {
         classScore: dto.classScore,
@@ -212,11 +213,78 @@ export class GradingService {
         observationText: dto.observationText,
         submittedById,
         submittedAt: new Date(),
+        isApproved: false, // Reset approval on update
       },
       include: { student: true, subject: true },
     });
 
     return entry;
+  }
+
+  /**
+   * HOD approves a grade entry
+   */
+  async approveGrade(gradeEntryId: string, approvedById: string, userRole: Role) {
+    if (
+      userRole !== Role.HOD &&
+      userRole !== Role.HEADMASTER &&
+      userRole !== Role.SUPER_ADMIN
+    ) {
+      throw new ForbiddenException('Only HODs or above can approve grade entries');
+    }
+
+    return this.prisma.gradeEntry.update({
+      where: { id: gradeEntryId },
+      data: { isApproved: true, approvedById, approvedAt: new Date() },
+    });
+  }
+
+  /**
+   * Bulk approve grades for a class/subject
+   */
+  async bulkApproveGrades(ids: string[], approvedById: string, userRole: Role) {
+    if (
+      userRole !== Role.HOD &&
+      userRole !== Role.HEADMASTER &&
+      userRole !== Role.SUPER_ADMIN
+    ) {
+      throw new ForbiddenException('Only HODs or above can approve grade entries');
+    }
+
+    return this.prisma.gradeEntry.updateMany({
+      where: { id: { in: ids } },
+      data: { isApproved: true, approvedById, approvedAt: new Date() },
+    });
+  }
+
+  /**
+   * Get class performance summary for a term (HOD view)
+   */
+  async getClassPerformanceSummary(classId: string, termId: string) {
+    const students = await this.prisma.studentProfile.findMany({
+      where: { currentClassId: classId },
+      include: {
+        grades: {
+          where: { termId },
+          include: { subject: true },
+        },
+      },
+    });
+
+    return students.map(s => {
+      const totalGrades = s.grades.length;
+      const approvedGrades = s.grades.filter(g => g.isApproved).length;
+      const progress = totalGrades > 0 ? (approvedGrades / totalGrades) * 100 : 0;
+
+      return {
+        id: s.id,
+        name: `${s.firstName} ${s.lastName}`,
+        indexNumber: s.indexNumber,
+        progress,
+        isFullyApproved: totalGrades > 0 && totalGrades === approvedGrades,
+        gradesCount: totalGrades,
+      };
+    });
   }
 
   /**
@@ -315,9 +383,16 @@ export class GradingService {
   /**
    * Get all grades for a student in a term
    */
-  async getStudentTermGrades(studentId: string, termId: string) {
+  async getStudentTermGrades(studentId: string, termId: string, userRole?: Role) {
+    const where: any = { studentId, termId };
+
+    // Students only see approved grades
+    if (userRole === Role.STUDENT) {
+      where.isApproved = true;
+    }
+
     return this.prisma.gradeEntry.findMany({
-      where: { studentId, termId },
+      where,
       include: { subject: true, corrections: true },
       orderBy: { subject: { name: 'asc' } },
     });

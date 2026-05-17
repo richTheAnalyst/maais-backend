@@ -16,7 +16,7 @@ exports.UsersController = void 0;
 const openapi = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
-const prisma_1 = require("../generated/prisma");
+const client_1 = require("@prisma/client");
 const users_service_1 = require("./users.service");
 const roles_decorator_1 = require("../common/decorators/roles.decorator");
 const create_staff_dto_1 = require("./dto/create-staff.dto");
@@ -31,14 +31,17 @@ let UsersController = class UsersController {
     createStudent(dto) {
         return this.usersService.createStudent(dto);
     }
-    getAllStudents(classId) {
-        return this.usersService.getAllStudents(classId);
+    createParent(dto) {
+        return this.usersService.createParent(dto);
     }
-    getStudentProfile(id) {
-        return this.usersService.getStudentProfile(id);
+    getAllStudents(user) {
+        return this.usersService.getAllStudents(user);
     }
-    getAllStaff() {
-        return this.usersService.getAllStaff();
+    getStudentProfile(id, role) {
+        return this.usersService.getStudentProfile(id, role);
+    }
+    getAllStaff(user) {
+        return this.usersService.getAllStaff(user);
     }
     deactivate(id) {
         return this.usersService.deactivateUser(id);
@@ -47,7 +50,7 @@ let UsersController = class UsersController {
 exports.UsersController = UsersController;
 __decorate([
     (0, common_1.Post)('staff'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.SUPER_ADMIN, prisma_1.Role.HEADMASTER),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER),
     (0, swagger_1.ApiOperation)({ summary: 'Create a staff account' }),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, (0, common_1.Body)()),
@@ -57,7 +60,7 @@ __decorate([
 ], UsersController.prototype, "createStaff", null);
 __decorate([
     (0, common_1.Post)('students'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.SUPER_ADMIN, prisma_1.Role.HEADMASTER),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER, client_1.Role.TEACHER),
     (0, swagger_1.ApiOperation)({ summary: 'Enrol a new student' }),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, (0, common_1.Body)()),
@@ -66,14 +69,23 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "createStudent", null);
 __decorate([
-    openapi.ApiQuery({ name: "classId", required: false }),
+    (0, common_1.Post)('parents'),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER, client_1.Role.TEACHER),
+    (0, swagger_1.ApiOperation)({ summary: 'Enrol a new parent' }),
+    openapi.ApiResponse({ status: 201, type: Object }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "createParent", null);
+__decorate([
     (0, common_1.Get)('students'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.SUPER_ADMIN, prisma_1.Role.HEADMASTER, prisma_1.Role.HOD, prisma_1.Role.TEACHER),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER, client_1.Role.HOD, client_1.Role.TEACHER),
     (0, swagger_1.ApiOperation)({ summary: 'List all active students' }),
     openapi.ApiResponse({ status: 200, type: [Object] }),
-    __param(0, (0, common_1.Query)('classId')),
+    __param(0, (0, roles_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "getAllStudents", null);
 __decorate([
@@ -81,22 +93,24 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get full student profile' }),
     openapi.ApiResponse({ status: 200, type: Object }),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, roles_decorator_1.CurrentUser)('role')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "getStudentProfile", null);
 __decorate([
     (0, common_1.Get)('staff'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.SUPER_ADMIN, prisma_1.Role.HEADMASTER),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER, client_1.Role.HOD),
     (0, swagger_1.ApiOperation)({ summary: 'List all staff members' }),
     openapi.ApiResponse({ status: 200, type: [Object] }),
+    __param(0, (0, roles_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "getAllStaff", null);
 __decorate([
     (0, common_1.Delete)(':id/deactivate'),
-    (0, roles_decorator_1.Roles)(prisma_1.Role.SUPER_ADMIN, prisma_1.Role.HEADMASTER),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER),
     (0, swagger_1.ApiOperation)({ summary: 'Deactivate a user account' }),
     openapi.ApiResponse({ status: 200 }),
     __param(0, (0, common_1.Param)('id')),

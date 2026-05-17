@@ -1,4 +1,4 @@
-import { NotificationChannel } from '../../generated/prisma';
+import { NotificationChannel } from '@prisma/client';
 export declare class SendNotificationDto {
     studentIds?: string[];
     title: string;

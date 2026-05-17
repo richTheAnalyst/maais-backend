@@ -1,5 +1,5 @@
-import { Role } from '../generated/prisma';
-import { UsersService } from './users.service';
+import { Role } from '@prisma/client';
+import { UsersService, CreateParentDto } from './users.service';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
 export declare class UsersController {
@@ -14,7 +14,7 @@ export declare class UsersController {
             firstName: string;
             lastName: string;
             middleName: string | null;
-            gender: import("../generated/prisma").Gender;
+            gender: import(".prisma/client").$Enums.Gender;
             dateOfBirth: Date | null;
             photoUrl: string | null;
             hiredAt: Date;
@@ -25,7 +25,7 @@ export declare class UsersController {
         email: string;
         phone: string | null;
         passwordHash: string;
-        role: Role;
+        role: import(".prisma/client").$Enums.Role;
         isActive: boolean;
         lastLoginAt: Date | null;
         createdAt: Date;
@@ -33,8 +33,15 @@ export declare class UsersController {
     }>;
     createStudent(dto: CreateStudentDto): Promise<{
         studentProfile: {
+            department: {
+                name: string;
+                id: string;
+                createdAt: Date;
+                description: string | null;
+                code: string;
+            };
             currentClass: {
-                level: import("../generated/prisma").ClassLevel;
+                level: import(".prisma/client").$Enums.ClassLevel;
                 name: string;
                 id: string;
                 capacity: number;
@@ -46,9 +53,10 @@ export declare class UsersController {
             firstName: string;
             lastName: string;
             middleName: string | null;
-            gender: import("../generated/prisma").Gender;
+            gender: import(".prisma/client").$Enums.Gender;
             dateOfBirth: Date | null;
             photoUrl: string | null;
+            departmentId: string | null;
             indexNumber: string;
             admissionDate: Date;
             currentClassId: string | null;
@@ -59,19 +67,50 @@ export declare class UsersController {
         email: string;
         phone: string | null;
         passwordHash: string;
-        role: Role;
+        role: import(".prisma/client").$Enums.Role;
         isActive: boolean;
         lastLoginAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
-    getAllStudents(classId?: string): Promise<({
+    createParent(dto: CreateParentDto): Promise<{
+        parentProfile: {
+            id: string;
+            email: string | null;
+            phone: string;
+            userId: string;
+            firstName: string;
+            lastName: string;
+            occupation: string | null;
+        };
+    } & {
+        id: string;
+        email: string;
+        phone: string | null;
+        passwordHash: string;
+        role: import(".prisma/client").$Enums.Role;
+        isActive: boolean;
+        lastLoginAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    getAllStudents(user: {
+        id: string;
+        role: Role;
+    }): Promise<({
         user: {
             email: string;
             isActive: boolean;
         };
+        department: {
+            name: string;
+            id: string;
+            createdAt: Date;
+            description: string | null;
+            code: string;
+        };
         currentClass: {
-            level: import("../generated/prisma").ClassLevel;
+            level: import(".prisma/client").$Enums.ClassLevel;
             name: string;
             id: string;
             capacity: number;
@@ -83,21 +122,29 @@ export declare class UsersController {
         firstName: string;
         lastName: string;
         middleName: string | null;
-        gender: import("../generated/prisma").Gender;
+        gender: import(".prisma/client").$Enums.Gender;
         dateOfBirth: Date | null;
         photoUrl: string | null;
+        departmentId: string | null;
         indexNumber: string;
         admissionDate: Date;
         currentClassId: string | null;
         archivedAt: Date | null;
     })[]>;
-    getStudentProfile(id: string): Promise<{
+    getStudentProfile(id: string, role: Role): Promise<{
         user: {
             email: string;
             lastLoginAt: Date;
         };
+        department: {
+            name: string;
+            id: string;
+            createdAt: Date;
+            description: string | null;
+            code: string;
+        };
         currentClass: {
-            level: import("../generated/prisma").ClassLevel;
+            level: import(".prisma/client").$Enums.ClassLevel;
             name: string;
             id: string;
             capacity: number;
@@ -116,18 +163,18 @@ export declare class UsersController {
             } & {
                 id: string;
                 isActive: boolean;
+                isLocked: boolean;
                 startDate: Date;
                 endDate: Date;
-                termNumber: import("../generated/prisma").TermNumber;
+                termNumber: import(".prisma/client").$Enums.TermNumber;
                 academicYearId: string;
-                isLocked: boolean;
             };
             subject: {
                 name: string;
                 id: string;
                 isActive: boolean;
                 createdAt: Date;
-                type: import("../generated/prisma").SubjectType;
+                type: import(".prisma/client").$Enums.SubjectType;
                 description: string | null;
                 departmentId: string | null;
                 code: string;
@@ -136,22 +183,25 @@ export declare class UsersController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            isLocked: boolean;
+            studentId: string;
+            isApproved: boolean;
             subjectId: string;
+            termId: string;
             classScore: number | null;
             examScore: number | null;
-            remark: string | null;
-            studentId: string;
-            termId: string;
             totalScore: number | null;
             grade: string | null;
+            remark: string | null;
             position: number | null;
             hasObservation: boolean;
             observationText: string | null;
+            isLocked: boolean;
             lockedById: string | null;
             lockedAt: Date | null;
             submittedById: string | null;
             submittedAt: Date | null;
+            approvedById: string | null;
+            approvedAt: Date | null;
         })[];
         reportCards: ({
             term: {
@@ -166,11 +216,11 @@ export declare class UsersController {
             } & {
                 id: string;
                 isActive: boolean;
+                isLocked: boolean;
                 startDate: Date;
                 endDate: Date;
-                termNumber: import("../generated/prisma").TermNumber;
+                termNumber: import(".prisma/client").$Enums.TermNumber;
                 academicYearId: string;
-                isLocked: boolean;
             };
         } & {
             id: string;
@@ -179,8 +229,8 @@ export declare class UsersController {
             studentId: string;
             termId: string;
             totalScore: number | null;
+            documentType: import(".prisma/client").$Enums.DocumentType;
             systemHash: string;
-            documentType: import("../generated/prisma").DocumentType;
             qrCodeUrl: string | null;
             verificationUrl: string | null;
             averageScore: number | null;
@@ -216,18 +266,22 @@ export declare class UsersController {
         firstName: string;
         lastName: string;
         middleName: string | null;
-        gender: import("../generated/prisma").Gender;
+        gender: import(".prisma/client").$Enums.Gender;
         dateOfBirth: Date | null;
         photoUrl: string | null;
+        departmentId: string | null;
         indexNumber: string;
         admissionDate: Date;
         currentClassId: string | null;
         archivedAt: Date | null;
     }>;
-    getAllStaff(): Promise<({
+    getAllStaff(user: {
+        id: string;
+        role: Role;
+    }): Promise<({
         user: {
             email: string;
-            role: Role;
+            role: import(".prisma/client").$Enums.Role;
             isActive: boolean;
         };
         department: {
@@ -243,13 +297,13 @@ export declare class UsersController {
                 id: string;
                 isActive: boolean;
                 createdAt: Date;
-                type: import("../generated/prisma").SubjectType;
+                type: import(".prisma/client").$Enums.SubjectType;
                 description: string | null;
                 departmentId: string | null;
                 code: string;
             };
             classSection: {
-                level: import("../generated/prisma").ClassLevel;
+                level: import(".prisma/client").$Enums.ClassLevel;
                 name: string;
                 id: string;
                 capacity: number;
@@ -257,9 +311,9 @@ export declare class UsersController {
             };
         } & {
             id: string;
+            subjectId: string;
             academicYearId: string;
             teacherId: string;
-            subjectId: string;
             classSectionId: string;
         })[];
     } & {
@@ -270,7 +324,7 @@ export declare class UsersController {
         firstName: string;
         lastName: string;
         middleName: string | null;
-        gender: import("../generated/prisma").Gender;
+        gender: import(".prisma/client").$Enums.Gender;
         dateOfBirth: Date | null;
         photoUrl: string | null;
         hiredAt: Date;
@@ -281,7 +335,7 @@ export declare class UsersController {
         email: string;
         phone: string | null;
         passwordHash: string;
-        role: Role;
+        role: import(".prisma/client").$Enums.Role;
         isActive: boolean;
         lastLoginAt: Date | null;
         createdAt: Date;

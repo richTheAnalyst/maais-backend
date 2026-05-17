@@ -1,5 +1,5 @@
 import { PrismaService } from '../common/prisma/prisma.service';
-import { NotificationChannel } from "@prisma/client";
+import { NotificationChannel } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
 export interface SendNotificationDto {
     studentIds?: string[];
@@ -30,7 +30,7 @@ export declare class CommsService {
         title: string;
         studentId: string | null;
         body: string;
-        channel: NotificationChannel;
+        channel: import(".prisma/client").$Enums.NotificationChannel;
         isRead: boolean;
         deliveredAt: Date | null;
         failedAt: Date | null;
@@ -43,7 +43,7 @@ export declare class CommsService {
         title: string;
         studentId: string | null;
         body: string;
-        channel: NotificationChannel;
+        channel: import(".prisma/client").$Enums.NotificationChannel;
         isRead: boolean;
         deliveredAt: Date | null;
         failedAt: Date | null;

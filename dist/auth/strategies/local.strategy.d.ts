@@ -11,7 +11,7 @@ export declare class LocalStrategy extends LocalStrategy_base {
         email: string;
         phone: string | null;
         passwordHash: string;
-        role: import("../../generated/prisma").Role;
+        role: import(".prisma/client").$Enums.Role;
         isActive: boolean;
         lastLoginAt: Date | null;
         createdAt: Date;
