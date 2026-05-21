@@ -51,7 +51,7 @@ __decorate([
 ], ArchiveController.prototype, "runPromotion", null);
 __decorate([
     (0, common_1.Get)('vault/search'),
-    (0, roles_decorator_1.Roles)(client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN, client_1.Role.HOD),
+    (0, roles_decorator_1.Roles)(client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN, client_1.Role.HOD, client_1.Role.TEACHER),
     (0, swagger_1.ApiOperation)({ summary: 'Search The Vault for historical records' }),
     openapi.ApiResponse({ status: 200, type: [Object] }),
     __param(0, (0, common_1.Query)()),
@@ -71,7 +71,7 @@ __decorate([
 ], ArchiveController.prototype, "lockTerm", null);
 __decorate([
     (0, common_1.Get)('health'),
-    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER, client_1.Role.HOD, client_1.Role.TEACHER),
     (0, swagger_1.ApiOperation)({ summary: 'Database health check' }),
     openapi.ApiResponse({ status: 200 }),
     __metadata("design:type", Function),

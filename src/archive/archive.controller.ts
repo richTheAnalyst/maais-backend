@@ -19,7 +19,7 @@ export class ArchiveController {
   }
 
   @Get('vault/search')
-  @Roles(Role.HEADMASTER, Role.SUPER_ADMIN, Role.HOD)
+  @Roles(Role.HEADMASTER, Role.SUPER_ADMIN, Role.HOD, Role.TEACHER)
   @ApiOperation({ summary: 'Search The Vault for historical records' })
   searchVault(@Query() query: any) {
     return this.archiveService.searchVault(query);
@@ -33,7 +33,7 @@ export class ArchiveController {
   }
 
   @Get('health')
-  @Roles(Role.SUPER_ADMIN, Role.HEADMASTER)
+  @Roles(Role.SUPER_ADMIN, Role.HEADMASTER,Role.HOD, Role.TEACHER)
   @ApiOperation({ summary: 'Database health check' })
   health() {
     return this.archiveService.getDatabaseHealth();
