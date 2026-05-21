@@ -20,7 +20,7 @@ export class UsersController {
   }
 
   @Post('students')
-  @Roles(Role.SUPER_ADMIN, Role.HEADMASTER, Role.TEACHER)
+  @Roles(Role.SUPER_ADMIN, Role.HEADMASTER, Role.TEACHER, Role.STUDENT)
   @ApiOperation({ summary: 'Enrol a new student' })
   createStudent(@Body() dto: CreateStudentDto) {
     return this.usersService.createStudent(dto);

@@ -60,7 +60,7 @@ __decorate([
 ], UsersController.prototype, "createStaff", null);
 __decorate([
     (0, common_1.Post)('students'),
-    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER, client_1.Role.TEACHER),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER, client_1.Role.TEACHER, client_1.Role.STUDENT),
     (0, swagger_1.ApiOperation)({ summary: 'Enrol a new student' }),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, (0, common_1.Body)()),
