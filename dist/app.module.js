@@ -9,7 +9,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const schedule_1 = require("@nestjs/schedule");
-const cron_module_1 = require("./cron/cron.module");
 const config_1 = require("@nestjs/config");
 const core_1 = require("@nestjs/core");
 const prisma_module_1 = require("./common/prisma/prisma.module");
@@ -30,7 +29,6 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             config_1.ConfigModule.forRoot({ isGlobal: true }),
             schedule_1.ScheduleModule.forRoot(),
-            cron_module_1.CronModule,
             prisma_module_1.PrismaModule,
             auth_module_1.AuthModule,
             users_module_1.UsersModule,

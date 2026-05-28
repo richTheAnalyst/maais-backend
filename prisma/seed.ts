@@ -5,7 +5,7 @@
  * Run: npm run prisma:seed
  */
 
-import { PrismaClient, Role, Gender, SubjectType, ClassLevel, TermNumber } from '../src/generated/prisma';
+import { PrismaClient, Role, Gender, SubjectType, ClassLevel, TermNumber } from '@prisma/client';
 import * as argon2 from 'argon2';
 import { PrismaNeon } from '@prisma/adapter-neon';
 import "dotenv/config"
