@@ -82,10 +82,10 @@ export declare class ArchiveService {
             id: string;
             studentId: string;
             academicYearId: string;
-            fromClass: import(".prisma/client").$Enums.ClassLevel;
-            toClass: import(".prisma/client").$Enums.ClassLevel | null;
             status: import(".prisma/client").$Enums.PromotionStatus;
             notes: string | null;
+            fromClass: import(".prisma/client").$Enums.ClassLevel;
+            toClass: import(".prisma/client").$Enums.ClassLevel | null;
             performedById: string;
             performedAt: Date;
         })[];

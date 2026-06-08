@@ -21,6 +21,10 @@ const archive_module_1 = require("./archive/archive.module");
 const comms_module_1 = require("./comms/comms.module");
 const jwt_auth_guard_1 = require("./common/guards/jwt-auth.guard");
 const roles_guard_1 = require("./common/guards/roles.guard");
+const portal_module_1 = require("./portal/portal.module");
+const behavior_module_1 = require("./behavior/behavior.module");
+const interventions_module_1 = require("./interventions/interventions.module");
+const timetable_module_1 = require("./timetable/timetable.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -37,6 +41,10 @@ exports.AppModule = AppModule = __decorate([
             reports_module_1.ReportsModule,
             archive_module_1.ArchiveModule,
             comms_module_1.CommsModule,
+            portal_module_1.PortalModule,
+            behavior_module_1.BehaviorModule,
+            interventions_module_1.InterventionsModule,
+            timetable_module_1.TimetableModule,
         ],
         providers: [
             {

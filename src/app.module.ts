@@ -12,6 +12,10 @@ import { ArchiveModule } from './archive/archive.module';
 import { CommsModule } from './comms/comms.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
+import { PortalModule } from './portal/portal.module';
+import { BehaviorModule } from './behavior/behavior.module';
+import { InterventionsModule } from './interventions/interventions.module';
+import { TimetableModule } from './timetable/timetable.module';
 
 @Module({
   imports: [
@@ -25,6 +29,10 @@ import { RolesGuard } from './common/guards/roles.guard';
     ReportsModule,
     ArchiveModule,
     CommsModule,
+    PortalModule,
+    BehaviorModule,
+    InterventionsModule,
+    TimetableModule,
   ],
   providers: [
     {

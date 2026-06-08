@@ -16,6 +16,9 @@ export default defineConfig({
   datasource: {
     url: connectionString,
   },
+  migrations: {
+      seed: 'ts-node ./prisma/seed.ts',
+    },
   migrate: {
     adapter: async () => {
       return new PrismaNeon({ connectionString });
