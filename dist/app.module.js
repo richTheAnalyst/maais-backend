@@ -25,6 +25,7 @@ const portal_module_1 = require("./portal/portal.module");
 const behavior_module_1 = require("./behavior/behavior.module");
 const interventions_module_1 = require("./interventions/interventions.module");
 const timetable_module_1 = require("./timetable/timetable.module");
+const audit_module_1 = require("./audit/audit.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -45,6 +46,7 @@ exports.AppModule = AppModule = __decorate([
             behavior_module_1.BehaviorModule,
             interventions_module_1.InterventionsModule,
             timetable_module_1.TimetableModule,
+            audit_module_1.AuditModule,
         ],
         providers: [
             {
