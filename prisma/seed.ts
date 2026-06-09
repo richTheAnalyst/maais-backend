@@ -1,14 +1,7 @@
-/**
- * MAAIS Database Seed
- * Sets up initial school structure: departments, subjects, classes, and a SUPER_ADMIN account.
- *
- * Run: npm run prisma:seed
- */
-
-import { PrismaClient, Role, Gender, SubjectType, ClassLevel, TermNumber } from '@prisma/client';
-import * as argon2 from 'argon2';
+import { PrismaClient } from '@prisma/client';
 import { PrismaNeon } from '@prisma/adapter-neon';
-import "dotenv/config"
+import "dotenv/config";
+import * as seeds from './seeds';
 
 const adapter = new PrismaNeon({
   connectionString: process.env.DATABASE_URL!,
@@ -18,121 +11,70 @@ const prisma = new PrismaClient({
 });
 
 async function main() {
-  console.log('🌱 Seeding MAAIS database...\n');
+  console.log('🌱 Starting full MAAIS database seed...\n');
 
-  // ─── Super Admin ────────────────────────────────────
-  const adminPassword = await argon2.hash('Admin@2024!');
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@mandoshts.edu.gh' },
-    update: {},
-    create: {
-      email: 'admin@mandoshts.edu.gh',
-      passwordHash: adminPassword,
-      role: Role.SUPER_ADMIN,
-      staffProfile: {
-        create: {
-          staffId: 'STA-2024-001',
-          firstName: 'System',
-          lastName: 'Administrator',
-          gender: Gender.MALE,
-        },
-      },
-    },
-  });
-  console.log('✅ Super Admin:', admin.email);
+  // 1. Admin
+  const admin = await seeds.seedAdmin(prisma);
 
-  // ─── Departments ─────────────────────────────────────
-  const departments = await Promise.all([
-    prisma.department.upsert({ where: { code: 'GEN' }, update: {}, create: { name: 'General Studies', code: 'GEN' } }),
-    prisma.department.upsert({ where: { code: 'SCI' }, update: {}, create: { name: 'Science', code: 'SCI' } }),
-    prisma.department.upsert({ where: { code: 'BUS' }, update: {}, create: { name: 'Business', code: 'BUS' } }),
-    prisma.department.upsert({ where: { code: 'VTG' }, update: {}, create: { name: 'Vocational & Technical', code: 'VTG' } }),
-    prisma.department.upsert({ where: { code: 'ART' }, update: {}, create: { name: 'General Arts', code: 'ART' } }),
-  ]);
-  console.log('✅ Departments:', departments.map((d) => d.code).join(', '));
-
-  // ─── Core Subjects (GH SHS) ──────────────────────────
-  const coreSubjects = [
-    { name: 'Core Mathematics', code: 'CMATH', type: SubjectType.CORE, deptCode: 'GEN' },
-    { name: 'English Language', code: 'ENGL', type: SubjectType.CORE, deptCode: 'GEN' },
-    { name: 'Integrated Science', code: 'ISCI', type: SubjectType.CORE, deptCode: 'GEN' },
-    { name: 'Social Studies', code: 'SOCI', type: SubjectType.CORE, deptCode: 'GEN' },
-    { name: 'ICT', code: 'ICT', type: SubjectType.CORE, deptCode: 'VTG' },
-  ];
-
-  const electiveSubjects = [
-    { name: 'Elective Mathematics', code: 'EMATH', type: SubjectType.ELECTIVE, deptCode: 'SCI' },
-    { name: 'Physics', code: 'PHY', type: SubjectType.ELECTIVE, deptCode: 'SCI' },
-    { name: 'Chemistry', code: 'CHEM', type: SubjectType.ELECTIVE, deptCode: 'SCI' },
-    { name: 'Biology', code: 'BIO', type: SubjectType.ELECTIVE, deptCode: 'SCI' },
-    { name: 'Economics', code: 'ECON', type: SubjectType.ELECTIVE, deptCode: 'BUS' },
-    { name: 'Accounting', code: 'ACCT', type: SubjectType.ELECTIVE, deptCode: 'BUS' },
-    { name: 'Business Management', code: 'BMGMT', type: SubjectType.ELECTIVE, deptCode: 'BUS' },
-    { name: 'Literature in English', code: 'LIT', type: SubjectType.ELECTIVE, deptCode: 'ART' },
-    { name: 'Government', code: 'GOVT', type: SubjectType.ELECTIVE, deptCode: 'ART' },
-  ];
-
+  // 2. Departments
+  const departments = await seeds.seedDepartments(prisma);
   const deptMap = Object.fromEntries(departments.map((d) => [d.code, d.id]));
 
-  for (const s of [...coreSubjects, ...electiveSubjects]) {
-    await prisma.subject.upsert({
-      where: { code: s.code },
-      update: {},
-      create: { name: s.name, code: s.code, type: s.type, departmentId: deptMap[s.deptCode] },
-    });
-  }
-  console.log('✅ Subjects:', coreSubjects.length + electiveSubjects.length, 'created');
+  // 3. Subjects
+  const subjects = await seeds.seedSubjects(prisma, deptMap);
 
-  // ─── Class Sections ───────────────────────────────────
-  const classSections = [
-    { name: '1A', level: ClassLevel.FORM_1 },
-    { name: '1B', level: ClassLevel.FORM_1 },
-    { name: '2A', level: ClassLevel.FORM_2 },
-    { name: '2B', level: ClassLevel.FORM_2 },
-    { name: '3A', level: ClassLevel.FORM_3 },
-    { name: '3B', level: ClassLevel.FORM_3 },
-  ];
+  // 4. Academic (Year, Terms, Classes)
+  const { year, terms, classes } = await seeds.seedAcademic(prisma);
+  const currentTerm = terms[0]; // Term 1
 
-  for (const c of classSections) {
-    await prisma.classSection.upsert({
-      where: { name_level: { name: c.name, level: c.level } },
-      update: {},
-      create: c,
-    });
-  }
-  console.log('✅ Class Sections:', classSections.map((c) => `${c.level} ${c.name}`).join(', '));
+  // 5. Grading
+  await seeds.seedGrading(prisma);
 
-  // ─── Academic Year & Terms ────────────────────────────
-  const year = await prisma.academicYear.upsert({
-    where: { label: '2024/2025' },
-    update: {},
-    create: {
-      label: '2024/2025',
-      startDate: new Date('2024-09-02'),
-      endDate: new Date('2025-07-31'),
-      isActive: true,
-    },
-  });
+  // 6. Staff (Teachers)
+  const teachers = await seeds.seedStaff(prisma, departments, classes);
 
-  const terms = [
-    { termNumber: TermNumber.TERM_1, startDate: new Date('2024-09-02'), endDate: new Date('2024-12-20') },
-    { termNumber: TermNumber.TERM_2, startDate: new Date('2025-01-13'), endDate: new Date('2025-04-11') },
-    { termNumber: TermNumber.TERM_3, startDate: new Date('2025-05-05'), endDate: new Date('2025-07-25') },
-  ];
+  // 7. Students
+  const students = await seeds.seedStudents(prisma, classes, departments);
 
-  for (const t of terms) {
-    await prisma.term.upsert({
-      where: { academicYearId_termNumber: { academicYearId: year.id, termNumber: t.termNumber } },
-      update: {},
-      create: { academicYearId: year.id, ...t, isActive: t.termNumber === TermNumber.TERM_1 },
-    });
-  }
-  console.log('✅ Academic Year: 2024/2025 with 3 terms');
+  // 8. Parents
+  await seeds.seedParents(prisma, students);
 
-  console.log('\n🎉 Seed complete!');
+  // 9. Teaching Assignments
+  await seeds.seedAssignments(prisma, teachers, subjects, classes, year.id);
+
+  // 10. Grades (Current Term)
+  await seeds.seedGrades(prisma, students, subjects, currentTerm.id);
+
+  // 11. Attendance (All Terms)
+  await seeds.seedAttendance(prisma, students, terms);
+
+  // 12. Reports (Current Term)
+  await seeds.seedReports(prisma, students, currentTerm.id);
+
+  // 13. Behavior & Traits (Current Term)
+  await seeds.seedBehavior(prisma, students, currentTerm.id);
+
+  // 14. Interventions
+  await seeds.seedInterventions(prisma, students);
+
+  // 15. Notifications
+  await seeds.seedNotifications(prisma, students);
+
+  // 16. Timetable
+  await seeds.seedTimetable(prisma, classes, subjects, teachers);
+
+  // 17. Audit Logs
+  await seeds.seedAudit(prisma, admin.id);
+
+  console.log('\n🎉 Full seed complete!');
   console.log('   Admin login: admin@mandoshts.edu.gh / Admin@2024!');
 }
 
 main()
-  .catch((e) => { console.error(e); process.exit(1); })
-  .finally(() => prisma.$disconnect());
+  .catch((e) => {
+    console.error('❌ Seed failed:', e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
