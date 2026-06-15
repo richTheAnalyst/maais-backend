@@ -37,6 +37,7 @@ export declare class JwtStrategy extends JwtStrategy_base {
             photoUrl: string | null;
             departmentId: string | null;
             indexNumber: string;
+            bio: string | null;
             admissionDate: Date;
             currentClassId: string | null;
             archivedAt: Date | null;

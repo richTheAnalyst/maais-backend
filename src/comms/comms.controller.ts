@@ -4,6 +4,7 @@ import { Role } from '@prisma/client';
 import { CommsService } from './comms.service';
 import { Roles, CurrentUser } from '../common/decorators/roles.decorator';
 import { SendNotificationDto, EmergencyNotificationDto } from './dto/comms.dto';
+import { CreateSupportTicketDto } from './dto/create-ticket.dto';
 
 @ApiTags('Comms')
 @ApiBearerAuth()
@@ -45,5 +46,19 @@ export class CommsController {
   @ApiOperation({ summary: 'Get academic pulse dashboard data' })
   getPulse(@Query('academicYearId') academicYearId?: string) {
     return this.commsService.getAnalyticsPulse(academicYearId);
+  }
+
+  @Post('tickets')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Raise a support ticket (student-facing)' })
+  createTicket(@Body() dto: CreateSupportTicketDto, @CurrentUser('id') userId: string) {
+    return this.commsService.createTicket(dto, userId);
+  }
+
+  @Get('tickets/my')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get current student\'s support tickets' })
+  getMyTickets(@CurrentUser('id') userId: string) {
+    return this.commsService.getStudentTickets(userId);
   }
 }

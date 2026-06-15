@@ -1,5 +1,6 @@
 import { CommsService } from './comms.service';
 import { SendNotificationDto, EmergencyNotificationDto } from './dto/comms.dto';
+import { CreateSupportTicketDto } from './dto/create-ticket.dto';
 export declare class CommsController {
     private commsService;
     constructor(commsService: CommsService);
@@ -55,4 +56,53 @@ export declare class CommsController {
             totalDays: number;
         };
     }>;
+    createTicket(dto: CreateSupportTicketDto, userId: string): Promise<{
+        student: {
+            user: {
+                email: string;
+            };
+        } & {
+            id: string;
+            userId: string;
+            firstName: string;
+            lastName: string;
+            middleName: string | null;
+            gender: import(".prisma/client").$Enums.Gender;
+            dateOfBirth: Date | null;
+            photoUrl: string | null;
+            departmentId: string | null;
+            indexNumber: string;
+            bio: string | null;
+            admissionDate: Date;
+            currentClassId: string | null;
+            archivedAt: Date | null;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string;
+        title: string;
+        studentId: string;
+        category: string;
+        priority: string;
+        createdById: string | null;
+        status: string;
+        assignedTo: string | null;
+        resolvedAt: Date | null;
+    }>;
+    getMyTickets(userId: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string;
+        title: string;
+        studentId: string;
+        category: string;
+        priority: string;
+        createdById: string | null;
+        status: string;
+        assignedTo: string | null;
+        resolvedAt: Date | null;
+    }[]>;
 }

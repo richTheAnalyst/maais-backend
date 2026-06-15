@@ -6,11 +6,14 @@ export class PortalService {
   constructor(private prisma: PrismaService) {}
 
   async getPortalData(studentId: string) {
+    const student = await this.prisma.studentProfile.findUnique({
+      where: { id: studentId },
+      include: { currentClass: true },
+    });
+
     const latestReport = await this.prisma.reportCard.findFirst({
       where: { studentId },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      orderBy: { createdAt: 'desc' },
     });
 
     const attendance = await this.prisma.attendanceRecord.findMany({
@@ -19,43 +22,39 @@ export class PortalService {
 
     const notifications = await this.prisma.notification.findMany({
       where: { studentId },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      orderBy: { createdAt: 'desc' },
       take: 10,
     });
 
     const grades = await this.prisma.gradeEntry.findMany({
       where: { studentId },
-      include: {
-        subject: true,
-      },
+      include: { subject: true },
     });
 
     const interventions = await this.prisma.interventionAlert.findMany({
       where: {
         studentId,
-        status: {
-          in: ['ACTIVE', 'IN_PROGRESS'],
-        },
+        status: { in: ['ACTIVE', 'IN_PROGRESS'] },
       },
     });
 
     const attendancePercentage = this.calculateAttendance(attendance);
 
     return {
+      student: {
+        id: student?.id,
+        firstName: student?.firstName,
+        lastName: student?.lastName,
+        indexNumber: student?.indexNumber,
+        currentClassId: student?.currentClassId,
+        currentClass: student?.currentClass,
+      },
       cgpa: latestReport?.averageScore ?? 0,
-
       classRank: latestReport?.classPosition,
-
       approvalStatus: latestReport?.releasedAt ? 'APPROVED' : 'PENDING',
-
       attendancePercentage,
-
       recentResults: grades,
-
       notifications,
-
       activeInterventions: interventions,
     };
   }

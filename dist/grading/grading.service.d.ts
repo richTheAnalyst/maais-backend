@@ -48,6 +48,7 @@ export declare class GradingService {
             photoUrl: string | null;
             departmentId: string | null;
             indexNumber: string;
+            bio: string | null;
             admissionDate: Date;
             currentClassId: string | null;
             archivedAt: Date | null;
@@ -258,6 +259,7 @@ export declare class GradingService {
             photoUrl: string | null;
             departmentId: string | null;
             indexNumber: string;
+            bio: string | null;
             admissionDate: Date;
             currentClassId: string | null;
             archivedAt: Date | null;

@@ -3,6 +3,7 @@ import { PrismaService } from '../common/prisma/prisma.service';
 import { NotificationChannel } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
 import * as twilio from 'twilio';
+import { CreateSupportTicketDto } from './dto/create-ticket.dto';
 
 export interface SendNotificationDto {
   studentIds?: string[];
@@ -143,6 +144,44 @@ export class CommsService {
     return this.prisma.notification.update({
       where: { id: notificationId },
       data: { isRead: true },
+    });
+  }
+
+  async createTicket(dto: CreateSupportTicketDto, studentId: string) {
+    const student = await this.prisma.studentProfile.findUnique({
+      where: { id: studentId },
+    });
+
+    if (!student) {
+      throw new Error('Student not found');
+    }
+
+    return this.prisma.supportTicket.create({
+      data: {
+        studentId,
+        title: dto.title,
+        description: dto.description,
+        category: dto.category || 'General',
+        priority: dto.priority || 'MEDIUM',
+        createdById: student.userId,
+      },
+      include: {
+        student: {
+          include: {
+            user: {
+              select: { email: true },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async getStudentTickets(studentId: string) {
+    return this.prisma.supportTicket.findMany({
+      where: { studentId },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
     });
   }
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Param, Query, Patch, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { UsersService, CreateParentDto } from './users.service';
@@ -44,6 +44,13 @@ export class UsersController {
   @ApiOperation({ summary: 'Get full student profile' })
   getStudentProfile(@Param('id') id: string, @CurrentUser('role') role: Role) {
     return this.usersService.getStudentProfile(id, role);
+  }
+
+  @Patch('students/:id')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update student profile (name, bio, DOB, photo)' })
+  updateStudentProfile(@Param('id') id: string, @Body() body: any, @CurrentUser('role') role: Role) {
+    return this.usersService.updateStudentProfile(id, body);
   }
 
   @Get('staff')

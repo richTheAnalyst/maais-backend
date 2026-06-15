@@ -140,6 +140,7 @@ export declare class ArchiveService {
         photoUrl: string | null;
         departmentId: string | null;
         indexNumber: string;
+        bio: string | null;
         admissionDate: Date;
         currentClassId: string | null;
         archivedAt: Date | null;

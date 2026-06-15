@@ -264,4 +264,38 @@ export class UsersService {
       data: { isActive: false },
     });
   }
+
+  async updateStudentProfile(studentId: string, dto: {
+    firstName?: string;
+    lastName?: string;
+    middleName?: string;
+    bio?: string;
+    photoUrl?: string;
+    dateOfBirth?: string;
+  }) {
+    const profile = await this.prisma.studentProfile.findUniqueOrThrow({
+      where: { id: studentId },
+      include: { user: true },
+    });
+
+    const updateData: any = {};
+    if (dto.firstName !== undefined) updateData.firstName = dto.firstName;
+    if (dto.lastName !== undefined) updateData.lastName = dto.lastName;
+    if (dto.middleName !== undefined) updateData.middleName = dto.middleName;
+    if (dto.bio !== undefined) updateData.bio = dto.bio;
+    if (dto.photoUrl !== undefined) updateData.photoUrl = dto.photoUrl;
+    if (dto.dateOfBirth !== undefined) updateData.dateOfBirth = dto.dateOfBirth ? new Date(dto.dateOfBirth) : null;
+
+    const updatedProfile = await this.prisma.studentProfile.update({
+      where: { id: studentId },
+      data: updateData,
+      include: {
+        currentClass: true,
+        department: true,
+        user: { select: { email: true, lastLoginAt: true } },
+      },
+    });
+
+    return updatedProfile;
+  }
 }
