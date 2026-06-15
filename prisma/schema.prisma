@@ -291,7 +291,7 @@ model Subject {
   // Assignments and grades
   teachingAssignments TeachingAssignment[]
   grades              GradeEntry[]
-  timetableEntry      TimetableEntry[]
+  timetableEntries     TimetableEntry[]
 
   @@map("subjects")
 }
@@ -306,7 +306,7 @@ model ClassSection {
 
   students            StudentProfile[]
   teachingAssignments TeachingAssignment[]
-  timetableEntry      TimetableEntry[]
+  timetableEntries      TimetableEntry[]
 
   @@unique([name, level])
   @@map("class_sections")
@@ -622,4 +622,6 @@ model TimetableEntry {
   classSection         ClassSection   @relation(fields: [classId], references: [id])
   subject      Subject  @relation(fields: [subjectId], references: [id])
   teacher      StaffProfile @relation(fields: [teacherId], references: [id])
+
+  @@map("timetable_entries")
 }

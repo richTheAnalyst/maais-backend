@@ -21,7 +21,10 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService, private prisma: PrismaService) {}
+  constructor(
+    private authService: AuthService,
+    private prisma: PrismaService,
+  ) {}
 
   @Public()
   @Post('login')
@@ -49,23 +52,23 @@ export class AuthController {
   async logout(@CurrentUser() user: User, @Body('refreshToken') token: string) {
     return this.authService.logout(user.id, token);
   }
-@ApiBearerAuth()
-@Get('me')
-@ApiOperation({ summary: 'Get current authenticated user with profile' })
-async getMe(@CurrentUser() user: User) {
-  const { passwordHash: _, ...rest } = user as any;
-  
-  // Fetch with profile included
-  const fullUser = await this.prisma.user.findUnique({
-    where: { id: user.id },
-    include: {
-      staffProfile: true,
-      studentProfile: true,
-      parentProfile: true,
-    },
-  });
+  @ApiBearerAuth()
+  @Get('me')
+  @ApiOperation({ summary: 'Get current authenticated user with profile' })
+  async getMe(@CurrentUser() user: User) {
+    const { passwordHash: _, ...rest } = user as any;
 
-  const { passwordHash: __, ...fullRest } = fullUser as any;
-  return fullRest;
-}
+    // Fetch with profile included
+    const fullUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        staffProfile: true,
+        studentProfile: true,
+        parentProfile: true,
+      },
+    });
+
+    const { passwordHash: __, ...fullRest } = fullUser as any;
+    return fullRest;
+  }
 }
