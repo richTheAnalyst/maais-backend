@@ -193,18 +193,18 @@ export declare class UsersService {
                     id: string;
                     isActive: boolean;
                     createdAt: Date;
-                    label: string;
                     startDate: Date;
                     endDate: Date;
+                    label: string;
                 };
             } & {
                 id: string;
                 isActive: boolean;
                 isLocked: boolean;
+                academicYearId: string;
+                termNumber: import(".prisma/client").$Enums.TermNumber;
                 startDate: Date;
                 endDate: Date;
-                termNumber: import(".prisma/client").$Enums.TermNumber;
-                academicYearId: string;
             };
             subject: {
                 name: string;
@@ -246,18 +246,18 @@ export declare class UsersService {
                     id: string;
                     isActive: boolean;
                     createdAt: Date;
-                    label: string;
                     startDate: Date;
                     endDate: Date;
+                    label: string;
                 };
             } & {
                 id: string;
                 isActive: boolean;
                 isLocked: boolean;
+                academicYearId: string;
+                termNumber: import(".prisma/client").$Enums.TermNumber;
                 startDate: Date;
                 endDate: Date;
-                termNumber: import(".prisma/client").$Enums.TermNumber;
-                academicYearId: string;
             };
         } & {
             id: string;

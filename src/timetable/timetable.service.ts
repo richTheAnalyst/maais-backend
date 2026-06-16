@@ -130,6 +130,17 @@ export class TimetableService {
     return days;
   }
 
+  async getStudentScheduleForClass(classId: string) {
+    const entries = await this.findByClass(classId);
+    const days: Record<string, typeof entries> = {
+      MONDAY: [], TUESDAY: [], WEDNESDAY: [], THURSDAY: [], FRIDAY: [],
+    };
+    entries.forEach(e => {
+      if (days[e.dayOfWeek]) days[e.dayOfWeek].push(e);
+    });
+    return days;
+  }
+
   async detectClashes(teacherId: string) {
     const entries = await this.findByTeacher(teacherId);
     const clashes: any[] = [];

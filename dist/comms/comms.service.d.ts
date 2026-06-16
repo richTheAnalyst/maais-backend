@@ -79,10 +79,10 @@ export declare class CommsService {
         description: string;
         title: string;
         studentId: string;
+        status: string;
         category: string;
         priority: string;
         createdById: string | null;
-        status: string;
         assignedTo: string | null;
         resolvedAt: Date | null;
     }>;
@@ -93,10 +93,10 @@ export declare class CommsService {
         description: string;
         title: string;
         studentId: string;
+        status: string;
         category: string;
         priority: string;
         createdById: string | null;
-        status: string;
         assignedTo: string | null;
         resolvedAt: Date | null;
     }[]>;
