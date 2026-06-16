@@ -108,6 +108,40 @@ let CommsService = CommsService_1 = class CommsService {
             data: { isRead: true },
         });
     }
+    async createTicket(dto, studentId) {
+        const student = await this.prisma.studentProfile.findUnique({
+            where: { id: studentId },
+        });
+        if (!student) {
+            throw new Error('Student not found');
+        }
+        return this.prisma.supportTicket.create({
+            data: {
+                studentId,
+                title: dto.title,
+                description: dto.description,
+                category: dto.category || 'General',
+                priority: dto.priority || 'MEDIUM',
+                createdById: student.userId,
+            },
+            include: {
+                student: {
+                    include: {
+                        user: {
+                            select: { email: true },
+                        },
+                    },
+                },
+            },
+        });
+    }
+    async getStudentTickets(studentId) {
+        return this.prisma.supportTicket.findMany({
+            where: { studentId },
+            orderBy: { createdAt: 'desc' },
+            take: 50,
+        });
+    }
     async getAnalyticsPulse(academicYearId) {
         const [enrollmentByClass, averageBySubject, attendanceSummary] = await Promise.all([
             this.prisma.classSection.findMany({

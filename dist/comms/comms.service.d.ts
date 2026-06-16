@@ -1,6 +1,7 @@
 import { PrismaService } from '../common/prisma/prisma.service';
 import { NotificationChannel } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
+import { CreateSupportTicketDto } from './dto/create-ticket.dto';
 export interface SendNotificationDto {
     studentIds?: string[];
     title: string;
@@ -50,6 +51,55 @@ export declare class CommsService {
         errorMsg: string | null;
         createdById: string | null;
     }>;
+    createTicket(dto: CreateSupportTicketDto, studentId: string): Promise<{
+        student: {
+            user: {
+                email: string;
+            };
+        } & {
+            id: string;
+            userId: string;
+            firstName: string;
+            lastName: string;
+            middleName: string | null;
+            gender: import(".prisma/client").$Enums.Gender;
+            dateOfBirth: Date | null;
+            photoUrl: string | null;
+            departmentId: string | null;
+            indexNumber: string;
+            bio: string | null;
+            admissionDate: Date;
+            currentClassId: string | null;
+            archivedAt: Date | null;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string;
+        title: string;
+        studentId: string;
+        category: string;
+        priority: string;
+        createdById: string | null;
+        status: string;
+        assignedTo: string | null;
+        resolvedAt: Date | null;
+    }>;
+    getStudentTickets(studentId: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string;
+        title: string;
+        studentId: string;
+        category: string;
+        priority: string;
+        createdById: string | null;
+        status: string;
+        assignedTo: string | null;
+        resolvedAt: Date | null;
+    }[]>;
     getAnalyticsPulse(academicYearId?: string): Promise<{
         enrollment: {
             class: string;

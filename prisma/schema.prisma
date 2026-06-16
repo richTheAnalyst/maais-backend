@@ -159,6 +159,7 @@ model StaffProfile {
   teachingAssignments TeachingAssignment[]
   classTeacher        ClassSection?        @relation("ClassTeacher")
   timetableEntries    TimetableEntry[]
+  behaviorsRecorded   StudentBehavior[]
 
   @@map("staff_profiles")
 }
@@ -169,8 +170,9 @@ model StudentProfile {
   user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   indexNumber    String        @unique // e.g. MSHTS/2024/001
   firstName      String
-  lastName       String
+  lastName      String
   middleName     String?
+  bio            String?
   gender         Gender
   dateOfBirth    DateTime?
   photoUrl       String?
@@ -192,6 +194,7 @@ model StudentProfile {
   behaviors   StudentBehavior[]
   characterTraits CharacterTrait[]
   interventionAlerts InterventionAlert[]
+  supportTickets SupportTicket[]
 
   // Archived after graduation
   archivedAt DateTime?
@@ -551,6 +554,7 @@ model StudentBehavior {
 
   remarks      String?
   recordedById String?
+  recordedBy   StaffProfile? @relation(fields: [recordedById], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -601,6 +605,29 @@ model InterventionAlert {
   student          StudentProfile @relation(fields: [studentId], references: [id])
 
   @@index([studentId])
+}
+
+model SupportTicket {
+  id          String    @id @default(uuid())
+  studentId   String
+  student     StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String
+  category    String // Academic, Technical, Finance, General
+  priority    String // HIGH, MEDIUM, LOW
+
+  status      String @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED
+
+  createdById String?
+  assignedTo  String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  resolvedAt  DateTime?
+
+  @@index([studentId])
+  @@map("support_tickets")
 }
 
 model TimetableEntry {

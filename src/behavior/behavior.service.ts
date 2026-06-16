@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service';
 
 @Injectable()
@@ -18,8 +18,7 @@ export class BehaviorService {
     }
 
     async getStudentBehavior(studentId: string) {
-        
-         const logs = this.prisma.studentBehavior.findMany({
+        const logs = this.prisma.studentBehavior.findMany({
             where: {studentId},
             orderBy: {
                 createdAt: 'desc'

@@ -20,6 +20,7 @@ const client_1 = require("@prisma/client");
 const comms_service_1 = require("./comms.service");
 const roles_decorator_1 = require("../common/decorators/roles.decorator");
 const comms_dto_1 = require("./dto/comms.dto");
+const create_ticket_dto_1 = require("./dto/create-ticket.dto");
 let CommsController = class CommsController {
     constructor(commsService) {
         this.commsService = commsService;
@@ -38,6 +39,12 @@ let CommsController = class CommsController {
     }
     getPulse(academicYearId) {
         return this.commsService.getAnalyticsPulse(academicYearId);
+    }
+    createTicket(dto, userId) {
+        return this.commsService.createTicket(dto, userId);
+    }
+    getMyTickets(userId) {
+        return this.commsService.getStudentTickets(userId);
     }
 };
 exports.CommsController = CommsController;
@@ -93,6 +100,27 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], CommsController.prototype, "getPulse", null);
+__decorate([
+    (0, common_1.Post)('tickets'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Raise a support ticket (student-facing)' }),
+    openapi.ApiResponse({ status: 201, type: Object }),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, roles_decorator_1.CurrentUser)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [create_ticket_dto_1.CreateSupportTicketDto, String]),
+    __metadata("design:returntype", void 0)
+], CommsController.prototype, "createTicket", null);
+__decorate([
+    (0, common_1.Get)('tickets/my'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get current student\'s support tickets' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, roles_decorator_1.CurrentUser)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], CommsController.prototype, "getMyTickets", null);
 exports.CommsController = CommsController = __decorate([
     (0, swagger_1.ApiTags)('Comms'),
     (0, swagger_1.ApiBearerAuth)(),

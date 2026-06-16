@@ -58,6 +58,7 @@ export declare class UsersController {
             photoUrl: string | null;
             departmentId: string | null;
             indexNumber: string;
+            bio: string | null;
             admissionDate: Date;
             currentClassId: string | null;
             archivedAt: Date | null;
@@ -127,6 +128,7 @@ export declare class UsersController {
         photoUrl: string | null;
         departmentId: string | null;
         indexNumber: string;
+        bio: string | null;
         admissionDate: Date;
         currentClassId: string | null;
         archivedAt: Date | null;
@@ -271,6 +273,42 @@ export declare class UsersController {
         photoUrl: string | null;
         departmentId: string | null;
         indexNumber: string;
+        bio: string | null;
+        admissionDate: Date;
+        currentClassId: string | null;
+        archivedAt: Date | null;
+    }>;
+    updateStudentProfile(id: string, body: any, role: Role): Promise<{
+        user: {
+            email: string;
+            lastLoginAt: Date;
+        };
+        department: {
+            name: string;
+            id: string;
+            createdAt: Date;
+            description: string | null;
+            code: string;
+        };
+        currentClass: {
+            level: import(".prisma/client").$Enums.ClassLevel;
+            name: string;
+            id: string;
+            capacity: number;
+            classTeacherId: string | null;
+        };
+    } & {
+        id: string;
+        userId: string;
+        firstName: string;
+        lastName: string;
+        middleName: string | null;
+        gender: import(".prisma/client").$Enums.Gender;
+        dateOfBirth: Date | null;
+        photoUrl: string | null;
+        departmentId: string | null;
+        indexNumber: string;
+        bio: string | null;
         admissionDate: Date;
         currentClassId: string | null;
         archivedAt: Date | null;

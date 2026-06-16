@@ -40,6 +40,9 @@ let UsersController = class UsersController {
     getStudentProfile(id, role) {
         return this.usersService.getStudentProfile(id, role);
     }
+    updateStudentProfile(id, body, role) {
+        return this.usersService.updateStudentProfile(id, body);
+    }
     getAllStaff(user) {
         return this.usersService.getAllStaff(user);
     }
@@ -98,6 +101,18 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "getStudentProfile", null);
+__decorate([
+    (0, common_1.Patch)('students/:id'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Update student profile (name, bio, DOB, photo)' }),
+    openapi.ApiResponse({ status: 200, type: Object }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, roles_decorator_1.CurrentUser)('role')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, String]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "updateStudentProfile", null);
 __decorate([
     (0, common_1.Get)('staff'),
     (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER, client_1.Role.HOD),
