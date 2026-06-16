@@ -5,6 +5,7 @@ import {
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { Role, DayOfWeek } from '@prisma/client';
 import { TimetableService } from './timetable.service';
+import { PrismaService } from '../common/prisma/prisma.service';
 import { Roles, CurrentUser } from '../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
@@ -14,7 +15,10 @@ import { RolesGuard } from '../common/guards/roles.guard';
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('timetable')
 export class TimetableController {
-  constructor(private timetableService: TimetableService) {}
+  constructor(
+    private timetableService: TimetableService,
+    private prisma: PrismaService,
+  ) {}
 
   @Post()
   @Roles(Role.SUPER_ADMIN, Role.HEADMASTER, Role.HOD)
@@ -61,6 +65,20 @@ export class TimetableController {
   @ApiOperation({ summary: 'Detect scheduling clashes for a teacher' })
   getClashes(@Param('teacherId') teacherId: string) {
     return this.timetableService.detectClashes(teacherId);
+  }
+
+  @Get('student-schedule')
+  @Roles(Role.STUDENT, Role.SUPER_ADMIN, Role.HEADMASTER)
+  @ApiOperation({ summary: 'Get current student timetable' })
+  getStudentSchedule(@CurrentUser('id') userId: string) {
+    return this.prisma.studentProfile.findUnique({
+      where: { userId },
+    }).then(student => {
+      if (!student?.currentClassId) {
+        return { MONDAY: [], TUESDAY: [], WEDNESDAY: [], THURSDAY: [], FRIDAY: [] };
+      }
+      return this.timetableService.getStudentScheduleForClass(student.currentClassId);
+    });
   }
 
   @Get(':id')
