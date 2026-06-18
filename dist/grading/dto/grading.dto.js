@@ -13,6 +13,7 @@ exports.LockGradeDto = exports.CorrectGradeDto = exports.BulkUpsertGradeDto = ex
 const openapi = require("@nestjs/swagger");
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
+const class_transformer_1 = require("class-transformer");
 class UpsertGradeDto {
     static _OPENAPI_METADATA_FACTORY() {
         return { studentId: { required: true, type: () => String }, subjectId: { required: true, type: () => String }, termId: { required: true, type: () => String }, classScore: { required: true, type: () => Number, minimum: 0, maximum: 30 }, examScore: { required: true, type: () => Number, minimum: 0, maximum: 70 }, remark: { required: false, type: () => String }, hasObservation: { required: false, type: () => Boolean }, observationText: { required: false, type: () => String } };
@@ -74,6 +75,9 @@ class BulkUpsertGradeDto {
 exports.BulkUpsertGradeDto = BulkUpsertGradeDto;
 __decorate([
     (0, swagger_1.ApiProperty)({ type: [UpsertGradeDto] }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.ValidateNested)({ each: true }),
+    (0, class_transformer_1.Type)(() => UpsertGradeDto),
     __metadata("design:type", Array)
 ], BulkUpsertGradeDto.prototype, "entries", void 0);
 class CorrectGradeDto {

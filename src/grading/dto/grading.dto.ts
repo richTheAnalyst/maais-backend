@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsNumber, IsOptional, IsBoolean, IsEnum, Min, Max } from 'class-validator';
+import { IsString, IsNumber, IsOptional,IsArray, ValidateNested, IsBoolean, IsEnum, Min, Max } from 'class-validator';
+import { Type } from 'class-transformer'
 
 export class UpsertGradeDto {
   @ApiProperty()
@@ -44,6 +45,9 @@ export class UpsertGradeDto {
 
 export class BulkUpsertGradeDto {
   @ApiProperty({ type: [UpsertGradeDto] })
+  @IsArray()
+  @ValidateNested({ each: true})
+  @Type(() => UpsertGradeDto)
   entries: UpsertGradeDto[];
 }
 
@@ -70,3 +74,4 @@ export class LockGradeDto {
   @IsString()
   gradeEntryId: string;
 }
+
