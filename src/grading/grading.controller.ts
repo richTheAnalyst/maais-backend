@@ -26,7 +26,7 @@ export class GradingController {
   }
 
   @Patch('entries/:id/lock')
-  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN, Role.TEACHER)
   @ApiOperation({ summary: 'Lock a grade entry' })
   lockGrade(
     @Param('id') id: string,
@@ -37,7 +37,7 @@ export class GradingController {
   }
 
   @Patch('entries/:id/approve')
-  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN, Role.TEACHER)
   @ApiOperation({ summary: 'Approve a grade entry' })
   approveGrade(
     @Param('id') id: string,
@@ -48,7 +48,7 @@ export class GradingController {
   }
 
   @Post('entries/bulk-approve')
-  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN, Role.TEACHER)
   @ApiOperation({ summary: 'Bulk approve grade entries' })
   bulkApprove(
     @Body('ids') ids: string[],
