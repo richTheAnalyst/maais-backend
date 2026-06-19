@@ -270,32 +270,35 @@ export class GradingService {
    * Get class performance summary for a term (HOD view)
    */
   async getClassPerformanceSummary(classId: string, termId: string) {
-    const students = await this.prisma.studentProfile.findMany({
-      where: { currentClassId: classId },
-      include: {
-        grades: {
-          where: { termId },
-          include: { subject: true },
-        },
+  const students = await this.prisma.studentProfile.findMany({
+    where: { currentClassId: classId },
+    include: {
+      grades: {
+        where: { termId },
+        include: { subject: true },
       },
-    });
+    },
+  });
 
-    return students.map((s) => {
-      const totalGrades = s.grades.length;
-      const approvedGrades = s.grades.filter((g) => g.isApproved).length;
-      const progress =
-        totalGrades > 0 ? (approvedGrades / totalGrades) * 100 : 0;
+  return students.map(s => {
+    const totalGrades = s.grades.length;
+    const approvedGrades = s.grades.filter(g => g.isApproved).length;
+    const lockedGrades = s.grades.filter(g => g.isLocked).length;
+    const progress = totalGrades > 0 ? (approvedGrades / totalGrades) * 100 : 0;
 
-      return {
-        id: s.id,
-        name: `${s.firstName} ${s.lastName}`,
-        indexNumber: s.indexNumber,
-        progress,
-        isFullyApproved: totalGrades > 0 && totalGrades === approvedGrades,
-        gradesCount: totalGrades,
-      };
-    });
-  }
+    return {
+      id: s.id,
+      name: `${s.firstName} ${s.lastName}`,
+      indexNumber: s.indexNumber,
+      progress,
+      isFullyApproved: totalGrades > 0 && totalGrades === approvedGrades,
+      isFullyLocked: totalGrades > 0 && totalGrades === lockedGrades,
+      hasAnyLocked: lockedGrades > 0,
+      gradesCount: totalGrades,
+      gradeEntryIds: s.grades.map(g => g.id),
+    };
+  });
+}
 
   /**
    * HOD locks a grade entry to prevent further editing
