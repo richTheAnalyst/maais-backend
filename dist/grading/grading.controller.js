@@ -33,6 +33,12 @@ let GradingController = class GradingController {
     lockGrade(id, userId, role) {
         return this.gradingService.lockGrade(id, userId, role);
     }
+    unlockGrade(id, userId, role) {
+        return this.gradingService.unlockGrade(id, userId, role);
+    }
+    bulkUnlock(ids, userId, role) {
+        return this.gradingService.bulkUnlockGrades(ids, userId, role);
+    }
     approveGrade(id, userId, role) {
         return this.gradingService.approveGrade(id, userId, role);
     }
@@ -93,6 +99,30 @@ __decorate([
     __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", void 0)
 ], GradingController.prototype, "lockGrade", null);
+__decorate([
+    (0, common_1.Patch)('entries/:id/unlock'),
+    (0, roles_decorator_1.Roles)(client_1.Role.HOD, client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN),
+    (0, swagger_1.ApiOperation)({ summary: 'Unlock a grade entry' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, roles_decorator_1.CurrentUser)('id')),
+    __param(2, (0, roles_decorator_1.CurrentUser)('role')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", void 0)
+], GradingController.prototype, "unlockGrade", null);
+__decorate([
+    (0, common_1.Post)('entries/bulk-unlock'),
+    (0, roles_decorator_1.Roles)(client_1.Role.HOD, client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN),
+    (0, swagger_1.ApiOperation)({ summary: 'Bulk unlock grade entries' }),
+    openapi.ApiResponse({ status: 201, type: Object }),
+    __param(0, (0, common_1.Body)('ids')),
+    __param(1, (0, roles_decorator_1.CurrentUser)('id')),
+    __param(2, (0, roles_decorator_1.CurrentUser)('role')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array, String, String]),
+    __metadata("design:returntype", void 0)
+], GradingController.prototype, "bulkUnlock", null);
 __decorate([
     (0, common_1.Patch)('entries/:id/approve'),
     (0, roles_decorator_1.Roles)(client_1.Role.HOD, client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN, client_1.Role.TEACHER),

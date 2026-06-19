@@ -224,14 +224,20 @@ export class GradingService {
   /**
    * HOD approves a grade entry
    */
-  async approveGrade(gradeEntryId: string, approvedById: string, userRole: Role) {
+  async approveGrade(
+    gradeEntryId: string,
+    approvedById: string,
+    userRole: Role,
+  ) {
     if (
       userRole !== Role.HOD &&
       userRole !== Role.HEADMASTER &&
       userRole !== Role.SUPER_ADMIN &&
       userRole !== Role.TEACHER
     ) {
-      throw new ForbiddenException('Only HODs or above can approve grade entries');
+      throw new ForbiddenException(
+        'Only HODs or above can approve grade entries',
+      );
     }
 
     return this.prisma.gradeEntry.update({
@@ -249,7 +255,9 @@ export class GradingService {
       userRole !== Role.HEADMASTER &&
       userRole !== Role.SUPER_ADMIN
     ) {
-      throw new ForbiddenException('Only HODs or above can approve grade entries');
+      throw new ForbiddenException(
+        'Only HODs or above can approve grade entries',
+      );
     }
 
     return this.prisma.gradeEntry.updateMany({
@@ -272,10 +280,11 @@ export class GradingService {
       },
     });
 
-    return students.map(s => {
+    return students.map((s) => {
       const totalGrades = s.grades.length;
-      const approvedGrades = s.grades.filter(g => g.isApproved).length;
-      const progress = totalGrades > 0 ? (approvedGrades / totalGrades) * 100 : 0;
+      const approvedGrades = s.grades.filter((g) => g.isApproved).length;
+      const progress =
+        totalGrades > 0 ? (approvedGrades / totalGrades) * 100 : 0;
 
       return {
         id: s.id,
@@ -384,7 +393,11 @@ export class GradingService {
   /**
    * Get all grades for a student in a term
    */
-  async getStudentTermGrades(studentId: string, termId: string, userRole?: Role) {
+  async getStudentTermGrades(
+    studentId: string,
+    termId: string,
+    userRole?: Role,
+  ) {
     const where: any = { studentId, termId };
 
     // Students only see approved grades
@@ -445,14 +458,56 @@ export class GradingService {
 
   //grade boundaries (is readonly)
   getBoundaries() {
-    return GRADE_BOUNDARIES.map((b, i) =>({
-       id: String(i + 1),
-    grade: b.grade,
-    min: b.min,
-    max: b.max,
-    remark: b.remark,
-    smartRemarks: b.smartRemarks,
-
+    return GRADE_BOUNDARIES.map((b, i) => ({
+      id: String(i + 1),
+      grade: b.grade,
+      min: b.min,
+      max: b.max,
+      remark: b.remark,
+      smartRemarks: b.smartRemarks,
     }));
+  }
+  /**
+   * HOD unlocks a grade entry to allow editing again
+   */
+  async unlockGrade(
+    gradeEntryId: string,
+    unlockedById: string,
+    userRole: Role,
+  ) {
+    if (
+      userRole !== Role.HOD &&
+      userRole !== Role.HEADMASTER &&
+      userRole !== Role.SUPER_ADMIN
+    ) {
+      throw new ForbiddenException(
+        'Only HODs or above can unlock grade entries',
+      );
+    }
+
+    return this.prisma.gradeEntry.update({
+      where: { id: gradeEntryId },
+      data: { isLocked: false, lockedById: null, lockedAt: null },
+    });
+  }
+
+  /**
+   * Bulk unlock grades for a class/subject
+   */
+  async bulkUnlockGrades(ids: string[], unlockedById: string, userRole: Role) {
+    if (
+      userRole !== Role.HOD &&
+      userRole !== Role.HEADMASTER &&
+      userRole !== Role.SUPER_ADMIN
+    ) {
+      throw new ForbiddenException(
+        'Only HODs or above can unlock grade entries',
+      );
+    }
+
+    return this.prisma.gradeEntry.updateMany({
+      where: { id: { in: ids } },
+      data: { isLocked: false, lockedById: null, lockedAt: null },
+    });
   }
 }

@@ -51,6 +51,28 @@ export class GradingController {
     return this.gradingService.lockGrade(id, userId, role);
   }
 
+  @Patch('entries/:id/unlock')
+  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Unlock a grade entry' })
+  unlockGrade(
+    @Param('id') id: string,
+    @CurrentUser('id') userId: string,
+    @CurrentUser('role') role: Role,
+  ) {
+    return this.gradingService.unlockGrade(id, userId, role);
+  }
+
+  @Post('entries/bulk-unlock')
+  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Bulk unlock grade entries' })
+  bulkUnlock(
+    @Body('ids') ids: string[],
+    @CurrentUser('id') userId: string,
+    @CurrentUser('role') role: Role,
+  ) {
+    return this.gradingService.bulkUnlockGrades(ids, userId, role);
+  }
+
   @Patch('entries/:id/approve')
   @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN, Role.TEACHER)
   @ApiOperation({ summary: 'Approve a grade entry' })

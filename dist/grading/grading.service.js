@@ -222,9 +222,9 @@ let GradingService = class GradingService {
                 },
             },
         });
-        return students.map(s => {
+        return students.map((s) => {
             const totalGrades = s.grades.length;
-            const approvedGrades = s.grades.filter(g => g.isApproved).length;
+            const approvedGrades = s.grades.filter((g) => g.isApproved).length;
             const progress = totalGrades > 0 ? (approvedGrades / totalGrades) * 100 : 0;
             return {
                 id: s.id,
@@ -347,6 +347,28 @@ let GradingService = class GradingService {
             remark: b.remark,
             smartRemarks: b.smartRemarks,
         }));
+    }
+    async unlockGrade(gradeEntryId, unlockedById, userRole) {
+        if (userRole !== client_1.Role.HOD &&
+            userRole !== client_1.Role.HEADMASTER &&
+            userRole !== client_1.Role.SUPER_ADMIN) {
+            throw new common_1.ForbiddenException('Only HODs or above can unlock grade entries');
+        }
+        return this.prisma.gradeEntry.update({
+            where: { id: gradeEntryId },
+            data: { isLocked: false, lockedById: null, lockedAt: null },
+        });
+    }
+    async bulkUnlockGrades(ids, unlockedById, userRole) {
+        if (userRole !== client_1.Role.HOD &&
+            userRole !== client_1.Role.HEADMASTER &&
+            userRole !== client_1.Role.SUPER_ADMIN) {
+            throw new common_1.ForbiddenException('Only HODs or above can unlock grade entries');
+        }
+        return this.prisma.gradeEntry.updateMany({
+            where: { id: { in: ids } },
+            data: { isLocked: false, lockedById: null, lockedAt: null },
+        });
     }
 };
 exports.GradingService = GradingService;

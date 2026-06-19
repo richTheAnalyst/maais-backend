@@ -295,4 +295,29 @@ export declare class GradingService {
         remark: "EXCELLENT" | "VERY_GOOD" | "GOOD" | "CREDIT" | "PASS" | "WEAK_PASS" | "FAILURE";
         smartRemarks: string[];
     }[];
+    unlockGrade(gradeEntryId: string, unlockedById: string, userRole: Role): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        studentId: string;
+        isApproved: boolean;
+        subjectId: string;
+        termId: string;
+        classScore: number | null;
+        examScore: number | null;
+        totalScore: number | null;
+        grade: string | null;
+        remark: string | null;
+        position: number | null;
+        hasObservation: boolean;
+        observationText: string | null;
+        isLocked: boolean;
+        lockedById: string | null;
+        lockedAt: Date | null;
+        submittedById: string | null;
+        submittedAt: Date | null;
+        approvedById: string | null;
+        approvedAt: Date | null;
+    }>;
+    bulkUnlockGrades(ids: string[], unlockedById: string, userRole: Role): Promise<import(".prisma/client").Prisma.BatchPayload>;
 }
