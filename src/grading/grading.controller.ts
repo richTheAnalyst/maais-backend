@@ -143,4 +143,33 @@ export class GradingController {
   getBoundaries() {
     return this.gradingService.getBoundaries();
   }
+
+  //top performing student
+  @Get('top-students/:departmentId')
+  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Get top performing students in a department' })
+  getTopStudents(
+    @Param('departmentId') departmentId: string,
+    @Query('termId') termId: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.gradingService.getTopStudentsByDepartment(
+      departmentId,
+      termId,
+      limit ? parseInt(limit) : 10,
+    );
+  }
+
+  @Get('grade-distribution/:departmentId')
+  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Get grade distribution for a department' })
+  getGradeDistribution(
+    @Param('departmentId') departmentId: string,
+    @Query('termId') termId: string,
+  ) {
+    return this.gradingService.getDepartmentGradeDistribution(
+      departmentId,
+      termId,
+    );
+  }
 }
