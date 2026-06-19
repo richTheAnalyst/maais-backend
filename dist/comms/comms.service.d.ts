@@ -60,6 +60,9 @@ export declare class CommsService {
         }[];
         subjectPerformance: {
             subjectId: string;
+            subjectName: string;
+            subjectCode: string;
+            departmentId: string;
             averageScore: string;
             studentCount: number;
         }[];

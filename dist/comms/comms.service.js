@@ -122,17 +122,31 @@ let CommsService = CommsService_1 = class CommsService {
                 _avg: { daysPresent: true, totalDays: true },
             }),
         ]);
+        const subjectIds = averageBySubject.map(s => s.subjectId);
+        const subjects = await this.prisma.subject.findMany({
+            where: { id: { in: subjectIds } },
+            select: { id: true, name: true, code: true, departmentId: true },
+        });
+        const subjectMap = new Map(subjects.map(s => [s.id, s]));
         return {
             enrollment: enrollmentByClass.map((c) => ({
                 class: `${c.level} ${c.name}`,
                 count: c._count.students,
                 capacity: c.capacity,
             })),
-            subjectPerformance: averageBySubject.map((s) => ({
-                subjectId: s.subjectId,
-                averageScore: s._avg.totalScore?.toFixed(2),
-                studentCount: s._count.id,
-            })),
+            subjectPerformance: averageBySubject
+                .map((s) => {
+                const subject = subjectMap.get(s.subjectId);
+                return {
+                    subjectId: s.subjectId,
+                    subjectName: subject?.name ?? 'Unknown Subject',
+                    subjectCode: subject?.code ?? '',
+                    departmentId: subject?.departmentId ?? null,
+                    averageScore: s._avg.totalScore?.toFixed(2),
+                    studentCount: s._count.id,
+                };
+            })
+                .sort((a, b) => parseFloat(b.averageScore ?? '0') - parseFloat(a.averageScore ?? '0')),
             attendance: attendanceSummary._avg,
         };
     }

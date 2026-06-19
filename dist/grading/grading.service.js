@@ -222,10 +222,10 @@ let GradingService = class GradingService {
                 },
             },
         });
-        return students.map(s => {
+        return students.map((s) => {
             const totalGrades = s.grades.length;
-            const approvedGrades = s.grades.filter(g => g.isApproved).length;
-            const lockedGrades = s.grades.filter(g => g.isLocked).length;
+            const approvedGrades = s.grades.filter((g) => g.isApproved).length;
+            const lockedGrades = s.grades.filter((g) => g.isLocked).length;
             const progress = totalGrades > 0 ? (approvedGrades / totalGrades) * 100 : 0;
             return {
                 id: s.id,
@@ -236,7 +236,7 @@ let GradingService = class GradingService {
                 isFullyLocked: totalGrades > 0 && totalGrades === lockedGrades,
                 hasAnyLocked: lockedGrades > 0,
                 gradesCount: totalGrades,
-                gradeEntryIds: s.grades.map(g => g.id),
+                gradeEntryIds: s.grades.map((g) => g.id),
             };
         });
     }
@@ -373,6 +373,67 @@ let GradingService = class GradingService {
             where: { id: { in: ids } },
             data: { isLocked: false, lockedById: null, lockedAt: null },
         });
+    }
+    async getTopStudentsByDepartment(departmentId, termId, limit = 10) {
+        const students = await this.prisma.studentProfile.findMany({
+            where: { departmentId },
+            include: {
+                grades: {
+                    where: { termId, totalScore: { not: null } },
+                },
+                currentClass: { select: { name: true, level: true } },
+            },
+        });
+        const ranked = students
+            .map((s) => {
+            const scores = s.grades.map((g) => g.totalScore).filter(Boolean);
+            const avg = scores.length > 0
+                ? scores.reduce((a, b) => a + b, 0) / scores.length
+                : 0;
+            return {
+                id: s.id,
+                name: `${s.firstName} ${s.lastName}`,
+                indexNumber: s.indexNumber,
+                currentClass: s.currentClass,
+                averageScore: avg,
+                subjectsGraded: scores.length,
+            };
+        })
+            .filter((s) => s.subjectsGraded > 0)
+            .sort((a, b) => b.averageScore - a.averageScore)
+            .slice(0, limit);
+        return ranked;
+    }
+    async getDepartmentGradeDistribution(departmentId, termId) {
+        const subjects = await this.prisma.subject.findMany({
+            where: { departmentId },
+            select: { id: true },
+        });
+        const subjectIds = subjects.map((s) => s.id);
+        const grades = await this.prisma.gradeEntry.findMany({
+            where: { subjectId: { in: subjectIds }, termId, grade: { not: null } },
+            select: { grade: true },
+        });
+        const distribution = {
+            A1: 0,
+            B2: 0,
+            B3: 0,
+            C4: 0,
+            C5: 0,
+            C6: 0,
+            D7: 0,
+            E8: 0,
+            F9: 0,
+        };
+        grades.forEach((g) => {
+            if (g.grade && distribution[g.grade] !== undefined) {
+                distribution[g.grade]++;
+            }
+        });
+        return Object.entries(distribution).map(([grade, count]) => ({
+            grade,
+            count,
+        }));
     }
 };
 exports.GradingService = GradingService;

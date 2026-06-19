@@ -323,4 +323,19 @@ export declare class GradingService {
         approvedAt: Date | null;
     }>;
     bulkUnlockGrades(ids: string[], unlockedById: string, userRole: Role): Promise<import(".prisma/client").Prisma.BatchPayload>;
+    getTopStudentsByDepartment(departmentId: string, termId: string, limit?: number): Promise<{
+        id: string;
+        name: string;
+        indexNumber: string;
+        currentClass: {
+            level: import(".prisma/client").$Enums.ClassLevel;
+            name: string;
+        };
+        averageScore: number;
+        subjectsGraded: number;
+    }[]>;
+    getDepartmentGradeDistribution(departmentId: string, termId: string): Promise<{
+        grade: string;
+        count: number;
+    }[]>;
 }

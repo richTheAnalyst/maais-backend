@@ -304,4 +304,19 @@ export declare class GradingController {
         remark: "EXCELLENT" | "VERY_GOOD" | "GOOD" | "CREDIT" | "PASS" | "WEAK_PASS" | "FAILURE";
         smartRemarks: string[];
     }[];
+    getTopStudents(departmentId: string, termId: string, limit?: string): Promise<{
+        id: string;
+        name: string;
+        indexNumber: string;
+        currentClass: {
+            level: import(".prisma/client").$Enums.ClassLevel;
+            name: string;
+        };
+        averageScore: number;
+        subjectsGraded: number;
+    }[]>;
+    getGradeDistribution(departmentId: string, termId: string): Promise<{
+        grade: string;
+        count: number;
+    }[]>;
 }

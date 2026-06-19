@@ -63,6 +63,12 @@ let GradingController = class GradingController {
     getBoundaries() {
         return this.gradingService.getBoundaries();
     }
+    getTopStudents(departmentId, termId, limit) {
+        return this.gradingService.getTopStudentsByDepartment(departmentId, termId, limit ? parseInt(limit) : 10);
+    }
+    getGradeDistribution(departmentId, termId) {
+        return this.gradingService.getDepartmentGradeDistribution(departmentId, termId);
+    }
 };
 exports.GradingController = GradingController;
 __decorate([
@@ -207,6 +213,30 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], GradingController.prototype, "getBoundaries", null);
+__decorate([
+    openapi.ApiQuery({ name: "limit", required: false }),
+    (0, common_1.Get)('top-students/:departmentId'),
+    (0, roles_decorator_1.Roles)(client_1.Role.HOD, client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN),
+    (0, swagger_1.ApiOperation)({ summary: 'Get top performing students in a department' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('departmentId')),
+    __param(1, (0, common_1.Query)('termId')),
+    __param(2, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", void 0)
+], GradingController.prototype, "getTopStudents", null);
+__decorate([
+    (0, common_1.Get)('grade-distribution/:departmentId'),
+    (0, roles_decorator_1.Roles)(client_1.Role.HOD, client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN),
+    (0, swagger_1.ApiOperation)({ summary: 'Get grade distribution for a department' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('departmentId')),
+    __param(1, (0, common_1.Query)('termId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], GradingController.prototype, "getGradeDistribution", null);
 exports.GradingController = GradingController = __decorate([
     (0, swagger_1.ApiTags)('Grading'),
     (0, swagger_1.ApiBearerAuth)(),
