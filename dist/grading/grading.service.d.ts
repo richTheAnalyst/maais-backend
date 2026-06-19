@@ -107,7 +107,10 @@ export declare class GradingService {
         indexNumber: string;
         progress: number;
         isFullyApproved: boolean;
+        isFullyLocked: boolean;
+        hasAnyLocked: boolean;
         gradesCount: number;
+        gradeEntryIds: string[];
     }[]>;
     lockGrade(gradeEntryId: string, lockedById: string, userRole: Role): Promise<{
         id: string;

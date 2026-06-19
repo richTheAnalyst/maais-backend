@@ -222,9 +222,10 @@ let GradingService = class GradingService {
                 },
             },
         });
-        return students.map((s) => {
+        return students.map(s => {
             const totalGrades = s.grades.length;
-            const approvedGrades = s.grades.filter((g) => g.isApproved).length;
+            const approvedGrades = s.grades.filter(g => g.isApproved).length;
+            const lockedGrades = s.grades.filter(g => g.isLocked).length;
             const progress = totalGrades > 0 ? (approvedGrades / totalGrades) * 100 : 0;
             return {
                 id: s.id,
@@ -232,7 +233,10 @@ let GradingService = class GradingService {
                 indexNumber: s.indexNumber,
                 progress,
                 isFullyApproved: totalGrades > 0 && totalGrades === approvedGrades,
+                isFullyLocked: totalGrades > 0 && totalGrades === lockedGrades,
+                hasAnyLocked: lockedGrades > 0,
                 gradesCount: totalGrades,
+                gradeEntryIds: s.grades.map(g => g.id),
             };
         });
     }

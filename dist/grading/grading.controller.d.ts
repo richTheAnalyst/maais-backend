@@ -242,7 +242,10 @@ export declare class GradingController {
         indexNumber: string;
         progress: number;
         isFullyApproved: boolean;
+        isFullyLocked: boolean;
+        hasAnyLocked: boolean;
         gradesCount: number;
+        gradeEntryIds: string[];
     }[]>;
     getStudentTermGrades(studentId: string, termId: string, role: Role): Promise<({
         subject: {

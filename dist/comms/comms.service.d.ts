@@ -28,6 +28,7 @@ export declare class CommsService {
         id: string;
         createdAt: Date;
         title: string;
+        staffId: string | null;
         studentId: string | null;
         body: string;
         channel: import(".prisma/client").$Enums.NotificationChannel;
@@ -41,6 +42,7 @@ export declare class CommsService {
         id: string;
         createdAt: Date;
         title: string;
+        staffId: string | null;
         studentId: string | null;
         body: string;
         channel: import(".prisma/client").$Enums.NotificationChannel;
@@ -66,4 +68,23 @@ export declare class CommsService {
             totalDays: number;
         };
     }>;
+    notifyStaff(staffIds: string[], title: string, body: string, sentById: string): Promise<{
+        sent: number;
+        delivered: number;
+        failed: number;
+    }>;
+    getStaffNotifications(staffId: string, unreadOnly?: boolean): Promise<{
+        id: string;
+        createdAt: Date;
+        title: string;
+        staffId: string | null;
+        studentId: string | null;
+        body: string;
+        channel: import(".prisma/client").$Enums.NotificationChannel;
+        isRead: boolean;
+        deliveredAt: Date | null;
+        failedAt: Date | null;
+        errorMsg: string | null;
+        createdById: string | null;
+    }[]>;
 }

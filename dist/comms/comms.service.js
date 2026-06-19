@@ -136,6 +136,40 @@ let CommsService = CommsService_1 = class CommsService {
             attendance: attendanceSummary._avg,
         };
     }
+    async notifyStaff(staffIds, title, body, sentById) {
+        const staff = await this.prisma.staffProfile.findMany({
+            where: { id: { in: staffIds } },
+            include: { user: true },
+        });
+        const results = await Promise.allSettled(staff.map(async (member) => {
+            const notification = await this.prisma.notification.create({
+                data: {
+                    staffId: member.id,
+                    title,
+                    body,
+                    channel: client_1.NotificationChannel.APP,
+                    createdById: sentById,
+                },
+            });
+            await this.prisma.notification.update({
+                where: { id: notification.id },
+                data: { deliveredAt: new Date() },
+            });
+            return notification;
+        }));
+        const delivered = results.filter((r) => r.status === 'fulfilled').length;
+        return { sent: staff.length, delivered, failed: staff.length - delivered };
+    }
+    async getStaffNotifications(staffId, unreadOnly = false) {
+        return this.prisma.notification.findMany({
+            where: {
+                staffId,
+                ...(unreadOnly ? { isRead: false } : {}),
+            },
+            orderBy: { createdAt: 'desc' },
+            take: 50,
+        });
+    }
 };
 exports.CommsService = CommsService;
 exports.CommsService = CommsService = CommsService_1 = __decorate([

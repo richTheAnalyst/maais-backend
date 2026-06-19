@@ -39,6 +39,12 @@ let CommsController = class CommsController {
     getPulse(academicYearId) {
         return this.commsService.getAnalyticsPulse(academicYearId);
     }
+    notifyStaff(dto, userId) {
+        return this.commsService.notifyStaff(dto.staffIds, dto.title, dto.body, userId);
+    }
+    getStaffNotifications(staffId, unreadOnly) {
+        return this.commsService.getStaffNotifications(staffId, unreadOnly);
+    }
 };
 exports.CommsController = CommsController;
 __decorate([
@@ -93,6 +99,27 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], CommsController.prototype, "getPulse", null);
+__decorate([
+    (0, common_1.Post)('notify-staff'),
+    (0, roles_decorator_1.Roles)(client_1.Role.TEACHER, client_1.Role.HOD, client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN),
+    (0, swagger_1.ApiOperation)({ summary: 'Send notification to staff members' }),
+    openapi.ApiResponse({ status: 201 }),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, roles_decorator_1.CurrentUser)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", void 0)
+], CommsController.prototype, "notifyStaff", null);
+__decorate([
+    (0, common_1.Get)('staff-notifications/:staffId'),
+    (0, swagger_1.ApiOperation)({ summary: "Get staff member's notification inbox" }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('staffId')),
+    __param(1, (0, common_1.Query)('unreadOnly')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Boolean]),
+    __metadata("design:returntype", void 0)
+], CommsController.prototype, "getStaffNotifications", null);
 exports.CommsController = CommsController = __decorate([
     (0, swagger_1.ApiTags)('Comms'),
     (0, swagger_1.ApiBearerAuth)(),
