@@ -149,37 +149,52 @@ export class CommsService {
   /**
    * Analytics pulse data for dashboard
    */
-  async getAnalyticsPulse(academicYearId?: string) {
-    const [enrollmentByClass, averageBySubject, attendanceSummary] =
-      await Promise.all([
-        this.prisma.classSection.findMany({
-          include: { _count: { select: { students: true } } },
-        }),
-        this.prisma.gradeEntry.groupBy({
-          by: ['subjectId'],
-          _avg: { totalScore: true },
-          _count: { id: true },
-        }),
-        this.prisma.attendanceRecord.aggregate({
-          _avg: { daysPresent: true, totalDays: true },
-        }),
-      ]);
+ async getAnalyticsPulse(academicYearId?: string) {
+  const [enrollmentByClass, averageBySubject, attendanceSummary] =
+    await Promise.all([
+      this.prisma.classSection.findMany({
+        include: { _count: { select: { students: true } } },
+      }),
+      this.prisma.gradeEntry.groupBy({
+        by: ['subjectId'],
+        _avg: { totalScore: true },
+        _count: { id: true },
+      }),
+      this.prisma.attendanceRecord.aggregate({
+        _avg: { daysPresent: true, totalDays: true },
+      }),
+    ]);
 
-    return {
-      enrollment: enrollmentByClass.map((c) => ({
-        class: `${c.level} ${c.name}`,
-        count: c._count.students,
-        capacity: c.capacity,
-      })),
-      subjectPerformance: averageBySubject.map((s) => ({
-        subjectId: s.subjectId,
-        averageScore: s._avg.totalScore?.toFixed(2),
-        studentCount: s._count.id,
-      })),
-      attendance: attendanceSummary._avg,
-    };
-  }
+  // Resolve subject names for the grouped results
+  const subjectIds = averageBySubject.map(s => s.subjectId);
+  const subjects = await this.prisma.subject.findMany({
+    where: { id: { in: subjectIds } },
+    select: { id: true, name: true, code: true, departmentId: true },
+  });
+  const subjectMap = new Map(subjects.map(s => [s.id, s]));
 
+  return {
+    enrollment: enrollmentByClass.map((c) => ({
+      class: `${c.level} ${c.name}`,
+      count: c._count.students,
+      capacity: c.capacity,
+    })),
+    subjectPerformance: averageBySubject
+      .map((s) => {
+        const subject = subjectMap.get(s.subjectId);
+        return {
+          subjectId: s.subjectId,
+          subjectName: subject?.name ?? 'Unknown Subject',
+          subjectCode: subject?.code ?? '',
+          departmentId: subject?.departmentId ?? null,
+          averageScore: s._avg.totalScore?.toFixed(2),
+          studentCount: s._count.id,
+        };
+      })
+      .sort((a, b) => parseFloat(b.averageScore ?? '0') - parseFloat(a.averageScore ?? '0')),
+    attendance: attendanceSummary._avg,
+  };
+}
   //adding staff notification system for grade changes
   /**
    * Send a notification to one or more staff members (e.g. HOD grade submission alert)
