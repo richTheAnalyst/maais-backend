@@ -179,4 +179,58 @@ export class CommsService {
       attendance: attendanceSummary._avg,
     };
   }
+
+  //adding staff notification system for grade changes
+  /**
+   * Send a notification to one or more staff members (e.g. HOD grade submission alert)
+   */
+  async notifyStaff(
+    staffIds: string[],
+    title: string,
+    body: string,
+    sentById: string,
+  ) {
+    const staff = await this.prisma.staffProfile.findMany({
+      where: { id: { in: staffIds } },
+      include: { user: true },
+    });
+
+    const results = await Promise.allSettled(
+      staff.map(async (member) => {
+        const notification = await this.prisma.notification.create({
+          data: {
+            staffId: member.id,
+            title,
+            body,
+            channel: NotificationChannel.APP,
+            createdById: sentById,
+          },
+        });
+
+        await this.prisma.notification.update({
+          where: { id: notification.id },
+          data: { deliveredAt: new Date() },
+        });
+
+        return notification;
+      }),
+    );
+
+    const delivered = results.filter((r) => r.status === 'fulfilled').length;
+    return { sent: staff.length, delivered, failed: staff.length - delivered };
+  }
+
+  /**
+   * Get notifications for a staff member (app inbox)
+   */
+  async getStaffNotifications(staffId: string, unreadOnly = false) {
+    return this.prisma.notification.findMany({
+      where: {
+        staffId,
+        ...(unreadOnly ? { isRead: false } : {}),
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+    });
+  }
 }

@@ -159,6 +159,8 @@ model StaffProfile {
   teachingAssignments TeachingAssignment[]
   classTeacher        ClassSection?        @relation("ClassTeacher")
   timetableEntries    TimetableEntry[]
+  // Notifications sent to or about this staff
+  notifications       Notification[]
 
   @@map("staff_profiles")
 }
@@ -477,11 +479,12 @@ model Transcript {
 
   @@map("transcripts")
 }
-
 model Notification {
   id          String              @id @default(uuid())
   studentId   String?
   student     StudentProfile?     @relation(fields: [studentId], references: [id])
+  staffId     String?
+  staff       StaffProfile?       @relation(fields: [staffId], references: [id])
   title       String
   body        String
   channel     NotificationChannel
