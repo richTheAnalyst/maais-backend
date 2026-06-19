@@ -228,7 +228,8 @@ export class GradingService {
     if (
       userRole !== Role.HOD &&
       userRole !== Role.HEADMASTER &&
-      userRole !== Role.SUPER_ADMIN
+      userRole !== Role.SUPER_ADMIN &&
+      userRole !== Role.TEACHER
     ) {
       throw new ForbiddenException('Only HODs or above can approve grade entries');
     }
@@ -440,5 +441,18 @@ export class GradingService {
         data: { position: currentRank },
       });
     }
+  }
+
+  //grade boundaries (is readonly)
+  getBoundaries() {
+    return GRADE_BOUNDARIES.map((b, i) =>({
+       id: String(i + 1),
+    grade: b.grade,
+    min: b.min,
+    max: b.max,
+    remark: b.remark,
+    smartRemarks: b.smartRemarks,
+
+    }));
   }
 }

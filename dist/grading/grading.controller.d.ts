@@ -5,37 +5,34 @@ export declare class GradingController {
     private gradingService;
     constructor(gradingService: GradingService);
     upsertGrade(dto: UpsertGradeDto, userId: string): Promise<{
-        subject: {
-            name: string;
-            id: string;
-            isActive: boolean;
-            createdAt: Date;
-            type: import(".prisma/client").$Enums.SubjectType;
-            description: string | null;
-            departmentId: string | null;
-            code: string;
-        };
         student: {
             id: string;
             userId: string;
+            indexNumber: string;
             firstName: string;
             lastName: string;
             middleName: string | null;
             gender: import(".prisma/client").$Enums.Gender;
             dateOfBirth: Date | null;
             photoUrl: string | null;
-            departmentId: string | null;
-            indexNumber: string;
             admissionDate: Date;
             currentClassId: string | null;
+            departmentId: string | null;
             archivedAt: Date | null;
+        };
+        subject: {
+            id: string;
+            createdAt: Date;
+            name: string;
+            departmentId: string | null;
+            code: string;
+            type: import(".prisma/client").$Enums.SubjectType;
+            description: string | null;
+            isActive: boolean;
         };
     } & {
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         studentId: string;
-        isApproved: boolean;
         subjectId: string;
         termId: string;
         classScore: number | null;
@@ -51,41 +48,41 @@ export declare class GradingController {
         lockedAt: Date | null;
         submittedById: string | null;
         submittedAt: Date | null;
+        isApproved: boolean;
         approvedById: string | null;
         approvedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     bulkUpsert(dto: BulkUpsertGradeDto, userId: string): Promise<({
-        subject: {
-            name: string;
-            id: string;
-            isActive: boolean;
-            createdAt: Date;
-            type: import(".prisma/client").$Enums.SubjectType;
-            description: string | null;
-            departmentId: string | null;
-            code: string;
-        };
         student: {
             id: string;
             userId: string;
+            indexNumber: string;
             firstName: string;
             lastName: string;
             middleName: string | null;
             gender: import(".prisma/client").$Enums.Gender;
             dateOfBirth: Date | null;
             photoUrl: string | null;
-            departmentId: string | null;
-            indexNumber: string;
             admissionDate: Date;
             currentClassId: string | null;
+            departmentId: string | null;
             archivedAt: Date | null;
+        };
+        subject: {
+            id: string;
+            createdAt: Date;
+            name: string;
+            departmentId: string | null;
+            code: string;
+            type: import(".prisma/client").$Enums.SubjectType;
+            description: string | null;
+            isActive: boolean;
         };
     } & {
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         studentId: string;
-        isApproved: boolean;
         subjectId: string;
         termId: string;
         classScore: number | null;
@@ -101,15 +98,15 @@ export declare class GradingController {
         lockedAt: Date | null;
         submittedById: string | null;
         submittedAt: Date | null;
+        isApproved: boolean;
         approvedById: string | null;
         approvedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
     })[]>;
     lockGrade(id: string, userId: string, role: Role): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         studentId: string;
-        isApproved: boolean;
         subjectId: string;
         termId: string;
         classScore: number | null;
@@ -125,15 +122,15 @@ export declare class GradingController {
         lockedAt: Date | null;
         submittedById: string | null;
         submittedAt: Date | null;
+        isApproved: boolean;
         approvedById: string | null;
         approvedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     approveGrade(id: string, userId: string, role: Role): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         studentId: string;
-        isApproved: boolean;
         subjectId: string;
         termId: string;
         classScore: number | null;
@@ -149,16 +146,16 @@ export declare class GradingController {
         lockedAt: Date | null;
         submittedById: string | null;
         submittedAt: Date | null;
+        isApproved: boolean;
         approvedById: string | null;
         approvedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     bulkApprove(ids: string[], userId: string, role: Role): Promise<import(".prisma/client").Prisma.BatchPayload>;
     correctGrade(dto: CorrectGradeDto, userId: string): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         studentId: string;
-        isApproved: boolean;
         subjectId: string;
         termId: string;
         classScore: number | null;
@@ -174,25 +171,25 @@ export declare class GradingController {
         lockedAt: Date | null;
         submittedById: string | null;
         submittedAt: Date | null;
+        isApproved: boolean;
         approvedById: string | null;
         approvedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     getMissingObservations(termId: string): Promise<({
+        student: {
+            indexNumber: string;
+            firstName: string;
+            lastName: string;
+        };
         subject: {
             name: string;
             code: string;
         };
-        student: {
-            firstName: string;
-            lastName: string;
-            indexNumber: string;
-        };
     } & {
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         studentId: string;
-        isApproved: boolean;
         subjectId: string;
         termId: string;
         classScore: number | null;
@@ -208,8 +205,11 @@ export declare class GradingController {
         lockedAt: Date | null;
         submittedById: string | null;
         submittedAt: Date | null;
+        isApproved: boolean;
         approvedById: string | null;
         approvedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
     })[]>;
     getClassSummary(classId: string, termId: string): Promise<{
         id: string;
@@ -221,31 +221,28 @@ export declare class GradingController {
     }[]>;
     getStudentTermGrades(studentId: string, termId: string, role: Role): Promise<({
         subject: {
-            name: string;
             id: string;
-            isActive: boolean;
             createdAt: Date;
-            type: import(".prisma/client").$Enums.SubjectType;
-            description: string | null;
+            name: string;
             departmentId: string | null;
             code: string;
+            type: import(".prisma/client").$Enums.SubjectType;
+            description: string | null;
+            isActive: boolean;
         };
         corrections: {
             id: string;
             createdAt: Date;
+            gradeEntryId: string;
             changedById: string;
             fieldChanged: string;
             oldValue: string | null;
             newValue: string;
             reason: string;
-            gradeEntryId: string;
         }[];
     } & {
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         studentId: string;
-        isApproved: boolean;
         subjectId: string;
         termId: string;
         classScore: number | null;
@@ -261,11 +258,22 @@ export declare class GradingController {
         lockedAt: Date | null;
         submittedById: string | null;
         submittedAt: Date | null;
+        isApproved: boolean;
         approvedById: string | null;
         approvedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
     })[]>;
     getSmartRemarks(grade: string): {
         grade: string;
         remarks: string[];
     };
+    getBoundaries(): {
+        id: string;
+        grade: string;
+        min: number;
+        max: number;
+        remark: "EXCELLENT" | "VERY_GOOD" | "GOOD" | "CREDIT" | "PASS" | "WEAK_PASS" | "FAILURE";
+        smartRemarks: string[];
+    }[];
 }

@@ -1,9 +1,21 @@
-import { Controller, Get, Post, Patch, Body, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Body,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { GradingService } from './grading.service';
 import { Roles, CurrentUser } from '../common/decorators/roles.decorator';
-import { UpsertGradeDto, BulkUpsertGradeDto, CorrectGradeDto } from './dto/grading.dto';
+import {
+  UpsertGradeDto,
+  BulkUpsertGradeDto,
+  CorrectGradeDto,
+} from './dto/grading.dto';
 
 @ApiTags('Grading')
 @ApiBearerAuth()
@@ -21,7 +33,10 @@ export class GradingController {
   @Post('entries/bulk')
   @Roles(Role.TEACHER, Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
   @ApiOperation({ summary: 'Bulk grade entry for a class/subject' })
-  bulkUpsert(@Body() dto: BulkUpsertGradeDto, @CurrentUser('id') userId: string) {
+  bulkUpsert(
+    @Body() dto: BulkUpsertGradeDto,
+    @CurrentUser('id') userId: string,
+  ) {
     return this.gradingService.bulkUpsertGrades(dto.entries, userId);
   }
 
@@ -61,7 +76,10 @@ export class GradingController {
   @Post('corrections')
   @Roles(Role.TEACHER, Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
   @ApiOperation({ summary: 'Submit a grade correction with audit trail' })
-  correctGrade(@Body() dto: CorrectGradeDto, @CurrentUser('id') userId: string) {
+  correctGrade(
+    @Body() dto: CorrectGradeDto,
+    @CurrentUser('id') userId: string,
+  ) {
     return this.gradingService.correctGrade(dto, userId);
   }
 
@@ -75,7 +93,10 @@ export class GradingController {
   @Get('class-summary/:classId')
   @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
   @ApiOperation({ summary: 'Get class performance summary' })
-  getClassSummary(@Param('classId') classId: string, @Query('termId') termId: string) {
+  getClassSummary(
+    @Param('classId') classId: string,
+    @Query('termId') termId: string,
+  ) {
     return this.gradingService.getClassPerformanceSummary(classId, termId);
   }
 
@@ -93,5 +114,11 @@ export class GradingController {
   @ApiOperation({ summary: 'Get smart remark suggestions for a grade' })
   getSmartRemarks(@Param('grade') grade: string) {
     return { grade, remarks: this.gradingService.getSmartRemarks(grade) };
+  }
+
+  @Get('boundaries')
+  @ApiOperation({ summary: 'Get WAEC grade boundaries (read-only)' })
+  getBoundaries() {
+    return this.gradingService.getBoundaries();
   }
 }

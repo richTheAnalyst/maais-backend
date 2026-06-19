@@ -54,6 +54,9 @@ let GradingController = class GradingController {
     getSmartRemarks(grade) {
         return { grade, remarks: this.gradingService.getSmartRemarks(grade) };
     }
+    getBoundaries() {
+        return this.gradingService.getBoundaries();
+    }
 };
 exports.GradingController = GradingController;
 __decorate([
@@ -80,7 +83,7 @@ __decorate([
 ], GradingController.prototype, "bulkUpsert", null);
 __decorate([
     (0, common_1.Patch)('entries/:id/lock'),
-    (0, roles_decorator_1.Roles)(client_1.Role.HOD, client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN),
+    (0, roles_decorator_1.Roles)(client_1.Role.HOD, client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN, client_1.Role.TEACHER),
     (0, swagger_1.ApiOperation)({ summary: 'Lock a grade entry' }),
     openapi.ApiResponse({ status: 200 }),
     __param(0, (0, common_1.Param)('id')),
@@ -92,7 +95,7 @@ __decorate([
 ], GradingController.prototype, "lockGrade", null);
 __decorate([
     (0, common_1.Patch)('entries/:id/approve'),
-    (0, roles_decorator_1.Roles)(client_1.Role.HOD, client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN),
+    (0, roles_decorator_1.Roles)(client_1.Role.HOD, client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN, client_1.Role.TEACHER),
     (0, swagger_1.ApiOperation)({ summary: 'Approve a grade entry' }),
     openapi.ApiResponse({ status: 200 }),
     __param(0, (0, common_1.Param)('id')),
@@ -104,7 +107,7 @@ __decorate([
 ], GradingController.prototype, "approveGrade", null);
 __decorate([
     (0, common_1.Post)('entries/bulk-approve'),
-    (0, roles_decorator_1.Roles)(client_1.Role.HOD, client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN),
+    (0, roles_decorator_1.Roles)(client_1.Role.HOD, client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN, client_1.Role.TEACHER),
     (0, swagger_1.ApiOperation)({ summary: 'Bulk approve grade entries' }),
     openapi.ApiResponse({ status: 201, type: Object }),
     __param(0, (0, common_1.Body)('ids')),
@@ -166,6 +169,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], GradingController.prototype, "getSmartRemarks", null);
+__decorate([
+    (0, common_1.Get)('boundaries'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get WAEC grade boundaries (read-only)' }),
+    openapi.ApiResponse({ status: 200 }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], GradingController.prototype, "getBoundaries", null);
 exports.GradingController = GradingController = __decorate([
     (0, swagger_1.ApiTags)('Grading'),
     (0, swagger_1.ApiBearerAuth)(),

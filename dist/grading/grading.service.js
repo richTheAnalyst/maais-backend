@@ -192,7 +192,8 @@ let GradingService = class GradingService {
     async approveGrade(gradeEntryId, approvedById, userRole) {
         if (userRole !== client_1.Role.HOD &&
             userRole !== client_1.Role.HEADMASTER &&
-            userRole !== client_1.Role.SUPER_ADMIN) {
+            userRole !== client_1.Role.SUPER_ADMIN &&
+            userRole !== client_1.Role.TEACHER) {
             throw new common_1.ForbiddenException('Only HODs or above can approve grade entries');
         }
         return this.prisma.gradeEntry.update({
@@ -336,6 +337,16 @@ let GradingService = class GradingService {
                 data: { position: currentRank },
             });
         }
+    }
+    getBoundaries() {
+        return GRADE_BOUNDARIES.map((b, i) => ({
+            id: String(i + 1),
+            grade: b.grade,
+            min: b.min,
+            max: b.max,
+            remark: b.remark,
+            smartRemarks: b.smartRemarks,
+        }));
     }
 };
 exports.GradingService = GradingService;

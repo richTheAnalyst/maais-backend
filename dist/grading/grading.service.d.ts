@@ -287,4 +287,12 @@ export declare class GradingService {
         approvedAt: Date | null;
     })[]>;
     computeSubjectPositions(subjectId: string, termId: string): Promise<void>;
+    getBoundaries(): {
+        id: string;
+        grade: string;
+        min: number;
+        max: number;
+        remark: "EXCELLENT" | "VERY_GOOD" | "GOOD" | "CREDIT" | "PASS" | "WEAK_PASS" | "FAILURE";
+        smartRemarks: string[];
+    }[];
 }
