@@ -38,4 +38,18 @@ export class ArchiveController {
   health() {
     return this.archiveService.getDatabaseHealth();
   }
+
+  @Patch('terms/:id/advance')
+@Roles(Role.SUPER_ADMIN, Role.HEADMASTER)
+@ApiOperation({ summary: 'Advance to the next term within the same academic year' })
+advanceTerm(@Param('id') id: string) {
+  return this.archiveService.advanceToNextTerm(id);
+}
+
+@Get('promotion/readiness/:academicYearId')
+@Roles(Role.SUPER_ADMIN, Role.HEADMASTER)
+@ApiOperation({ summary: 'Check if academic year is ready for promotion' })
+getPromotionReadiness(@Param('academicYearId') academicYearId: string) {
+  return this.archiveService.getPromotionReadiness(academicYearId);
+}
 }

@@ -12,11 +12,7 @@ const PROMOTION_MAP: Record<ClassLevel, ClassLevel | null> = {
 export class ArchiveService {
   constructor(private prisma: PrismaService) {}
 
-  /**
-   * Execute the annual Promotion Cycle:
-   * F1→F2, F2→F3, F3→Graduate/Alumni
-   * Only callable by SUPER_ADMIN or HEADMASTER
-   */
+ 
   async runPromotionCycle(academicYearId: string, performedById: string) {
     const year = await this.prisma.academicYear.findUniqueOrThrow({
       where: { id: academicYearId },
@@ -204,4 +200,104 @@ export class ArchiveService {
       },
     };
   }
+
+  /**
+ * Advance to the next term within the same academic year.
+ * Term 1 -> Term 2 -> Term 3. No student/class changes happen here —
+ * only term activation state shifts. The current term must be locked first.
+ */
+async advanceToNextTerm(currentTermId: string) {
+  const currentTerm = await this.prisma.term.findUniqueOrThrow({
+    where: { id: currentTermId },
+    include: { academicYear: { include: { terms: true } } },
+  });
+
+  if (!currentTerm.isLocked) {
+    throw new BadRequestException(
+      'Current term must be locked before advancing to the next term.',
+    );
+  }
+
+  const TERM_ORDER = ['TERM_1', 'TERM_2', 'TERM_3'] as const;
+  const currentIndex = TERM_ORDER.indexOf(currentTerm.termNumber as any);
+
+  if (currentIndex === -1 || currentIndex === TERM_ORDER.length - 1) {
+    throw new BadRequestException(
+      'This is the final term of the academic year. Run year-end promotion instead.',
+    );
+  }
+
+  const nextTermNumber = TERM_ORDER[currentIndex + 1];
+  const nextTerm = currentTerm.academicYear.terms.find(
+    (t) => t.termNumber === nextTermNumber,
+  );
+
+  if (!nextTerm) {
+    throw new BadRequestException(
+      `${nextTermNumber} has not been created yet for this academic year.`,
+    );
+  }
+
+  // Deactivate current term, activate next term
+  await this.prisma.term.update({
+    where: { id: currentTerm.id },
+    data: { isActive: false },
+  });
+
+  const activated = await this.prisma.term.update({
+    where: { id: nextTerm.id },
+    data: { isActive: true },
+  });
+
+  return {
+    previousTerm: currentTerm.termNumber,
+    newActiveTerm: activated.termNumber,
+    academicYear: currentTerm.academicYear.label,
+  };
+}
+
+/**
+ * Get a year-end promotion readiness check — used by frontend
+ * to show whether the Execute Promotion button should be enabled.
+ */
+async getPromotionReadiness(academicYearId: string) {
+  const terms = await this.prisma.term.findMany({
+    where: { academicYearId },
+  });
+
+  const allLocked = terms.length === 3 && terms.every((t) => t.isLocked);
+  const lockedCount = terms.filter((t) => t.isLocked).length;
+
+  const activeStudents = await this.prisma.studentProfile.count({
+    where: { archivedAt: null, currentClassId: { not: null } },
+  });
+
+  const byLevel = await this.prisma.studentProfile.groupBy({
+    by: ['currentClassId'],
+    where: { archivedAt: null, currentClassId: { not: null } },
+    _count: { id: true },
+  });
+
+  const classSections = await this.prisma.classSection.findMany({
+    where: { id: { in: byLevel.map((b) => b.currentClassId!) } },
+  });
+
+  const countsByLevel: Record<string, number> = { FORM_1: 0, FORM_2: 0, FORM_3: 0 };
+  byLevel.forEach((b) => {
+    const cls = classSections.find((c) => c.id === b.currentClassId);
+    if (cls) countsByLevel[cls.level] += b._count.id;
+  });
+
+  return {
+    isReady: allLocked,
+    termsLocked: lockedCount,
+    termsTotal: terms.length,
+    totalActiveStudents: activeStudents,
+    breakdown: {
+      form1ToForm2: countsByLevel.FORM_1,
+      form2ToForm3: countsByLevel.FORM_2,
+      form3ToAlumni: countsByLevel.FORM_3,
+    },
+  };
+}
 }

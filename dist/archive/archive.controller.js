@@ -36,6 +36,12 @@ let ArchiveController = class ArchiveController {
     health() {
         return this.archiveService.getDatabaseHealth();
     }
+    advanceTerm(id) {
+        return this.archiveService.advanceToNextTerm(id);
+    }
+    getPromotionReadiness(academicYearId) {
+        return this.archiveService.getPromotionReadiness(academicYearId);
+    }
 };
 exports.ArchiveController = ArchiveController;
 __decorate([
@@ -78,6 +84,26 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], ArchiveController.prototype, "health", null);
+__decorate([
+    (0, common_1.Patch)('terms/:id/advance'),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER),
+    (0, swagger_1.ApiOperation)({ summary: 'Advance to the next term within the same academic year' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ArchiveController.prototype, "advanceTerm", null);
+__decorate([
+    (0, common_1.Get)('promotion/readiness/:academicYearId'),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER),
+    (0, swagger_1.ApiOperation)({ summary: 'Check if academic year is ready for promotion' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('academicYearId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ArchiveController.prototype, "getPromotionReadiness", null);
 exports.ArchiveController = ArchiveController = __decorate([
     (0, swagger_1.ApiTags)('Archive'),
     (0, swagger_1.ApiBearerAuth)(),

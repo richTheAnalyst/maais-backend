@@ -166,4 +166,20 @@ export declare class ArchiveService {
             pendingObservations: number;
         };
     }>;
+    advanceToNextTerm(currentTermId: string): Promise<{
+        previousTerm: import(".prisma/client").$Enums.TermNumber;
+        newActiveTerm: import(".prisma/client").$Enums.TermNumber;
+        academicYear: string;
+    }>;
+    getPromotionReadiness(academicYearId: string): Promise<{
+        isReady: boolean;
+        termsLocked: number;
+        termsTotal: number;
+        totalActiveStudents: number;
+        breakdown: {
+            form1ToForm2: number;
+            form2ToForm3: number;
+            form3ToAlumni: number;
+        };
+    }>;
 }

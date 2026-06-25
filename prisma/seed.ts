@@ -10,7 +10,7 @@ const prisma = new PrismaClient({
   adapter
 });
 
-/* async function main() {
+async function main() {
   console.log('🌱 Starting full MAAIS database seed...\n');
 
   // 1. Admin
@@ -68,9 +68,9 @@ const prisma = new PrismaClient({
 
   console.log('\n🎉 Full seed complete!');
   console.log('   Admin login: admin@mandoshts.edu.gh / Admin@2024!');
-} */
+}
 
-async function main() {
+/* sync function main() {
   console.log('🌱 Seeding timetable only...\n');
 
   const classes = await prisma.classSection.findMany();
@@ -85,7 +85,7 @@ async function main() {
   );
 
   console.log('✅ Timetable seeded');
-}
+} */
 
 main()
   .catch((e) => {
