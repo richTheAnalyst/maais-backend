@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service';
-import { TermNumber, ClassLevel, SubjectType } from '@prisma/client';
+import { TermNumber, ClassLevel, SubjectType, Role } from '@prisma/client';
 
 @Injectable()
 export class AcademicArchitectService {
@@ -130,4 +130,77 @@ export class AcademicArchitectService {
       include: { subject: true, classSection: true },
     });
   }
+
+  // ─── Teaching Assignments: full CRUD ──────────────────
+
+async getAllAssignments() {
+  return this.prisma.teachingAssignment.findMany({
+    include: {
+      teacher: { select: { id: true, firstName: true, lastName: true, staffId: true } },
+      subject: true,
+      classSection: true,
+    },
+    orderBy: { teacher: { lastName: 'asc' } },
+  });
+}
+
+async deleteAssignment(assignmentId: string) {
+  return this.prisma.teachingAssignment.delete({
+    where: { id: assignmentId },
+  });
+}
+
+// ─── Staff role & department management ───────────────
+
+async updateStaffRole(staffUserId: string, role: Role) {
+  return this.prisma.user.update({
+    where: { id: staffUserId },
+    data: { role },
+  });
+}
+
+async updateStaffDepartment(staffId: string, departmentId: string | null) {
+  return this.prisma.staffProfile.update({
+    where: { id: staffId },
+    data: { departmentId },
+  });
+}
+
+// ─── Term unlock (with audit trail) ────────────────────
+
+async unlockTerm(termId: string, unlockedById: string, reason: string) {
+  const term = await this.prisma.term.findUniqueOrThrow({
+    where: { id: termId },
+    include: {
+      _count: { select: { reportCards: true } },
+    },
+  });
+
+  const unlocked = await this.prisma.term.update({
+    where: { id: termId },
+    data: { isLocked: false },
+  });
+
+  // Log this as an audit event since it's a sensitive reversal
+  await this.prisma.auditLog.create({
+    data: {
+      userId: unlockedById,
+      action: 'UNLOCK',
+      entity: 'Term',
+      entityId: termId,
+      payload: {
+        reason,
+        existingReportCards: term._count.reportCards,
+        warning: term._count.reportCards > 0
+          ? 'Term had generated report cards at time of unlock — they may now be stale if grades change.'
+          : null,
+      },
+    },
+  });
+
+  return {
+    ...unlocked,
+    existingReportCardsWarning: term._count.reportCards > 0 ? term._count.reportCards : null,
+  };
+}
 }

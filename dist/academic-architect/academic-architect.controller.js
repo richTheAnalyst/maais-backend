@@ -71,6 +71,21 @@ let AcademicArchitectController = class AcademicArchitectController {
             return [];
         return this.service.getTeacherAssignments(user.staffProfile.id);
     }
+    getAllAssignments() {
+        return this.service.getAllAssignments();
+    }
+    deleteAssignment(id) {
+        return this.service.deleteAssignment(id);
+    }
+    updateStaffRole(userId, role) {
+        return this.service.updateStaffRole(userId, role);
+    }
+    updateStaffDepartment(staffId, departmentId) {
+        return this.service.updateStaffDepartment(staffId, departmentId);
+    }
+    unlockTerm(id, reason, userId) {
+        return this.service.unlockTerm(id, userId, reason);
+    }
 };
 exports.AcademicArchitectController = AcademicArchitectController;
 __decorate([
@@ -213,6 +228,59 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], AcademicArchitectController.prototype, "getMyAssignments", null);
+__decorate([
+    (0, common_1.Get)('assignments'),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER, client_1.Role.HOD),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all teaching assignments' }),
+    openapi.ApiResponse({ status: 200, type: [Object] }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], AcademicArchitectController.prototype, "getAllAssignments", null);
+__decorate([
+    (0, common_1.Delete)('assignments/:id'),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER, client_1.Role.HOD),
+    (0, swagger_1.ApiOperation)({ summary: 'Remove a teaching assignment' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AcademicArchitectController.prototype, "deleteAssignment", null);
+__decorate([
+    (0, common_1.Patch)('staff/:userId/role'),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER),
+    (0, swagger_1.ApiOperation)({ summary: 'Change a staff member\'s system role' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('userId')),
+    __param(1, (0, common_1.Body)('role')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], AcademicArchitectController.prototype, "updateStaffRole", null);
+__decorate([
+    (0, common_1.Patch)('staff/:staffId/department'),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER),
+    (0, swagger_1.ApiOperation)({ summary: 'Change a staff member\'s department' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('staffId')),
+    __param(1, (0, common_1.Body)('departmentId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], AcademicArchitectController.prototype, "updateStaffDepartment", null);
+__decorate([
+    (0, common_1.Patch)('terms/:id/unlock'),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER),
+    (0, swagger_1.ApiOperation)({ summary: 'Unlock a previously locked term (sensitive action, audit logged)' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)('reason')),
+    __param(2, (0, roles_decorator_1.CurrentUser)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", void 0)
+], AcademicArchitectController.prototype, "unlockTerm", null);
 exports.AcademicArchitectController = AcademicArchitectController = __decorate([
     (0, swagger_1.ApiTags)('Academic Architect'),
     (0, swagger_1.ApiBearerAuth)(),

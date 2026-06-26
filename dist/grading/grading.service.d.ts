@@ -208,11 +208,11 @@ export declare class GradingService {
         corrections: {
             id: string;
             createdAt: Date;
+            reason: string;
             changedById: string;
             fieldChanged: string;
             oldValue: string | null;
             newValue: string;
-            reason: string;
             gradeEntryId: string;
         }[];
     } & {

@@ -209,7 +209,11 @@ let ArchiveService = class ArchiveService {
         const classSections = await this.prisma.classSection.findMany({
             where: { id: { in: byLevel.map((b) => b.currentClassId) } },
         });
-        const countsByLevel = { FORM_1: 0, FORM_2: 0, FORM_3: 0 };
+        const countsByLevel = {
+            FORM_1: 0,
+            FORM_2: 0,
+            FORM_3: 0,
+        };
         byLevel.forEach((b) => {
             const cls = classSections.find((c) => c.id === b.currentClassId);
             if (cls)

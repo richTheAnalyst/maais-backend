@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, Delete } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { AcademicArchitectService } from './academic-architect.service';
@@ -118,4 +118,43 @@ export class AcademicArchitectController {
     if (!user.staffProfile) return [];
     return this.service.getTeacherAssignments(user.staffProfile.id);
   }
+
+  @Get('assignments')
+@Roles(Role.SUPER_ADMIN, Role.HEADMASTER, Role.HOD)
+@ApiOperation({ summary: 'Get all teaching assignments' })
+getAllAssignments() {
+  return this.service.getAllAssignments();
+}
+
+@Delete('assignments/:id')
+@Roles(Role.SUPER_ADMIN, Role.HEADMASTER, Role.HOD)
+@ApiOperation({ summary: 'Remove a teaching assignment' })
+deleteAssignment(@Param('id') id: string) {
+  return this.service.deleteAssignment(id);
+}
+
+@Patch('staff/:userId/role')
+@Roles(Role.SUPER_ADMIN, Role.HEADMASTER)
+@ApiOperation({ summary: 'Change a staff member\'s system role' })
+updateStaffRole(@Param('userId') userId: string, @Body('role') role: Role) {
+  return this.service.updateStaffRole(userId, role);
+}
+
+@Patch('staff/:staffId/department')
+@Roles(Role.SUPER_ADMIN, Role.HEADMASTER)
+@ApiOperation({ summary: 'Change a staff member\'s department' })
+updateStaffDepartment(@Param('staffId') staffId: string, @Body('departmentId') departmentId: string | null) {
+  return this.service.updateStaffDepartment(staffId, departmentId);
+}
+
+@Patch('terms/:id/unlock')
+@Roles(Role.SUPER_ADMIN, Role.HEADMASTER)
+@ApiOperation({ summary: 'Unlock a previously locked term (sensitive action, audit logged)' })
+unlockTerm(
+  @Param('id') id: string,
+  @Body('reason') reason: string,
+  @CurrentUser('id') userId: string,
+) {
+  return this.service.unlockTerm(id, userId, reason);
+}
 }

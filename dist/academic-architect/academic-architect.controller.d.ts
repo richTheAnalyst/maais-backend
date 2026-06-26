@@ -1,3 +1,4 @@
+import { Role } from '@prisma/client';
 import { AcademicArchitectService } from './academic-architect.service';
 import { CreateAcademicYearDto, CreateTermDto, CreateDepartmentDto, CreateSubjectDto, CreateClassSectionDto, AssignTeacherDto, AssignClassTeacherDto } from './dto/academic-architect.dto';
 export declare class AcademicArchitectController {
@@ -207,4 +208,77 @@ export declare class AcademicArchitectController {
         teacherId: string;
         classSectionId: string;
     })[]>;
+    getAllAssignments(): Promise<({
+        subject: {
+            name: string;
+            id: string;
+            isActive: boolean;
+            createdAt: Date;
+            type: import(".prisma/client").$Enums.SubjectType;
+            description: string | null;
+            departmentId: string | null;
+            code: string;
+        };
+        classSection: {
+            level: import(".prisma/client").$Enums.ClassLevel;
+            name: string;
+            id: string;
+            capacity: number;
+            classTeacherId: string | null;
+        };
+        teacher: {
+            id: string;
+            staffId: string;
+            firstName: string;
+            lastName: string;
+        };
+    } & {
+        id: string;
+        subjectId: string;
+        academicYearId: string;
+        teacherId: string;
+        classSectionId: string;
+    })[]>;
+    deleteAssignment(id: string): Promise<{
+        id: string;
+        subjectId: string;
+        academicYearId: string;
+        teacherId: string;
+        classSectionId: string;
+    }>;
+    updateStaffRole(userId: string, role: Role): Promise<{
+        id: string;
+        email: string;
+        phone: string | null;
+        passwordHash: string;
+        role: import(".prisma/client").$Enums.Role;
+        isActive: boolean;
+        lastLoginAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    updateStaffDepartment(staffId: string, departmentId: string | null): Promise<{
+        id: string;
+        phone: string | null;
+        userId: string;
+        staffId: string;
+        firstName: string;
+        lastName: string;
+        middleName: string | null;
+        gender: import(".prisma/client").$Enums.Gender;
+        dateOfBirth: Date | null;
+        photoUrl: string | null;
+        hiredAt: Date;
+        departmentId: string | null;
+    }>;
+    unlockTerm(id: string, reason: string, userId: string): Promise<{
+        existingReportCardsWarning: number;
+        id: string;
+        isActive: boolean;
+        isLocked: boolean;
+        startDate: Date;
+        endDate: Date;
+        termNumber: import(".prisma/client").$Enums.TermNumber;
+        academicYearId: string;
+    }>;
 }
