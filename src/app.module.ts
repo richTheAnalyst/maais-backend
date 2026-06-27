@@ -16,6 +16,7 @@ import { PortalModule } from './portal/portal.module';
 import { BehaviorModule } from './behavior/behavior.module';
 import { InterventionsModule } from './interventions/interventions.module';
 import { TimetableModule } from './timetable/timetable.module';
+import { SettingsModule } from './settings/settings.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { TimetableModule } from './timetable/timetable.module';
     BehaviorModule,
     InterventionsModule,
     TimetableModule,
+    SettingsModule,
   ],
   providers: [
     {

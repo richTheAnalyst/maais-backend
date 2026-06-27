@@ -628,3 +628,14 @@ model TimetableEntry {
 
   @@map("timetable_entries")
 }
+
+//school settings
+model SchoolSettings {
+  id                      String   @id @default(uuid())
+  clashDetectionEnabled   Boolean  @default(true)
+  departmentColorsEnabled Boolean  @default(true)
+  updatedAt               DateTime @updatedAt
+  updatedById             String?
+
+  @@map("school_settings")
+}
