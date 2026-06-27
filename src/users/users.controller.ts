@@ -59,4 +59,33 @@ export class UsersController {
   deactivate(@Param('id') id: string) {
     return this.usersService.deactivateUser(id);
   }
+
+  //csv
+  @Post('students/bulk-import')
+@Roles(Role.SUPER_ADMIN, Role.HEADMASTER)
+@ApiOperation({ summary: 'Bulk import students from parsed CSV rows' })
+bulkImportStudents(@Body('rows') rows: CreateStudentDto[]) {
+  return this.usersService.bulkCreateStudents(rows);
+}
+
+@Post('staff/bulk-import')
+@Roles(Role.SUPER_ADMIN, Role.HEADMASTER)
+@ApiOperation({ summary: 'Bulk import staff from parsed CSV rows' })
+bulkImportStaff(@Body('rows') rows: CreateStaffDto[]) {
+  return this.usersService.bulkCreateStaff(rows);
+}
+
+@Get('students/export')
+@Roles(Role.SUPER_ADMIN, Role.HEADMASTER, Role.HOD)
+@ApiOperation({ summary: 'Export students as CSV-ready JSON' })
+exportStudents(@CurrentUser() user: { id: string; role: Role }) {
+  return this.usersService.exportStudentsCSV(user);
+}
+
+@Get('staff/export')
+@Roles(Role.SUPER_ADMIN, Role.HEADMASTER, Role.HOD)
+@ApiOperation({ summary: 'Export staff as CSV-ready JSON' })
+exportStaff(@CurrentUser() user: { id: string; role: Role }) {
+  return this.usersService.exportStaffCSV(user);
+}
 }

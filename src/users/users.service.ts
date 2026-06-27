@@ -264,4 +264,79 @@ export class UsersService {
       data: { isActive: false },
     });
   }
+
+  //csv logics
+  async bulkCreateStudents(rows: CreateStudentDto[]) {
+  const results: { row: number; success: boolean; error?: string; indexNumber?: string }[] = [];
+
+  for (let i = 0; i < rows.length; i++) {
+    const dto = rows[i];
+    try {
+      await this.createStudent(dto);
+      results.push({ row: i + 1, success: true, indexNumber: dto.indexNumber });
+    } catch (err: any) {
+      results.push({ row: i + 1, success: false, error: err.message, indexNumber: dto.indexNumber });
+    }
+  }
+
+  return {
+    total: rows.length,
+    succeeded: results.filter(r => r.success).length,
+    failed: results.filter(r => !r.success).length,
+    results,
+  };
+}
+
+async bulkCreateStaff(rows: CreateStaffDto[]) {
+  const results: { row: number; success: boolean; error?: string; staffId?: string }[] = [];
+
+  for (let i = 0; i < rows.length; i++) {
+    const dto = rows[i];
+    try {
+      await this.createStaff(dto);
+      results.push({ row: i + 1, success: true, staffId: dto.staffId });
+    } catch (err: any) {
+      results.push({ row: i + 1, success: false, error: err.message, staffId: dto.staffId });
+    }
+  }
+
+  return {
+    total: rows.length,
+    succeeded: results.filter(r => r.success).length,
+    failed: results.filter(r => !r.success).length,
+    results,
+  };
+}
+
+async exportStudentsCSV(user?: { id: string; role: Role }) {
+  const students = await this.getAllStudents(user);
+  return students.map(s => ({
+    indexNumber: s.indexNumber,
+    firstName: s.firstName,
+    lastName: s.lastName,
+    middleName: s.middleName ?? '',
+    gender: s.gender,
+    dateOfBirth: s.dateOfBirth ? s.dateOfBirth.toISOString().split('T')[0] : '',
+    email: s.user?.email ?? '',
+    currentClass: s.currentClass ? `${s.currentClass.level}|${s.currentClass.name}` : '',
+    department: s.department?.name ?? '',
+    isActive: s.user?.isActive ?? true,
+  }));
+}
+
+async exportStaffCSV(user?: { id: string; role: Role }) {
+  const staff = await this.getAllStaff(user);
+  return staff.map(s => ({
+    staffId: s.staffId,
+    firstName: s.firstName,
+    lastName: s.lastName,
+    middleName: s.middleName ?? '',
+    gender: s.gender,
+    phone: s.phone ?? '',
+    email: s.user?.email ?? '',
+    role: s.user?.role ?? '',
+    department: s.department?.name ?? '',
+    isActive: s.user?.isActive ?? true,
+  }));
+}
 }
