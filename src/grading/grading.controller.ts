@@ -172,4 +172,18 @@ export class GradingController {
       termId,
     );
   }
+
+  /**
+   * performance filtered analytics
+  */
+ @Get('performance-filtered')
+@Roles(Role.HEADMASTER, Role.SUPER_ADMIN, Role.HOD)
+@ApiOperation({ summary: 'Get subject performance filtered by class, department, and type' })
+getPerformanceFiltered(
+  @Query('classId') classId?: string,
+  @Query('departmentId') departmentId?: string,
+  @Query('subjectType') subjectType?: 'CORE' | 'ELECTIVE',
+) {
+  return this.gradingService.getSubjectPerformanceFiltered({ classId, departmentId, subjectType });
+}
 }

@@ -24,10 +24,10 @@ export declare class AcademicArchitectService {
             id: string;
             isActive: boolean;
             isLocked: boolean;
+            academicYearId: string;
             startDate: Date;
             endDate: Date;
             termNumber: import(".prisma/client").$Enums.TermNumber;
-            academicYearId: string;
         }[];
     } & {
         id: string;
@@ -41,19 +41,19 @@ export declare class AcademicArchitectService {
         id: string;
         isActive: boolean;
         isLocked: boolean;
+        academicYearId: string;
         startDate: Date;
         endDate: Date;
         termNumber: import(".prisma/client").$Enums.TermNumber;
-        academicYearId: string;
     }>;
     setActiveTerm(termId: string): Promise<{
         id: string;
         isActive: boolean;
         isLocked: boolean;
+        academicYearId: string;
         startDate: Date;
         endDate: Date;
         termNumber: import(".prisma/client").$Enums.TermNumber;
-        academicYearId: string;
     }>;
     createDepartment(name: string, code: string, description?: string): Promise<{
         name: string;
@@ -164,9 +164,9 @@ export declare class AcademicArchitectService {
     }): Promise<{
         id: string;
         subjectId: string;
-        academicYearId: string;
         teacherId: string;
         classSectionId: string;
+        academicYearId: string;
     }>;
     getTeacherAssignments(teacherId: string): Promise<({
         subject: {
@@ -189,9 +189,9 @@ export declare class AcademicArchitectService {
     } & {
         id: string;
         subjectId: string;
-        academicYearId: string;
         teacherId: string;
         classSectionId: string;
+        academicYearId: string;
     })[]>;
     getAllAssignments(): Promise<({
         subject: {
@@ -220,16 +220,16 @@ export declare class AcademicArchitectService {
     } & {
         id: string;
         subjectId: string;
-        academicYearId: string;
         teacherId: string;
         classSectionId: string;
+        academicYearId: string;
     })[]>;
     deleteAssignment(assignmentId: string): Promise<{
         id: string;
         subjectId: string;
-        academicYearId: string;
         teacherId: string;
         classSectionId: string;
+        academicYearId: string;
     }>;
     updateStaffRole(staffUserId: string, role: Role): Promise<{
         id: string;
@@ -261,9 +261,9 @@ export declare class AcademicArchitectService {
         id: string;
         isActive: boolean;
         isLocked: boolean;
+        academicYearId: string;
         startDate: Date;
         endDate: Date;
         termNumber: import(".prisma/client").$Enums.TermNumber;
-        academicYearId: string;
     }>;
 }

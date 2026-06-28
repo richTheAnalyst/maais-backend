@@ -46,6 +46,18 @@ let UsersController = class UsersController {
     deactivate(id) {
         return this.usersService.deactivateUser(id);
     }
+    bulkImportStudents(rows) {
+        return this.usersService.bulkCreateStudents(rows);
+    }
+    bulkImportStaff(rows) {
+        return this.usersService.bulkCreateStaff(rows);
+    }
+    exportStudents(user) {
+        return this.usersService.exportStudentsCSV(user);
+    }
+    exportStaff(user) {
+        return this.usersService.exportStaffCSV(user);
+    }
 };
 exports.UsersController = UsersController;
 __decorate([
@@ -118,6 +130,46 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "deactivate", null);
+__decorate([
+    (0, common_1.Post)('students/bulk-import'),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER),
+    (0, swagger_1.ApiOperation)({ summary: 'Bulk import students from parsed CSV rows' }),
+    openapi.ApiResponse({ status: 201 }),
+    __param(0, (0, common_1.Body)('rows')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "bulkImportStudents", null);
+__decorate([
+    (0, common_1.Post)('staff/bulk-import'),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER),
+    (0, swagger_1.ApiOperation)({ summary: 'Bulk import staff from parsed CSV rows' }),
+    openapi.ApiResponse({ status: 201 }),
+    __param(0, (0, common_1.Body)('rows')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "bulkImportStaff", null);
+__decorate([
+    (0, common_1.Get)('students/export'),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER, client_1.Role.HOD),
+    (0, swagger_1.ApiOperation)({ summary: 'Export students as CSV-ready JSON' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, roles_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "exportStudents", null);
+__decorate([
+    (0, common_1.Get)('staff/export'),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.HEADMASTER, client_1.Role.HOD),
+    (0, swagger_1.ApiOperation)({ summary: 'Export staff as CSV-ready JSON' }),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, roles_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "exportStaff", null);
 exports.UsersController = UsersController = __decorate([
     (0, swagger_1.ApiTags)('Users'),
     (0, swagger_1.ApiBearerAuth)(),

@@ -69,6 +69,9 @@ let GradingController = class GradingController {
     getGradeDistribution(departmentId, termId) {
         return this.gradingService.getDepartmentGradeDistribution(departmentId, termId);
     }
+    getPerformanceFiltered(classId, departmentId, subjectType) {
+        return this.gradingService.getSubjectPerformanceFiltered({ classId, departmentId, subjectType });
+    }
 };
 exports.GradingController = GradingController;
 __decorate([
@@ -237,6 +240,21 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], GradingController.prototype, "getGradeDistribution", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Get subject performance filtered by class, department, and type' }),
+    openapi.ApiQuery({ name: "classId", required: false }),
+    openapi.ApiQuery({ name: "departmentId", required: false }),
+    openapi.ApiQuery({ name: "subjectType", required: false }),
+    (0, common_1.Get)('performance-filtered'),
+    (0, roles_decorator_1.Roles)(client_1.Role.HEADMASTER, client_1.Role.SUPER_ADMIN, client_1.Role.HOD),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Query)('classId')),
+    __param(1, (0, common_1.Query)('departmentId')),
+    __param(2, (0, common_1.Query)('subjectType')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", void 0)
+], GradingController.prototype, "getPerformanceFiltered", null);
 exports.GradingController = GradingController = __decorate([
     (0, swagger_1.ApiTags)('Grading'),
     (0, swagger_1.ApiBearerAuth)(),

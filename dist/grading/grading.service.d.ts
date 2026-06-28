@@ -338,4 +338,25 @@ export declare class GradingService {
         grade: string;
         count: number;
     }[]>;
+    getSubjectPerformanceFiltered(filters: {
+        classId?: string;
+        departmentId?: string;
+        subjectType?: 'CORE' | 'ELECTIVE';
+    }): Promise<{
+        subjects: {
+            subjectId: string;
+            subjectName: string;
+            subjectCode: string;
+            type: string;
+            departmentName: string;
+            averageScore: string;
+            studentCount: number;
+        }[];
+        summary: {
+            coreAverage: string;
+            electiveAverage: string;
+            coreSubjectCount: number;
+            electiveSubjectCount: number;
+        };
+    }>;
 }

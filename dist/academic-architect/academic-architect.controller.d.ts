@@ -25,10 +25,10 @@ export declare class AcademicArchitectController {
             id: string;
             isActive: boolean;
             isLocked: boolean;
+            academicYearId: string;
             startDate: Date;
             endDate: Date;
             termNumber: import(".prisma/client").$Enums.TermNumber;
-            academicYearId: string;
         }[];
     } & {
         id: string;
@@ -42,19 +42,19 @@ export declare class AcademicArchitectController {
         id: string;
         isActive: boolean;
         isLocked: boolean;
+        academicYearId: string;
         startDate: Date;
         endDate: Date;
         termNumber: import(".prisma/client").$Enums.TermNumber;
-        academicYearId: string;
     }>;
     activateTerm(id: string): Promise<{
         id: string;
         isActive: boolean;
         isLocked: boolean;
+        academicYearId: string;
         startDate: Date;
         endDate: Date;
         termNumber: import(".prisma/client").$Enums.TermNumber;
-        academicYearId: string;
     }>;
     createDepartment(dto: CreateDepartmentDto): Promise<{
         name: string;
@@ -154,9 +154,9 @@ export declare class AcademicArchitectController {
     assignTeacher(dto: AssignTeacherDto): Promise<{
         id: string;
         subjectId: string;
-        academicYearId: string;
         teacherId: string;
         classSectionId: string;
+        academicYearId: string;
     }>;
     getTeacherAssignments(teacherId: string): Promise<({
         subject: {
@@ -179,9 +179,9 @@ export declare class AcademicArchitectController {
     } & {
         id: string;
         subjectId: string;
-        academicYearId: string;
         teacherId: string;
         classSectionId: string;
+        academicYearId: string;
     })[]>;
     getMyAssignments(user: any): any[] | Promise<({
         subject: {
@@ -204,9 +204,9 @@ export declare class AcademicArchitectController {
     } & {
         id: string;
         subjectId: string;
-        academicYearId: string;
         teacherId: string;
         classSectionId: string;
+        academicYearId: string;
     })[]>;
     getAllAssignments(): Promise<({
         subject: {
@@ -235,16 +235,16 @@ export declare class AcademicArchitectController {
     } & {
         id: string;
         subjectId: string;
-        academicYearId: string;
         teacherId: string;
         classSectionId: string;
+        academicYearId: string;
     })[]>;
     deleteAssignment(id: string): Promise<{
         id: string;
         subjectId: string;
-        academicYearId: string;
         teacherId: string;
         classSectionId: string;
+        academicYearId: string;
     }>;
     updateStaffRole(userId: string, role: Role): Promise<{
         id: string;
@@ -276,9 +276,9 @@ export declare class AcademicArchitectController {
         id: string;
         isActive: boolean;
         isLocked: boolean;
+        academicYearId: string;
         startDate: Date;
         endDate: Date;
         termNumber: import(".prisma/client").$Enums.TermNumber;
-        academicYearId: string;
     }>;
 }

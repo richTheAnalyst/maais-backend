@@ -435,6 +435,64 @@ let GradingService = class GradingService {
             count,
         }));
     }
+    async getSubjectPerformanceFiltered(filters) {
+        const gradeWhere = {};
+        if (filters.classId) {
+            gradeWhere.student = { currentClassId: filters.classId };
+        }
+        const subjectWhere = {};
+        if (filters.departmentId)
+            subjectWhere.departmentId = filters.departmentId;
+        if (filters.subjectType)
+            subjectWhere.type = filters.subjectType;
+        if (Object.keys(subjectWhere).length > 0) {
+            gradeWhere.subject = subjectWhere;
+        }
+        const grades = await this.prisma.gradeEntry.findMany({
+            where: { ...gradeWhere, totalScore: { not: null } },
+            include: {
+                subject: { select: { id: true, name: true, code: true, type: true, departmentId: true, department: { select: { name: true } } } },
+            },
+        });
+        const bySubject = new Map();
+        grades.forEach((g) => {
+            const key = g.subjectId;
+            if (!bySubject.has(key)) {
+                bySubject.set(key, {
+                    name: g.subject.name,
+                    code: g.subject.code,
+                    type: g.subject.type,
+                    departmentName: g.subject.department?.name ?? null,
+                    scores: [],
+                });
+            }
+            bySubject.get(key).scores.push(g.totalScore);
+        });
+        const result = Array.from(bySubject.entries()).map(([subjectId, data]) => ({
+            subjectId,
+            subjectName: data.name,
+            subjectCode: data.code,
+            type: data.type,
+            departmentName: data.departmentName,
+            averageScore: (data.scores.reduce((a, b) => a + b, 0) / data.scores.length).toFixed(2),
+            studentCount: data.scores.length,
+        }));
+        result.sort((a, b) => parseFloat(b.averageScore) - parseFloat(a.averageScore));
+        const coreScores = result.filter(r => r.type === 'CORE');
+        const electiveScores = result.filter(r => r.type === 'ELECTIVE');
+        const avgOf = (arr) => arr.length > 0
+            ? (arr.reduce((sum, r) => sum + parseFloat(r.averageScore), 0) / arr.length).toFixed(2)
+            : null;
+        return {
+            subjects: result,
+            summary: {
+                coreAverage: avgOf(coreScores),
+                electiveAverage: avgOf(electiveScores),
+                coreSubjectCount: coreScores.length,
+                electiveSubjectCount: electiveScores.length,
+            },
+        };
+    }
 };
 exports.GradingService = GradingService;
 exports.GradingService = GradingService = __decorate([

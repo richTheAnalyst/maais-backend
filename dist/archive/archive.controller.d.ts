@@ -24,10 +24,10 @@ export declare class ArchiveController {
                 id: string;
                 isActive: boolean;
                 isLocked: boolean;
+                academicYearId: string;
                 startDate: Date;
                 endDate: Date;
                 termNumber: import(".prisma/client").$Enums.TermNumber;
-                academicYearId: string;
             };
             subject: {
                 name: string;
@@ -97,10 +97,10 @@ export declare class ArchiveController {
                 id: string;
                 isActive: boolean;
                 isLocked: boolean;
+                academicYearId: string;
                 startDate: Date;
                 endDate: Date;
                 termNumber: import(".prisma/client").$Enums.TermNumber;
-                academicYearId: string;
             };
         } & {
             id: string;
@@ -142,10 +142,10 @@ export declare class ArchiveController {
         id: string;
         isActive: boolean;
         isLocked: boolean;
+        academicYearId: string;
         startDate: Date;
         endDate: Date;
         termNumber: import(".prisma/client").$Enums.TermNumber;
-        academicYearId: string;
     }>;
     health(): Promise<{
         status: string;

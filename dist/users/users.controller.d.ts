@@ -164,10 +164,10 @@ export declare class UsersController {
                 id: string;
                 isActive: boolean;
                 isLocked: boolean;
+                academicYearId: string;
                 startDate: Date;
                 endDate: Date;
                 termNumber: import(".prisma/client").$Enums.TermNumber;
-                academicYearId: string;
             };
             subject: {
                 name: string;
@@ -217,10 +217,10 @@ export declare class UsersController {
                 id: string;
                 isActive: boolean;
                 isLocked: boolean;
+                academicYearId: string;
                 startDate: Date;
                 endDate: Date;
                 termNumber: import(".prisma/client").$Enums.TermNumber;
-                academicYearId: string;
             };
         } & {
             id: string;
@@ -312,9 +312,9 @@ export declare class UsersController {
         } & {
             id: string;
             subjectId: string;
-            academicYearId: string;
             teacherId: string;
             classSectionId: string;
+            academicYearId: string;
         })[];
     } & {
         id: string;
@@ -341,4 +341,56 @@ export declare class UsersController {
         createdAt: Date;
         updatedAt: Date;
     }>;
+    bulkImportStudents(rows: CreateStudentDto[]): Promise<{
+        total: number;
+        succeeded: number;
+        failed: number;
+        results: {
+            row: number;
+            success: boolean;
+            error?: string;
+            indexNumber?: string;
+        }[];
+    }>;
+    bulkImportStaff(rows: CreateStaffDto[]): Promise<{
+        total: number;
+        succeeded: number;
+        failed: number;
+        results: {
+            row: number;
+            success: boolean;
+            error?: string;
+            staffId?: string;
+        }[];
+    }>;
+    exportStudents(user: {
+        id: string;
+        role: Role;
+    }): Promise<{
+        indexNumber: string;
+        firstName: string;
+        lastName: string;
+        middleName: string;
+        gender: import(".prisma/client").$Enums.Gender;
+        dateOfBirth: string;
+        email: string;
+        currentClass: string;
+        department: string;
+        isActive: boolean;
+    }[]>;
+    exportStaff(user: {
+        id: string;
+        role: Role;
+    }): Promise<{
+        staffId: string;
+        firstName: string;
+        lastName: string;
+        middleName: string;
+        gender: import(".prisma/client").$Enums.Gender;
+        phone: string;
+        email: string;
+        role: string;
+        department: string;
+        isActive: boolean;
+    }[]>;
 }
