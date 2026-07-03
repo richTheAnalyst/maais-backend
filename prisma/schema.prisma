@@ -164,18 +164,13 @@ model StaffProfile {
   teachingAssignments TeachingAssignment[]
   classTeacher        ClassSection?        @relation("ClassTeacher")
   timetableEntries    TimetableEntry[]
-<<<<<<< HEAD
-  // Notifications sent to or about this staff
-  notifications       Notification[]
-=======
-  behaviorsRecorded   StudentBehavior[]
+  behaviorsRecorded StudentBehavior[]
 
   canTeach     Boolean @default(false)
   canOversight Boolean @default(false)
 
-  // Notifications
+  // Notifications sent to or about this staff
   notifications Notification[]
->>>>>>> qhojoblinks/main
 
   @@map("staff_profiles")
 }
@@ -750,7 +745,6 @@ model TimetableEntry {
   @@map("timetable_entries")
 }
 
-<<<<<<< HEAD
 //school settings
 model SchoolSettings {
   id                      String   @id @default(uuid())
@@ -760,7 +754,8 @@ model SchoolSettings {
   updatedById             String?
 
   @@map("school_settings")
-=======
+}
+
 model ApprovalRequest {
   id              String    @id @default(uuid())
   teacherId       String
@@ -814,5 +809,4 @@ model AdminSettings {
   updatedAt          DateTime @updatedAt
 
   @@map("admin_settings")
->>>>>>> qhojoblinks/main
 }
