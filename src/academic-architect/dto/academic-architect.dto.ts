@@ -1,5 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsEnum, IsOptional, IsDateString, IsInt } from 'class-validator';
+import {
+  IsString,
+  IsEnum,
+  IsOptional,
+  IsDateString,
+  IsInt,
+} from 'class-validator';
 import { TermNumber, ClassLevel, SubjectType } from '@prisma/client';
 
 export class CreateAcademicYearDto {
@@ -14,6 +20,15 @@ export class CreateAcademicYearDto {
   @ApiProperty({ example: '2025-07-31' })
   @IsDateString()
   endDate: string;
+
+  @ApiPropertyOptional({ 
+    example: 'THREE_TERMS', 
+    enum: ['THREE_TERMS', 'TWO_SEMESTERS'],
+    description: 'Term system for this academic year' 
+  })
+  @IsOptional()
+  @IsString()
+  termSystem?: string;
 }
 
 export class CreateTermDto {
@@ -50,11 +65,14 @@ export class CreateDepartmentDto {
 }
 
 export class CreateSubjectDto {
-  @ApiProperty({ example: 'Core Mathematics' })
+  @ApiProperty({ example: 'Mathematics' })
   @IsString()
   name: string;
 
-  @ApiProperty({ example: 'CMATH' })
+  @ApiProperty({
+    example: '402',
+    description: 'WAEC subject code (e.g., 402 for Mathematics)',
+  })
   @IsString()
   code: string;
 
@@ -66,6 +84,12 @@ export class CreateSubjectDto {
   @IsOptional()
   @IsString()
   departmentId?: string;
+
+  @ApiPropertyOptional({
+    description: 'Applicable programs (e.g., ["Science", "General Arts"])',
+  })
+  @IsOptional()
+  applicablePrograms?: string[];
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -86,6 +110,16 @@ export class CreateClassSectionDto {
   @IsOptional()
   @IsInt()
   capacity?: number;
+
+  @ApiPropertyOptional({ example: 'Science' })
+  @IsOptional()
+  @IsString()
+  program?: string;
+
+  @ApiPropertyOptional({ example: 'Gold' })
+  @IsOptional()
+  @IsString()
+  track?: string;
 }
 
 export class AssignTeacherDto {
@@ -110,4 +144,31 @@ export class AssignClassTeacherDto {
   @ApiProperty()
   @IsString()
   staffId: string;
+}
+
+export class UpdateClassSectionDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @ApiPropertyOptional({ enum: ClassLevel })
+  @IsOptional()
+  @IsEnum(ClassLevel)
+  level?: ClassLevel;
+
+  @ApiPropertyOptional({ example: 40 })
+  @IsOptional()
+  @IsInt()
+  capacity?: number;
+
+  @ApiPropertyOptional({ example: 'Science' })
+  @IsOptional()
+  @IsString()
+  program?: string;
+
+  @ApiPropertyOptional({ example: 'Gold' })
+  @IsOptional()
+  @IsString()
+  track?: string;
 }

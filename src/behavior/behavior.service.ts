@@ -1,50 +1,52 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class BehaviorService {
-    constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {}
 
-    async createBehavior(data:any) {
-        return this.prisma.studentBehavior.create({
-            data,
-        });
+  async createBehavior(data: any) {
+    return this.prisma.studentBehavior.create({
+      data,
+    });
+  }
+
+  async createTrait(data: any) {
+    return this.prisma.characterTrait.create({
+      data,
+    });
+  }
+
+  async getStudentBehavior(
+    studentId: string,
+    requesterId?: string,
+    requesterRole?: Role,
+  ) {
+    let targetStudentId = studentId;
+
+    if (requesterRole === Role.STUDENT && requesterId) {
+      const lookupStudent = await this.prisma.studentProfile.findUnique({
+        where: { userId: requesterId },
+        select: { id: true },
+      });
+
+      if (!lookupStudent) {
+        throw new ForbiddenException('Student profile not found');
+      }
+      targetStudentId = lookupStudent.id;
     }
 
-    async createTrait(data:any) {
-        return this.prisma.characterTrait.create({
-            data,
-        });
-    }
+    const logs = await this.prisma.studentBehavior.findMany({
+      where: { studentId: targetStudentId },
+      orderBy: { createdAt: 'desc' },
+    });
 
-    async getStudentBehavior(studentId: string) {
-        
-         const logs = this.prisma.studentBehavior.findMany({
-            where: {studentId},
-            orderBy: {
-                createdAt: 'desc'
-            }
-        })
-        const traits =
-        await this.prisma.characterTrait.findFirst({
-            where:{
-                studentId,
-            },
-            orderBy: {
-                createdAt: 'desc',
-            },
-        });
+    const traits = await this.prisma.characterTrait.findFirst({
+      where: { studentId: targetStudentId },
+      orderBy: { createdAt: 'desc' },
+    });
 
-        return {
-            logs,
-            traits,
-        };
-    }
-
-    /* async getTraits(studentId: string) {
-        return this.prisma.characterTrait.findMany({
-            where: { studentId},
-        })
-    } */
-
+    return { logs, traits };
+  }
 }

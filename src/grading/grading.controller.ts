@@ -1,32 +1,59 @@
-import { Controller, Get, Post, Patch, Body, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+<<<<<<< HEAD
+=======
+  Put,
+>>>>>>> qhojoblinks/main
+  Body,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
-import { Role } from '@prisma/client';
+import { Role, AuditAction } from '@prisma/client';
 import { GradingService } from './grading.service';
+import { PrismaService } from '../common/prisma/prisma.service';
 import { Roles, CurrentUser } from '../common/decorators/roles.decorator';
-import { UpsertGradeDto, BulkUpsertGradeDto, CorrectGradeDto } from './dto/grading.dto';
+import {
+  UpsertGradeDto,
+  BulkUpsertGradeDto,
+  CorrectGradeDto,
+} from './dto/grading.dto';
 
 @ApiTags('Grading')
 @ApiBearerAuth()
 @Controller('grading')
 export class GradingController {
-  constructor(private gradingService: GradingService) {}
+  constructor(
+    private gradingService: GradingService,
+    private prisma: PrismaService,
+  ) {}
 
   @Post('entries')
-  @Roles(Role.TEACHER, Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+  @Roles(Role.TEACHER)
   @ApiOperation({ summary: 'Submit or update a grade entry' })
   upsertGrade(@Body() dto: UpsertGradeDto, @CurrentUser('id') userId: string) {
     return this.gradingService.upsertGrade(dto, userId);
   }
 
   @Post('entries/bulk')
-  @Roles(Role.TEACHER, Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+  @Roles(Role.TEACHER)
   @ApiOperation({ summary: 'Bulk grade entry for a class/subject' })
-  bulkUpsert(@Body() dto: BulkUpsertGradeDto, @CurrentUser('id') userId: string) {
+  bulkUpsert(
+    @Body() dto: BulkUpsertGradeDto,
+    @CurrentUser('id') userId: string,
+  ) {
     return this.gradingService.bulkUpsertGrades(dto.entries, userId);
   }
 
   @Patch('entries/:id/lock')
-  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+<<<<<<< HEAD
+  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN, Role.TEACHER)
+=======
+  @Roles(Role.HOD)
+>>>>>>> qhojoblinks/main
   @ApiOperation({ summary: 'Lock a grade entry' })
   lockGrade(
     @Param('id') id: string,
@@ -36,8 +63,35 @@ export class GradingController {
     return this.gradingService.lockGrade(id, userId, role);
   }
 
-  @Patch('entries/:id/approve')
+<<<<<<< HEAD
+  @Patch('entries/:id/unlock')
   @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Unlock a grade entry' })
+  unlockGrade(
+    @Param('id') id: string,
+    @CurrentUser('id') userId: string,
+    @CurrentUser('role') role: Role,
+  ) {
+    return this.gradingService.unlockGrade(id, userId, role);
+  }
+
+  @Post('entries/bulk-unlock')
+  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Bulk unlock grade entries' })
+  bulkUnlock(
+    @Body('ids') ids: string[],
+    @CurrentUser('id') userId: string,
+    @CurrentUser('role') role: Role,
+  ) {
+    return this.gradingService.bulkUnlockGrades(ids, userId, role);
+  }
+
+  @Patch('entries/:id/approve')
+  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN, Role.TEACHER)
+=======
+  @Patch('entries/:id/approve')
+  @Roles(Role.HOD)
+>>>>>>> qhojoblinks/main
   @ApiOperation({ summary: 'Approve a grade entry' })
   approveGrade(
     @Param('id') id: string,
@@ -48,7 +102,11 @@ export class GradingController {
   }
 
   @Post('entries/bulk-approve')
-  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+<<<<<<< HEAD
+  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN, Role.TEACHER)
+=======
+  @Roles(Role.HOD)
+>>>>>>> qhojoblinks/main
   @ApiOperation({ summary: 'Bulk approve grade entries' })
   bulkApprove(
     @Body('ids') ids: string[],
@@ -59,27 +117,125 @@ export class GradingController {
   }
 
   @Post('corrections')
-  @Roles(Role.TEACHER, Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+  @Roles(Role.TEACHER)
   @ApiOperation({ summary: 'Submit a grade correction with audit trail' })
-  correctGrade(@Body() dto: CorrectGradeDto, @CurrentUser('id') userId: string) {
+  correctGrade(
+    @Body() dto: CorrectGradeDto,
+    @CurrentUser('id') userId: string,
+  ) {
     return this.gradingService.correctGrade(dto, userId);
   }
 
   @Get('audit-tray')
-  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+  @Roles(Role.TEACHER)
   @ApiOperation({ summary: 'Get missing observations tray' })
-  getMissingObservations(@Query('termId') termId: string) {
-    return this.gradingService.getMissingObservationsTray(termId);
+  getMissingObservations(
+    @Query('termId') termId: string,
+    @CurrentUser('id') userId: string,
+    @CurrentUser('role') role: Role,
+  ) {
+    return this.gradingService.getMissingObservationsTray(termId, userId, role);
+  }
+
+  @Get('missing-observations')
+  @Roles(Role.TEACHER)
+  @ApiOperation({ summary: 'Get missing observations (flat list)' })
+  getMissingObservationsFlat(
+    @Query('termId') termId: string,
+    @CurrentUser('id') userId: string,
+    @CurrentUser('role') role: Role,
+  ) {
+    return this.gradingService.getMissingObservationsTray(termId, userId, role);
+  }
+
+  @Get('entries/:id')
+  @Roles(Role.TEACHER)
+  @ApiOperation({ summary: 'Get a single grade entry' })
+  getGradeEntry(@Param('id') id: string) {
+    return this.prisma.gradeEntry.findUnique({
+      where: { id },
+      include: {
+        student: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            indexNumber: true,
+            currentClass: { select: { name: true } },
+          },
+        },
+        subject: { select: { id: true, name: true } },
+        term: { select: { id: true, termNumber: true } },
+      },
+    });
+  }
+
+  @Patch('entries/:id/unlock')
+  @Roles(Role.HOD)
+  @ApiOperation({ summary: 'Unlock a grade entry' })
+  async unlockGrade(
+    @Param('id') id: string,
+    @CurrentUser('id') userId: string,
+  ) {
+    const updated = await this.prisma.gradeEntry.update({
+      where: { id },
+      data: { isLocked: false, lockedById: null, lockedAt: null },
+    });
+
+    await this.prisma.auditLog.create({
+      data: {
+        userId,
+        action: AuditAction.UNLOCK,
+        entity: 'GradeEntry',
+        entityId: id,
+        payload: { gradeEntryId: id, unlockedById: userId },
+      },
+    });
+
+    return updated;
+  }
+
+  @Get('classes/:classId/terms/:termId/performance')
+  @Roles(Role.TEACHER)
+  @ApiOperation({ summary: 'Get class performance summary' })
+  getClassPerformance(
+    @Param('classId') classId: string,
+    @Param('termId') termId: string,
+    @CurrentUser('id') userId: string,
+    @CurrentUser('role') role: Role,
+  ) {
+    return this.gradingService.getClassPerformanceSummary(
+      classId,
+      termId,
+      userId,
+      role,
+    );
   }
 
   @Get('class-summary/:classId')
-  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+  @Roles(Role.TEACHER)
   @ApiOperation({ summary: 'Get class performance summary' })
-  getClassSummary(@Param('classId') classId: string, @Query('termId') termId: string) {
+  getClassSummary(
+    @Param('classId') classId: string,
+    @Query('termId') termId: string,
+<<<<<<< HEAD
+  ) {
     return this.gradingService.getClassPerformanceSummary(classId, termId);
+=======
+    @CurrentUser('id') userId: string,
+    @CurrentUser('role') role: Role,
+  ) {
+    return this.gradingService.getClassPerformanceSummary(
+      classId,
+      termId,
+      userId,
+      role,
+    );
+>>>>>>> qhojoblinks/main
   }
 
   @Get('students/:studentId/terms/:termId')
+  @Roles(Role.STUDENT)
   @ApiOperation({ summary: 'Get all grades for a student in a term' })
   getStudentTermGrades(
     @Param('studentId') studentId: string,
@@ -89,9 +245,218 @@ export class GradingController {
     return this.gradingService.getStudentTermGrades(studentId, termId, role);
   }
 
+  @Get('students/for-grading')
+  @Roles(Role.TEACHER)
+  @ApiOperation({
+    summary: 'Get students eligible for grading by subject and class',
+  })
+  async getStudentsForGrading(
+    @Query('subjectId') subjectId: string,
+    @Query('classId') classId: string,
+    @Query('termId') termId: string,
+    @CurrentUser('id') userId: string,
+    @CurrentUser('role') role: Role,
+  ) {
+    return this.gradingService.getStudentsForGrading(
+      subjectId,
+      classId,
+      termId,
+      userId,
+      role,
+    );
+  }
+
+  @Get('compliance/warnings')
+  @Roles(Role.HOD)
+  @ApiOperation({ summary: 'Get system compliance warnings for active term' })
+  getComplianceWarnings(
+    @CurrentUser('id') userId: string,
+    @CurrentUser('role') role: Role,
+  ) {
+    return this.gradingService.getComplianceWarnings(userId, role);
+  }
+
+  @Get('term-summary/:termId')
+  @Roles(Role.HOD)
+  @ApiOperation({
+    summary: 'Get summary stats for a term (student count, grade entry count)',
+  })
+  getTermSummary(
+    @Param('termId') termId: string,
+    @CurrentUser('id') userId: string,
+    @CurrentUser('role') role: Role,
+  ) {
+    return this.gradingService.getTermSummary(termId, userId, role);
+  }
+
   @Get('smart-remarks/:grade')
   @ApiOperation({ summary: 'Get smart remark suggestions for a grade' })
   getSmartRemarks(@Param('grade') grade: string) {
     return { grade, remarks: this.gradingService.getSmartRemarks(grade) };
   }
+
+<<<<<<< HEAD
+  @Get('boundaries')
+  @ApiOperation({ summary: 'Get WAEC grade boundaries (read-only)' })
+  getBoundaries() {
+    return this.gradingService.getBoundaries();
+  }
+
+  //top performing student
+  @Get('top-students/:departmentId')
+  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Get top performing students in a department' })
+  getTopStudents(
+    @Param('departmentId') departmentId: string,
+    @Query('termId') termId: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.gradingService.getTopStudentsByDepartment(
+      departmentId,
+      termId,
+      limit ? parseInt(limit) : 10,
+    );
+  }
+
+  @Get('grade-distribution/:departmentId')
+  @Roles(Role.HOD, Role.HEADMASTER, Role.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Get grade distribution for a department' })
+  getGradeDistribution(
+    @Param('departmentId') departmentId: string,
+    @Query('termId') termId: string,
+  ) {
+    return this.gradingService.getDepartmentGradeDistribution(
+      departmentId,
+      termId,
+    );
+  }
+
+  /**
+   * performance filtered analytics
+  */
+ @Get('performance-filtered')
+@Roles(Role.HEADMASTER, Role.SUPER_ADMIN, Role.HOD)
+@ApiOperation({ summary: 'Get subject performance filtered by class, department, and type' })
+getPerformanceFiltered(
+  @Query('classId') classId?: string,
+  @Query('departmentId') departmentId?: string,
+  @Query('subjectType') subjectType?: 'CORE' | 'ELECTIVE',
+) {
+  return this.gradingService.getSubjectPerformanceFiltered({ classId, departmentId, subjectType });
+}
+=======
+  @Get('rules')
+  @Roles(Role.TEACHER)
+  @ApiOperation({ summary: 'Get current grading rules configuration' })
+  async getGradingRules(@Query('termId') termId: string) {
+    if (termId) {
+      const rules = await this.prisma.assessmentRules.findUnique({
+        where: { termId },
+        include: { term: true },
+      });
+      if (rules) return rules;
+    }
+    const existing = await this.prisma.assessmentRules.findFirst();
+    if (!existing) {
+      return this.prisma.assessmentRules.create({
+        data: {
+          termId: 'default',
+          caWeight: 30,
+          examWeight: 70,
+          normalizationEnabled: true,
+        },
+      });
+    }
+    return existing;
+  }
+
+  @Get('last-saved')
+  @Roles(Role.TEACHER)
+  @ApiOperation({
+    summary: 'Get the last time a grade entry was saved for the current user',
+  })
+  async getLastSaved(@CurrentUser('id') userId: string) {
+    const staffProfile = await this.prisma.staffProfile.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
+
+    if (!staffProfile) {
+      return { lastSaved: null };
+    }
+
+    const lastEntry = await this.prisma.gradeEntry.findFirst({
+      where: { submittedById: userId },
+      orderBy: { updatedAt: 'desc' },
+      select: { updatedAt: true },
+    });
+
+    return {
+      lastSaved: lastEntry?.updatedAt || null,
+    };
+  }
+
+  @Put('rules')
+  @Roles(Role.HOD)
+  @ApiOperation({ summary: 'Update grading rules configuration' })
+  async updateGradingRules(
+    @Body()
+    body: {
+      termId?: string;
+      caWeight?: number;
+      examWeight?: number;
+      normalizationEnabled?: boolean;
+      submissionDeadline?: string;
+    },
+  ) {
+    if (!body.termId) {
+      const existing = await this.prisma.assessmentRules.findFirst();
+      if (!existing) {
+        return this.prisma.assessmentRules.create({
+          data: {
+            termId: 'default',
+            caWeight: body.caWeight ?? 30,
+            examWeight: body.examWeight ?? 70,
+            normalizationEnabled: body.normalizationEnabled ?? true,
+            submissionDeadline: body.submissionDeadline
+              ? new Date(body.submissionDeadline)
+              : undefined,
+          },
+        });
+      }
+      return this.prisma.assessmentRules.update({
+        where: { id: existing.id },
+        data: {
+          caWeight: body.caWeight ?? existing.caWeight,
+          examWeight: body.examWeight ?? existing.examWeight,
+          normalizationEnabled:
+            body.normalizationEnabled ?? existing.normalizationEnabled,
+          submissionDeadline: body.submissionDeadline
+            ? new Date(body.submissionDeadline)
+            : existing.submissionDeadline,
+        },
+      });
+    }
+    return this.prisma.assessmentRules.upsert({
+      where: { termId: body.termId },
+      create: {
+        termId: body.termId,
+        caWeight: body.caWeight ?? 30,
+        examWeight: body.examWeight ?? 70,
+        normalizationEnabled: body.normalizationEnabled ?? true,
+        submissionDeadline: body.submissionDeadline
+          ? new Date(body.submissionDeadline)
+          : undefined,
+      },
+      update: {
+        caWeight: body.caWeight ?? 30,
+        examWeight: body.examWeight ?? 70,
+        normalizationEnabled: body.normalizationEnabled ?? true,
+        submissionDeadline: body.submissionDeadline
+          ? new Date(body.submissionDeadline)
+          : undefined,
+      },
+    });
+  }
+>>>>>>> qhojoblinks/main
 }

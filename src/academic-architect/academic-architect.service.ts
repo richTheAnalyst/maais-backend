@@ -1,16 +1,65 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service';
-import { TermNumber, ClassLevel, SubjectType } from '@prisma/client';
+import { TermNumber, ClassLevel, SubjectType, Role } from '@prisma/client';
 
 @Injectable()
 export class AcademicArchitectService {
+  private readonly validSubjectCodes = [
+    302,
+    402,
+    502,
+    204, // Core
+    512,
+    505,
+    504,
+    401,
+    507,
+    319,
+    608, // Science electives
+    103,
+    104,
+    113,
+    203,
+    114,
+    112, // Business electives
+    210,
+    205,
+    207,
+    202,
+    208,
+    304,
+    301,
+    321,
+    322,
+    323,
+    324,
+    325,
+    326,
+    330,
+    705,
+    706, // Arts electives
+    327,
+    328,
+    329, // Languages
+    216,
+    508,
+    511,
+    702,
+    703, // Other
+  ];
+
   constructor(private prisma: PrismaService) {}
+
+  validateSubjectCode(code: string): boolean {
+    const numericCode = Number(code);
+    return this.validSubjectCodes.includes(numericCode);
+  }
 
   // ─── Academic Years ───────────────────────────────────
 
-  async createAcademicYear(label: string, startDate: Date, endDate: Date) {
+  async createAcademicYear(label: string, startDate: Date, endDate: Date, termSystem?: string) {
     return this.prisma.academicYear.create({
-      data: { label, startDate, endDate },
+      data: { label, startDate, endDate, termSystem: termSystem || 'THREE_TERMS' },
     });
   }
 
@@ -29,7 +78,13 @@ export class AcademicArchitectService {
     });
   }
 
-  // ─── Terms ────────────────────────────────────────────
+  async getAllYears() {
+    return this.prisma.academicYear.findMany({
+      orderBy: { startDate: 'desc' },
+    });
+  }
+
+  // ─── Terms ─────────────────────────────────────────────
 
   async createTerm(
     academicYearId: string,
@@ -65,7 +120,17 @@ export class AcademicArchitectService {
 
   async getAllDepartments() {
     return this.prisma.department.findMany({
-      include: { subjects: true, _count: { select: { staff: true } } },
+      include: {
+        staff: {
+          include: {
+            user: {
+              select: { id: true, email: true, role: true, isActive: true },
+            },
+          },
+        },
+        subjects: true,
+        _count: { select: { staff: true, subjects: true } },
+      },
       orderBy: { name: 'asc' },
     });
   }
@@ -79,6 +144,11 @@ export class AcademicArchitectService {
     departmentId?: string;
     description?: string;
   }) {
+    if (!this.validateSubjectCode(dto.code)) {
+      throw new BadRequestException(
+        `Invalid WAEC subject code: ${dto.code}. Must be one of: ${this.validSubjectCodes.join(', ')}`,
+      );
+    }
     return this.prisma.subject.create({ data: dto });
   }
 
@@ -92,12 +162,21 @@ export class AcademicArchitectService {
 
   // ─── Class Sections ───────────────────────────────────
 
-  async createClassSection(name: string, level: ClassLevel, capacity?: number) {
-    return this.prisma.classSection.create({ data: { name, level, capacity } });
+  async createClassSection(
+    name: string,
+    level: ClassLevel,
+    capacity?: number,
+    program?: string,
+    track?: string,
+  ) {
+    return this.prisma.classSection.create({
+      data: { name, level, capacity, program, track },
+    });
   }
 
-  async getAllClassSections() {
+  async getAllClassSections(track?: string) {
     return this.prisma.classSection.findMany({
+      where: track ? { track } : undefined,
       include: {
         classTeacher: true,
         _count: { select: { students: true } },
@@ -113,7 +192,28 @@ export class AcademicArchitectService {
     });
   }
 
-  // ─── Teaching Assignments ─────────────────────────────
+  async updateClassSection(
+    classSectionId: string,
+    data: {
+      name?: string;
+      level?: ClassLevel;
+      capacity?: number;
+      program?: string;
+    },
+  ) {
+    return this.prisma.classSection.update({
+      where: { id: classSectionId },
+      data,
+    });
+  }
+
+  async deleteClassSection(classSectionId: string) {
+    return this.prisma.classSection.delete({
+      where: { id: classSectionId },
+    });
+  }
+
+  // ─── Teaching Assignments ──────────────────────────────
 
   async assignTeacher(dto: {
     teacherId: string;
@@ -130,4 +230,91 @@ export class AcademicArchitectService {
       include: { subject: true, classSection: true },
     });
   }
+
+<<<<<<< HEAD
+  // ─── Teaching Assignments: full CRUD ──────────────────
+
+async getAllAssignments() {
+  return this.prisma.teachingAssignment.findMany({
+    include: {
+      teacher: { select: { id: true, firstName: true, lastName: true, staffId: true } },
+      subject: true,
+      classSection: true,
+    },
+    orderBy: { teacher: { lastName: 'asc' } },
+  });
 }
+
+async deleteAssignment(assignmentId: string) {
+  return this.prisma.teachingAssignment.delete({
+    where: { id: assignmentId },
+  });
+}
+
+// ─── Staff role & department management ───────────────
+
+async updateStaffRole(staffUserId: string, role: Role) {
+  return this.prisma.user.update({
+    where: { id: staffUserId },
+    data: { role },
+  });
+}
+
+async updateStaffDepartment(staffId: string, departmentId: string | null) {
+  return this.prisma.staffProfile.update({
+    where: { id: staffId },
+    data: { departmentId },
+  });
+}
+
+// ─── Term unlock (with audit trail) ────────────────────
+
+async unlockTerm(termId: string, unlockedById: string, reason: string) {
+  const term = await this.prisma.term.findUniqueOrThrow({
+    where: { id: termId },
+    include: {
+      _count: { select: { reportCards: true } },
+    },
+  });
+
+  const unlocked = await this.prisma.term.update({
+    where: { id: termId },
+    data: { isLocked: false },
+  });
+
+  // Log this as an audit event since it's a sensitive reversal
+  await this.prisma.auditLog.create({
+    data: {
+      userId: unlockedById,
+      action: 'UNLOCK',
+      entity: 'Term',
+      entityId: termId,
+      payload: {
+        reason,
+        existingReportCards: term._count.reportCards,
+        warning: term._count.reportCards > 0
+          ? 'Term had generated report cards at time of unlock — they may now be stale if grades change.'
+          : null,
+      },
+    },
+  });
+
+  return {
+    ...unlocked,
+    existingReportCardsWarning: term._count.reportCards > 0 ? term._count.reportCards : null,
+  };
+}
+}
+=======
+  async getAssignmentsByClass(classSectionId: string, track?: string) {
+    return this.prisma.teachingAssignment.findMany({
+      where: { classSectionId },
+      include: {
+        subject: { include: { department: true } },
+        teacher: { include: { user: { select: { email: true } } } },
+        classSection: true,
+      },
+    });
+  }
+}
+>>>>>>> qhojoblinks/main
