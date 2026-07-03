@@ -1,6 +1,11 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../common/prisma/prisma.service';
-import { GradeRemark, Role } from '@prisma/client';
+import { GradeRemark, Role, AuditAction } from '@prisma/client';
+import { InterventionsService } from '../interventions/interventions.service';
 
 // GH SHS Standard WAEC grading
 const GRADE_BOUNDARIES = [
@@ -121,18 +126,17 @@ export interface CorrectGradeDto {
 
 @Injectable()
 export class GradingService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private interventionsService: InterventionsService,
+  ) {}
 
-  /**
-   * Compute grade from total score using GH WAEC boundaries
-   */
   computeGrade(classScore: number, examScore: number) {
     const total = Math.round(classScore + examScore);
     const boundary =
       GRADE_BOUNDARIES.find((b) => total >= b.min && total <= b.max) ||
-      GRADE_BOUNDARIES[GRADE_BOUNDARIES.length - 1]; // Fallback to F9
+      GRADE_BOUNDARIES[GRADE_BOUNDARIES.length - 1];
 
-    // Edge case for scores > 100
     if (total > 100) {
       return {
         totalScore: total,
@@ -150,16 +154,10 @@ export class GradingService {
     };
   }
 
-  /**
-   * Get smart remarks pool for a given grade
-   */
   getSmartRemarks(grade: string): string[] {
     return GRADE_BOUNDARIES.find((b) => b.grade === grade)?.smartRemarks ?? [];
   }
 
-  /**
-   * Upsert a grade entry (teacher submitting scores)
-   */
   async upsertGrade(dto: UpsertGradeDto, submittedById: string) {
     const term = await this.prisma.term.findUniqueOrThrow({
       where: { id: dto.termId },
@@ -179,6 +177,20 @@ export class GradingService {
       totalScore = computed.totalScore;
       grade = computed.grade;
     }
+
+    const existing = await this.prisma.gradeEntry.findFirst({
+      where: {
+        studentId: dto.studentId,
+        subjectId: dto.subjectId,
+        termId: dto.termId,
+      },
+      select: {
+        classScore: true,
+        examScore: true,
+        totalScore: true,
+        grade: true,
+      },
+    });
 
     const entry = await this.prisma.gradeEntry.upsert({
       where: {
@@ -201,7 +213,7 @@ export class GradingService {
         observationText: dto.observationText,
         submittedById,
         submittedAt: new Date(),
-        isApproved: false, // Must be approved by HOD
+        isApproved: false,
       },
       update: {
         classScore: dto.classScore,
@@ -213,17 +225,103 @@ export class GradingService {
         observationText: dto.observationText,
         submittedById,
         submittedAt: new Date(),
-        isApproved: false, // Reset approval on update
+        isApproved: false,
       },
       include: { student: true, subject: true },
     });
 
+    await this.prisma.auditLog.create({
+      data: {
+        userId: submittedById,
+        action: existing ? AuditAction.UPDATE : AuditAction.CREATE,
+        entity: 'GradeEntry',
+        entityId: entry.id,
+        payload: {
+          studentId: dto.studentId,
+          subjectId: dto.subjectId,
+          termId: dto.termId,
+          oldValue: existing
+            ? {
+                classScore: existing.classScore,
+                examScore: existing.examScore,
+                totalScore: existing.totalScore,
+                grade: existing.grade,
+              }
+            : null,
+          newValue: {
+            classScore: dto.classScore,
+            examScore: dto.examScore,
+            totalScore,
+            grade,
+          },
+          justification: null,
+        },
+      },
+    });
+
+    const previousTermId = await this.getPreviousTermId(dto.termId);
+    if (previousTermId) {
+      try {
+        await this.interventionsService.checkPerformanceDrop(
+          dto.studentId,
+          dto.termId,
+          previousTermId,
+        );
+      } catch {
+        // Intervention check failure must not break grade submission
+      }
+    }
+
     return entry;
   }
 
+<<<<<<< HEAD
   /**
    * HOD approves a grade entry
    */
+=======
+  private async getPreviousTermId(
+    currentTermId: string,
+  ): Promise<string | null> {
+    const currentTerm = await this.prisma.term.findUniqueOrThrow({
+      where: { id: currentTermId },
+      select: { academicYearId: true, termNumber: true },
+    });
+
+    const termOrder: Record<string, number> = {
+      TERM_1: 1,
+      TERM_2: 2,
+      TERM_3: 3,
+    };
+    const currentNum = termOrder[currentTerm.termNumber];
+
+    const candidates = await this.prisma.term.findMany({
+      where: { academicYearId: currentTerm.academicYearId },
+      orderBy: { termNumber: 'desc' },
+    });
+
+    for (const t of candidates) {
+      if (termOrder[t.termNumber] < currentNum) {
+        return t.id;
+      }
+    }
+
+    const prevYear = await this.prisma.academicYear.findFirst({
+      where: { id: { not: currentTerm.academicYearId } },
+      orderBy: { startDate: 'desc' },
+    });
+
+    if (!prevYear) return null;
+
+    const prevYearTerms = await this.prisma.term.findMany({
+      where: { academicYearId: prevYear.id },
+      orderBy: { termNumber: 'desc' },
+    });
+
+    return prevYearTerms[0]?.id ?? null;
+  }
+
+>>>>>>> qhojoblinks/main
   async approveGrade(
     gradeEntryId: string,
     approvedById: string,
@@ -240,15 +338,27 @@ export class GradingService {
       );
     }
 
-    return this.prisma.gradeEntry.update({
+    const entry = await this.prisma.gradeEntry.update({
       where: { id: gradeEntryId },
       data: { isApproved: true, approvedById, approvedAt: new Date() },
     });
+
+    await this.prisma.auditLog.create({
+      data: {
+        userId: approvedById,
+        action: AuditAction.UPDATE,
+        entity: 'GradeEntry',
+        entityId: gradeEntryId,
+        payload: {
+          oldValue: { isApproved: false },
+          newValue: { isApproved: true, approvedAt: new Date().toISOString() },
+        },
+      },
+    });
+
+    return entry;
   }
 
-  /**
-   * Bulk approve grades for a class/subject
-   */
   async bulkApproveGrades(ids: string[], approvedById: string, userRole: Role) {
     if (
       userRole !== Role.HOD &&
@@ -260,16 +370,54 @@ export class GradingService {
       );
     }
 
-    return this.prisma.gradeEntry.updateMany({
+    const result = await this.prisma.gradeEntry.updateMany({
       where: { id: { in: ids } },
       data: { isApproved: true, approvedById, approvedAt: new Date() },
     });
+
+    await this.prisma.auditLog.create({
+      data: {
+        userId: approvedById,
+        action: AuditAction.UPDATE,
+        entity: 'GradeEntry',
+        entityId: ids[0] || 'bulk',
+        payload: {
+          approvedCount: result.count,
+          ids,
+        },
+      },
+    });
+
+    return result;
   }
 
-  /**
-   * Get class performance summary for a term (HOD view)
-   */
-  async getClassPerformanceSummary(classId: string, termId: string) {
+  async getClassPerformanceSummary(
+    classId: string,
+    termId: string,
+    userId?: string,
+    userRole?: Role,
+  ) {
+    if (userRole === Role.TEACHER && userId) {
+      const staffProfile = await this.prisma.staffProfile.findUnique({
+        where: { userId },
+      });
+
+      if (!staffProfile) {
+        throw new ForbiddenException('Teacher profile not found');
+      }
+
+      const isAssigned = await this.prisma.teachingAssignment.findFirst({
+        where: {
+          teacherId: staffProfile.id,
+          classSectionId: classId,
+        },
+      });
+
+      if (!isAssigned) {
+        throw new ForbiddenException('You are not assigned to this class');
+      }
+    }
+
     const students = await this.prisma.studentProfile.findMany({
       where: { currentClassId: classId },
       include: {
@@ -283,7 +431,10 @@ export class GradingService {
     return students.map((s) => {
       const totalGrades = s.grades.length;
       const approvedGrades = s.grades.filter((g) => g.isApproved).length;
+<<<<<<< HEAD
       const lockedGrades = s.grades.filter((g) => g.isLocked).length;
+=======
+>>>>>>> qhojoblinks/main
       const progress =
         totalGrades > 0 ? (approvedGrades / totalGrades) * 100 : 0;
 
@@ -301,9 +452,6 @@ export class GradingService {
     });
   }
 
-  /**
-   * HOD locks a grade entry to prevent further editing
-   */
   async lockGrade(gradeEntryId: string, lockedById: string, userRole: Role) {
     if (
       userRole !== Role.HOD &&
@@ -313,15 +461,24 @@ export class GradingService {
       throw new ForbiddenException('Only HODs or above can lock grade entries');
     }
 
-    return this.prisma.gradeEntry.update({
+    const updated = await this.prisma.gradeEntry.update({
       where: { id: gradeEntryId },
       data: { isLocked: true, lockedById, lockedAt: new Date() },
     });
+
+    await this.prisma.auditLog.create({
+      data: {
+        userId: lockedById,
+        action: AuditAction.LOCK,
+        entity: 'GradeEntry',
+        entityId: gradeEntryId,
+        payload: { gradeEntryId, lockedById },
+      },
+    });
+
+    return updated;
   }
 
-  /**
-   * Record a grade correction with reason (audit trail)
-   */
   async correctGrade(dto: CorrectGradeDto, changedById: string) {
     const entry = await this.prisma.gradeEntry.findUniqueOrThrow({
       where: { id: dto.gradeEntryId },
@@ -335,7 +492,6 @@ export class GradingService {
       entry[dto.fieldChanged as keyof typeof entry] ?? '',
     );
 
-    // Record the correction
     await this.prisma.gradeCorrection.create({
       data: {
         gradeEntryId: dto.gradeEntryId,
@@ -347,13 +503,26 @@ export class GradingService {
       },
     });
 
-    // Apply correction
+    await this.prisma.auditLog.create({
+      data: {
+        userId: changedById,
+        action: AuditAction.GRADE_CORRECTION,
+        entity: 'GradeEntry',
+        entityId: dto.gradeEntryId,
+        payload: {
+          fieldChanged: dto.fieldChanged,
+          oldValue,
+          newValue: dto.newValue,
+          justification: dto.reason,
+        },
+      },
+    });
+
     const updateData: Record<string, any> = {
       [dto.fieldChanged]:
         dto.fieldChanged === 'remark' ? dto.newValue : parseFloat(dto.newValue),
     };
 
-    // Recompute total/grade if score changed
     if (dto.fieldChanged === 'classScore' || dto.fieldChanged === 'examScore') {
       const cs =
         dto.fieldChanged === 'classScore'
@@ -374,29 +543,400 @@ export class GradingService {
     });
   }
 
-  /**
-   * Get missing observations tray - students with scores but no observation
-   */
-  async getMissingObservationsTray(termId: string) {
-    return this.prisma.gradeEntry.findMany({
-      where: {
-        termId,
-        hasObservation: false,
-        OR: [{ classScore: { not: null } }, { examScore: { not: null } }],
-      },
+  private async getTeacherSubjectIds(userId?: string) {
+    if (!userId) return [];
+
+    const staffProfile = await this.prisma.staffProfile.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
+
+    if (!staffProfile) {
+      throw new ForbiddenException('Teacher profile not found');
+    }
+
+    const assignments = await this.prisma.teachingAssignment.findMany({
+      where: { teacherId: staffProfile.id },
+      select: { subjectId: true },
+    });
+
+    return assignments.map((assignment) => assignment.subjectId);
+  }
+
+  private async getEffectiveTermId(termId?: string) {
+    if (termId) return termId;
+
+    const activeTerm = await this.prisma.term.findFirst({
+      where: { isActive: true },
+      orderBy: { startDate: 'desc' },
+      select: { id: true },
+    });
+
+    if (activeTerm) return activeTerm.id;
+
+    const latestTerm = await this.prisma.term.findFirst({
+      orderBy: { startDate: 'desc' },
+      select: { id: true },
+    });
+
+    return latestTerm?.id;
+  }
+
+  private async getTeacherNameMap(userIds: Array<string | null | undefined>) {
+    const ids = [...new Set(userIds.filter(Boolean))] as string[];
+    if (ids.length === 0) return new Map<string, string>();
+
+    const staffProfiles = await this.prisma.staffProfile.findMany({
+      where: { userId: { in: ids } },
+      select: { userId: true, firstName: true, lastName: true },
+    });
+
+    return new Map(
+      staffProfiles.map((staff) => [
+        staff.userId,
+        `${staff.firstName || ''} ${staff.lastName || ''}`.trim(),
+      ]),
+    );
+  }
+
+  private toObservation(entry: any, teacher = 'Unknown') {
+    return {
+      id: entry.id,
+      student: entry.student
+        ? `${entry.student.firstName || ''} ${entry.student.lastName || ''}`.trim()
+        : 'Unknown',
+      index: entry.student?.indexNumber || '',
+      class: entry.student?.currentClass?.name || 'Unknown Class',
+      teacher,
+      type: entry.subject?.name || 'Unknown Subject',
+      comment: entry.observationText || entry.remark || '',
+      status: entry.hasObservation ? 'Logged' : 'Missing',
+      date: entry.updatedAt
+        ? entry.updatedAt.toISOString().split('T')[0]
+        : new Date().toISOString().split('T')[0],
+    };
+  }
+
+  async getMissingObservationsTray(
+    termId: string,
+    userId?: string,
+    userRole?: Role,
+  ) {
+    const effectiveTermId = await this.getEffectiveTermId(termId);
+    if (!effectiveTermId) return [];
+
+    const whereClause: any = {
+      termId: effectiveTermId,
+      hasObservation: false,
+      OR: [{ classScore: { not: null } }, { examScore: { not: null } }],
+    };
+
+    if (userRole === Role.TEACHER && userId) {
+      const subjectIds = await this.getTeacherSubjectIds(userId);
+      if (subjectIds.length > 0) {
+        whereClause.subjectId = { in: subjectIds };
+      }
+    }
+
+    const entries = await this.prisma.gradeEntry.findMany({
+      where: whereClause,
       include: {
         student: {
-          select: { indexNumber: true, firstName: true, lastName: true },
+          select: {
+            indexNumber: true,
+            firstName: true,
+            lastName: true,
+            currentClass: { select: { name: true } },
+          },
         },
         subject: { select: { name: true, code: true } },
       },
       orderBy: { student: { lastName: 'asc' } },
     });
+
+    const teacherMap = await this.getTeacherNameMap(
+      entries.map((entry) => entry.submittedById),
+    );
+
+    return entries.map((entry) => ({
+      ...this.toObservation(
+        entry,
+        entry.submittedById
+          ? teacherMap.get(entry.submittedById) || 'Unknown'
+          : 'Unknown',
+      ),
+      status: 'Missing',
+    }));
   }
 
+<<<<<<< HEAD
   /**
    * Get all grades for a student in a term
    */
+=======
+  async getObservationLogs(userId?: string, userRole?: Role) {
+    const whereClause: any = {};
+
+    if (userRole === Role.TEACHER && userId) {
+      const subjectIds = await this.getTeacherSubjectIds(userId);
+      if (subjectIds.length === 0) return [];
+      whereClause.subjectId = { in: subjectIds };
+    }
+
+    const entries = await this.prisma.gradeEntry.findMany({
+      where: whereClause,
+      include: {
+        student: {
+          select: {
+            indexNumber: true,
+            firstName: true,
+            lastName: true,
+            currentClass: { select: { name: true } },
+          },
+        },
+        subject: { select: { name: true, code: true } },
+      },
+      orderBy: [{ hasObservation: 'desc' }, { updatedAt: 'desc' }],
+    });
+
+    const teacherMap = await this.getTeacherNameMap(
+      entries.map((entry) => entry.submittedById),
+    );
+
+    return entries.map((entry) =>
+      this.toObservation(
+        entry,
+        entry.submittedById
+          ? teacherMap.get(entry.submittedById) || 'Unknown'
+          : 'Unknown',
+      ),
+    );
+  }
+
+  private async assertObservationAccess(
+    entry: any,
+    userId?: string,
+    userRole?: Role,
+  ) {
+    if (userRole !== Role.TEACHER || !userId) return;
+
+    const subjectIds = await this.getTeacherSubjectIds(userId);
+    if (!subjectIds.includes(entry.subjectId)) {
+      throw new ForbiddenException(
+        'You can only access your assigned observations',
+      );
+    }
+  }
+
+  private async resolveObservationGradeEntry(body: any) {
+    if (body.gradeEntryId) {
+      return this.prisma.gradeEntry.findUnique({
+        where: { id: body.gradeEntryId },
+        include: {
+          student: {
+            select: {
+              indexNumber: true,
+              firstName: true,
+              lastName: true,
+              currentClass: { select: { name: true } },
+            },
+          },
+          subject: { select: { name: true, code: true } },
+        },
+      });
+    }
+
+    const activeTermId = await this.getEffectiveTermId();
+
+    if (!activeTermId) return null;
+
+    const student = await this.prisma.studentProfile.findFirst({
+      where: {
+        indexNumber: body.index || body.studentIndex,
+        currentClass: { name: body.class || body.className },
+      },
+      select: { id: true },
+    });
+
+    const subject = await this.prisma.subject.findFirst({
+      where: { name: body.type || body.subject || body.subjectName },
+      select: { id: true },
+    });
+
+    if (!student || !subject) return null;
+
+    return this.prisma.gradeEntry.findUnique({
+      where: {
+        studentId_subjectId_termId: {
+          studentId: student.id,
+          subjectId: subject.id,
+          termId: activeTermId,
+        },
+      },
+      include: {
+        student: {
+          select: {
+            indexNumber: true,
+            firstName: true,
+            lastName: true,
+            currentClass: { select: { name: true } },
+          },
+        },
+        subject: { select: { name: true, code: true } },
+      },
+    });
+  }
+
+  async createObservation(body: any, userId?: string, userRole?: Role) {
+    const comment = body.comment || body.observationText || '';
+    const entry = await this.resolveObservationGradeEntry(body);
+
+    if (!entry) {
+      throw new NotFoundException('Grade entry matching observation not found');
+    }
+
+    await this.assertObservationAccess(entry, userId, userRole);
+
+    const updated = await this.prisma.gradeEntry.update({
+      where: { id: entry.id },
+      data: {
+        hasObservation: true,
+        observationText: comment,
+        remark: comment,
+        submittedById: userId,
+        submittedAt: new Date(),
+        isApproved: false,
+      },
+      include: {
+        student: {
+          select: {
+            indexNumber: true,
+            firstName: true,
+            lastName: true,
+            currentClass: { select: { name: true } },
+          },
+        },
+        subject: { select: { name: true, code: true } },
+      },
+    });
+
+    const teacherMap = await this.getTeacherNameMap([userId]);
+    return this.toObservation(updated, teacherMap.get(userId) || 'Unknown');
+  }
+
+  async updateObservation(
+    observationId: string,
+    body: any,
+    userId?: string,
+    userRole?: Role,
+  ) {
+    const entry = await this.prisma.gradeEntry.findUnique({
+      where: { id: observationId },
+      include: {
+        student: {
+          select: {
+            indexNumber: true,
+            firstName: true,
+            lastName: true,
+            currentClass: { select: { name: true } },
+          },
+        },
+        subject: { select: { name: true, code: true } },
+      },
+    });
+
+    if (!entry) {
+      throw new NotFoundException('Observation not found');
+    }
+
+    await this.assertObservationAccess(entry, userId, userRole);
+
+    const data: any = {
+      hasObservation: body.hasObservation ?? true,
+      submittedById: userId,
+      submittedAt: new Date(),
+      isApproved: false,
+    };
+
+    if (body.comment !== undefined || body.observationText !== undefined) {
+      const comment = body.comment ?? body.observationText ?? '';
+      data.observationText = comment;
+      data.remark = comment;
+    }
+
+    const updated = await this.prisma.gradeEntry.update({
+      where: { id: observationId },
+      data,
+      include: {
+        student: {
+          select: {
+            indexNumber: true,
+            firstName: true,
+            lastName: true,
+            currentClass: { select: { name: true } },
+          },
+        },
+        subject: { select: { name: true, code: true } },
+      },
+    });
+
+    const teacherMap = await this.getTeacherNameMap([userId]);
+    return this.toObservation(updated, teacherMap.get(userId) || 'Unknown');
+  }
+
+  async deleteObservation(
+    observationId: string,
+    userId?: string,
+    userRole?: Role,
+  ) {
+    const entry = await this.prisma.gradeEntry.findUnique({
+      where: { id: observationId },
+      include: {
+        student: {
+          select: {
+            indexNumber: true,
+            firstName: true,
+            lastName: true,
+            currentClass: { select: { name: true } },
+          },
+        },
+        subject: { select: { name: true, code: true } },
+      },
+    });
+
+    if (!entry) {
+      throw new NotFoundException('Observation not found');
+    }
+
+    await this.assertObservationAccess(entry, userId, userRole);
+
+    const updated = await this.prisma.gradeEntry.update({
+      where: { id: observationId },
+      data: {
+        hasObservation: false,
+        observationText: null,
+        submittedById: userId,
+        submittedAt: new Date(),
+        isApproved: false,
+      },
+      include: {
+        student: {
+          select: {
+            indexNumber: true,
+            firstName: true,
+            lastName: true,
+            currentClass: { select: { name: true } },
+          },
+        },
+        subject: { select: { name: true, code: true } },
+      },
+    });
+
+    const teacherMap = await this.getTeacherNameMap([userId]);
+    return this.toObservation(updated, teacherMap.get(userId) || 'Unknown');
+  }
+
+>>>>>>> qhojoblinks/main
   async getStudentTermGrades(
     studentId: string,
     termId: string,
@@ -404,7 +944,6 @@ export class GradingService {
   ) {
     const where: any = { studentId, termId };
 
-    // Students only see approved grades
     if (userRole === Role.STUDENT) {
       where.isApproved = true;
     }
@@ -416,28 +955,19 @@ export class GradingService {
     });
   }
 
-  /**
-   * Bulk grade entry for a class
-   */
   async bulkUpsertGrades(entries: UpsertGradeDto[], submittedById: string) {
     const results = await Promise.all(
       entries.map((e) => this.upsertGrade(e, submittedById)),
     );
 
-    // After bulk upsert, recompute positions for this class/subject/term
     if (entries.length > 0) {
       const { subjectId, termId } = entries[0];
-      // Note: This assumes all entries in bulk are for same subject/term
-      // which is usually the case for a teacher's markbook.
       await this.computeSubjectPositions(subjectId, termId);
     }
 
     return results;
   }
 
-  /**
-   * Compute subject positions for all students in a subject/term
-   */
   async computeSubjectPositions(subjectId: string, termId: string) {
     const entries = await this.prisma.gradeEntry.findMany({
       where: { subjectId, termId, totalScore: { not: null } },
@@ -448,7 +978,6 @@ export class GradingService {
     for (let i = 0; i < entries.length; i++) {
       const entry = entries[i];
       if (i > 0 && entry.totalScore === entries[i - 1].totalScore) {
-        // Tie
       } else {
         currentRank = i + 1;
       }
@@ -460,6 +989,7 @@ export class GradingService {
     }
   }
 
+<<<<<<< HEAD
   //grade boundaries (is readonly)
   getBoundaries() {
     return GRADE_BOUNDARIES.map((b, i) => ({
@@ -671,4 +1201,212 @@ async getSubjectPerformanceFiltered(filters: {
     },
   };
 }
+=======
+  async getStudentsForGrading(
+    subjectId: string,
+    classId: string,
+    termId: string,
+    userId: string,
+    userRole: Role,
+  ) {
+    const effectiveTermId = await this.getEffectiveTermId(termId);
+    if (!subjectId || !classId || !effectiveTermId) {
+      return [];
+    }
+
+    let teacherId: string | undefined;
+    if (userRole === Role.TEACHER) {
+      const staffProfile = await this.prisma.staffProfile.findUnique({
+        where: { userId },
+        select: { id: true },
+      });
+      teacherId = staffProfile?.id;
+    }
+
+    const isAssigned = teacherId
+      ? !!(await this.prisma.teachingAssignment.findFirst({
+          where: { teacherId, subjectId, classSectionId: classId },
+        }))
+      : true;
+
+    if (
+      userRole !== Role.SUPER_ADMIN &&
+      userRole !== Role.HEADMASTER &&
+      !isAssigned
+    ) {
+      return [];
+    }
+
+    const [students, gradeEntries] = await Promise.all([
+      this.prisma.studentProfile.findMany({
+        where: { currentClassId: classId },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          indexNumber: true,
+        },
+        orderBy: { lastName: 'asc' },
+      }),
+      this.prisma.gradeEntry.findMany({
+        where: { subjectId, termId: effectiveTermId },
+        select: {
+          studentId: true,
+          classScore: true,
+          examScore: true,
+          totalScore: true,
+          grade: true,
+          remark: true,
+          hasObservation: true,
+        },
+      }),
+    ]);
+
+    const gradeMap = new Map(gradeEntries.map((g) => [g.studentId, g]));
+
+    return students.map((s) => {
+      const g = gradeMap.get(s.id);
+      let auditStatus;
+      if (g === undefined) {
+        auditStatus = undefined;
+      } else if (g.hasObservation) {
+        auditStatus = 'COMPLETE';
+      } else {
+        auditStatus = 'MISSING';
+      }
+      return {
+        id: s.id,
+        name: `${s.firstName} ${s.lastName}`,
+        index: s.indexNumber,
+        sba: g?.classScore ?? 0,
+        exam: g?.examScore ?? 0,
+        final: g?.totalScore ?? 0,
+        grade: g?.grade ?? '',
+        auditStatus,
+        remark: g?.remark ?? '',
+      };
+    });
+  }
+
+  async getComplianceWarnings(userId: string, role: Role) {
+    if (
+      role !== Role.HEADMASTER &&
+      role !== Role.SUPER_ADMIN &&
+      role !== Role.HOD
+    ) {
+      throw new ForbiddenException('Insufficient permissions');
+    }
+
+    const warnings: { severity: 'high' | 'medium' | 'low'; msg: string }[] = [];
+
+    const activeTerm = await this.prisma.term.findFirst({
+      where: { isActive: true },
+    });
+
+    if (!activeTerm) {
+      warnings.push({
+        severity: 'high',
+        msg: 'No active term found. Term initialization required.',
+      });
+      return warnings;
+    }
+
+    const incompleteEntries = await this.prisma.gradeEntry.count({
+      where: {
+        termId: activeTerm.id,
+        OR: [{ totalScore: null }, { remark: null }],
+      },
+    });
+
+    if (incompleteEntries > 0) {
+      warnings.push({
+        severity: 'high',
+        msg: `${incompleteEntries} grade entries have missing scores or remarks.`,
+      });
+    }
+
+    const lockedTerm = await this.prisma.term.findFirst({
+      where: { id: activeTerm.id, isLocked: true },
+    });
+
+    if (lockedTerm) {
+      warnings.push({
+        severity: 'medium',
+        msg: 'Active term is locked. Modifications require emergency unlock.',
+      });
+    }
+
+    const unapprovedEntries = await this.prisma.gradeEntry.count({
+      where: {
+        termId: activeTerm.id,
+        isLocked: true,
+        isApproved: false,
+      },
+    });
+
+    if (unapprovedEntries > 0) {
+      warnings.push({
+        severity: 'low',
+        msg: `${unapprovedEntries} locked entries await final sign-off.`,
+      });
+    }
+
+    return warnings;
+  }
+
+  async getTermSummary(termId: string, userId: string, role: Role) {
+    if (
+      role !== Role.HEADMASTER &&
+      role !== Role.SUPER_ADMIN &&
+      role !== Role.HOD
+    ) {
+      throw new ForbiddenException('Insufficient permissions');
+    }
+
+    const term = await this.prisma.term.findUnique({
+      where: { id: termId },
+      include: { academicYear: true },
+    });
+
+    if (!term) {
+      throw new NotFoundException('Term not found');
+    }
+
+    const classSections = await this.prisma.classSection.findMany({
+      where: {
+        teachingAssignments: {
+          some: { academicYearId: term.academicYearId },
+        },
+      },
+      select: { id: true },
+    });
+
+    const studentCount = await this.prisma.studentProfile.count({
+      where: {
+        currentClassId: { in: classSections.map((c) => c.id) },
+        archivedAt: null,
+      },
+    });
+
+    const gradeEntryCount = await this.prisma.gradeEntry.count({
+      where: { termId },
+    });
+
+    const TERM_DISPLAY: Record<string, string> = {
+      TERM_1: 'Term 1',
+      TERM_2: 'Term 2',
+      TERM_3: 'Term 3',
+    };
+
+    const termLabel = term.academicYear
+      ? `${term.academicYear.label} — ${TERM_DISPLAY[term.termNumber] || term.termNumber}`
+      : TERM_DISPLAY[term.termNumber] || `Term ${term.termNumber}`;
+
+    return {
+      termLabel,
+      studentCount,
+      gradeEntryCount,
+    };
+  }
+>>>>>>> qhojoblinks/main
 }

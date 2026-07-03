@@ -1,10 +1,43 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
@@ -13,7 +46,7 @@ exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../common/prisma/prisma.service");
 const client_1 = require("@prisma/client");
-const argon2 = require("argon2");
+const argon2 = __importStar(require("argon2"));
 let UsersService = class UsersService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -71,52 +104,10 @@ let UsersService = class UsersService {
                     },
                 },
             },
-            include: { studentProfile: { include: { currentClass: true, department: true } } },
+            include: {
+                studentProfile: { include: { currentClass: true, department: true } },
+            },
         });
-        if (dto.parentFirstName && dto.parentLastName && dto.parentPhone) {
-            const parentEmail = dto.parentEmail || `${dto.parentPhone}@parent.com`;
-            let parentUser = await this.prisma.user.findUnique({
-                where: { email: parentEmail },
-                include: { parentProfile: true },
-            });
-            if (!parentUser) {
-                const parentPassHash = await argon2.hash('Parent@123!');
-                parentUser = await this.prisma.user.create({
-                    data: {
-                        email: parentEmail,
-                        passwordHash: parentPassHash,
-                        role: client_1.Role.PARENT,
-                        phone: dto.parentPhone,
-                        parentProfile: {
-                            create: {
-                                firstName: dto.parentFirstName,
-                                lastName: dto.parentLastName,
-                                phone: dto.parentPhone,
-                                email: dto.parentEmail,
-                            },
-                        },
-                    },
-                    include: { parentProfile: true },
-                });
-            }
-            if (parentUser.parentProfile) {
-                await this.prisma.studentParentLink.upsert({
-                    where: {
-                        studentId_parentId: {
-                            studentId: student.studentProfile.id,
-                            parentId: parentUser.parentProfile.id,
-                        },
-                    },
-                    create: {
-                        studentId: student.studentProfile.id,
-                        parentId: parentUser.parentProfile.id,
-                        relationship: dto.parentRelationship || 'Guardian',
-                        isPrimary: true,
-                    },
-                    update: {},
-                });
-            }
-        }
         return student;
     }
     async createParent(dto) {
@@ -146,7 +137,7 @@ let UsersService = class UsersService {
             include: { parentProfile: true },
         });
     }
-    async getAllStudents(user) {
+    async getAllStudents(user, search) {
         let departmentId;
         if (user?.role === client_1.Role.HOD) {
             const staff = await this.prisma.staffProfile.findUnique({
@@ -154,21 +145,82 @@ let UsersService = class UsersService {
             });
             departmentId = staff?.departmentId || undefined;
         }
-        return this.prisma.studentProfile.findMany({
-            where: {
+        if (user?.role === client_1.Role.TEACHER) {
+            const staff = await this.prisma.staffProfile.findUnique({
+                where: { userId: user.id },
+            });
+            if (!staff) {
+                throw new Error('Teacher profile not found');
+            }
+            const teacherAssignments = await this.prisma.teachingAssignment.findMany({
+                where: { teacherId: staff.id },
+                select: { classSectionId: true },
+            });
+            const classSectionIds = teacherAssignments.map((a) => a.classSectionId);
+            const where = {
                 archivedAt: null,
-                ...(departmentId ? { departmentId } : {}),
-            },
+                currentClassId: { in: classSectionIds },
+            };
+            if (search) {
+                where.OR = [
+                    { firstName: { contains: search, mode: 'insensitive' } },
+                    { lastName: { contains: search, mode: 'insensitive' } },
+                    { indexNumber: { contains: search, mode: 'insensitive' } },
+                ];
+            }
+            return this.prisma.studentProfile.findMany({
+                where,
+                include: {
+                    currentClass: true,
+                    department: true,
+                    user: {
+                        select: {
+                            email: true,
+                            phone: true,
+                            isActive: true,
+                            role: true,
+                            lastLoginAt: true,
+                        },
+                    },
+                    parentLinks: { take: 1, include: { parent: true } },
+                    grades: { take: 20, include: { subject: true } },
+                },
+                orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
+            });
+        }
+        const where = {
+            archivedAt: null,
+            ...(departmentId ? { departmentId } : {}),
+        };
+        if (search) {
+            where.OR = [
+                { firstName: { contains: search, mode: 'insensitive' } },
+                { lastName: { contains: search, mode: 'insensitive' } },
+                { indexNumber: { contains: search, mode: 'insensitive' } },
+            ];
+        }
+        return this.prisma.studentProfile.findMany({
+            where,
             include: {
                 currentClass: true,
                 department: true,
-                user: { select: { email: true, isActive: true } },
+                user: {
+                    select: {
+                        email: true,
+                        phone: true,
+                        isActive: true,
+                        role: true,
+                        lastLoginAt: true,
+                    },
+                },
+                parentLinks: { take: 1, include: { parent: true } },
+                grades: { take: 20, include: { subject: true } },
             },
             orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
         });
     }
-    async getStudentProfile(studentId, requesterRole) {
-        return this.prisma.studentProfile.findUniqueOrThrow({
+    async getStudentProfile(studentId, requesterRole, teacherStaffId) {
+        const baseProfile = await this.prisma.studentProfile.findUniqueOrThrow({
             where: { id: studentId },
             include: {
                 currentClass: true,
@@ -187,6 +239,18 @@ let UsersService = class UsersService {
                 },
             },
         });
+        if (requesterRole === client_1.Role.TEACHER && teacherStaffId) {
+            const isAssigned = await this.prisma.teachingAssignment.findFirst({
+                where: {
+                    teacherId: teacherStaffId,
+                    classSectionId: baseProfile.currentClassId || '',
+                },
+            });
+            if (!isAssigned) {
+                throw new common_1.ForbiddenException("You are not assigned to this student's class");
+            }
+        }
+        return baseProfile;
     }
     async getAllStaff(user) {
         let departmentId;
@@ -208,12 +272,53 @@ let UsersService = class UsersService {
             orderBy: { lastName: 'asc' },
         });
     }
+    async searchTeachers(user, search) {
+        let departmentId;
+        if (user?.role === client_1.Role.HOD) {
+            const staff = await this.prisma.staffProfile.findUnique({
+                where: { userId: user.id },
+            });
+            departmentId = staff?.departmentId || undefined;
+        }
+        const where = {
+            user: { role: client_1.Role.TEACHER },
+            ...(departmentId ? { departmentId } : {}),
+        };
+        if (search) {
+            where.OR = [
+                { firstName: { contains: search, mode: 'insensitive' } },
+                { lastName: { contains: search, mode: 'insensitive' } },
+                { staffId: { contains: search, mode: 'insensitive' } },
+            ];
+        }
+        let results = await this.prisma.staffProfile.findMany({
+            where,
+            include: {
+                user: { select: { email: true, role: true, isActive: true } },
+                department: true,
+                teachingAssignments: { include: { subject: true, classSection: true } },
+            },
+            orderBy: { lastName: 'asc' },
+            take: 20,
+        });
+        if (user?.role === client_1.Role.TEACHER) {
+            const requesterStaff = await this.prisma.staffProfile.findUnique({
+                where: { userId: user.id },
+                select: { id: true },
+            });
+            if (requesterStaff) {
+                results = results.filter((s) => s.id === requesterStaff.id);
+            }
+        }
+        return results;
+    }
     async deactivateUser(userId) {
         return this.prisma.user.update({
             where: { id: userId },
             data: { isActive: false },
         });
     }
+<<<<<<< HEAD
     async bulkCreateStudents(rows) {
         const results = [];
         for (let i = 0; i < rows.length; i++) {
@@ -281,6 +386,262 @@ let UsersService = class UsersService {
             department: s.department?.name ?? '',
             isActive: s.user?.isActive ?? true,
         }));
+=======
+    async updateStudentProfile(studentId, dto) {
+        await this.prisma.studentProfile.findUniqueOrThrow({
+            where: { id: studentId },
+            include: { user: true },
+        });
+        const updateData = {};
+        if (dto.firstName !== undefined)
+            updateData.firstName = dto.firstName;
+        if (dto.lastName !== undefined)
+            updateData.lastName = dto.lastName;
+        if (dto.middleName !== undefined)
+            updateData.middleName = dto.middleName;
+        if (dto.photoUrl !== undefined)
+            updateData.photoUrl = dto.photoUrl;
+        if (dto.dateOfBirth !== undefined)
+            updateData.dateOfBirth = dto.dateOfBirth
+                ? new Date(dto.dateOfBirth)
+                : null;
+        const updatedProfile = await this.prisma.studentProfile.update({
+            where: { id: studentId },
+            data: updateData,
+            include: {
+                currentClass: true,
+                department: true,
+                user: { select: { email: true, lastLoginAt: true } },
+            },
+        });
+        return updatedProfile;
+    }
+    async getAllParents() {
+        const parents = await this.prisma.parentProfile.findMany({
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                phone: true,
+                email: true,
+                occupation: true,
+                user: {
+                    select: {
+                        email: true,
+                        isActive: true,
+                        lastLoginAt: true,
+                    },
+                },
+                studentLinks: {
+                    select: {
+                        relationship: true,
+                        isPrimary: true,
+                        student: {
+                            select: {
+                                id: true,
+                                firstName: true,
+                                lastName: true,
+                                currentClass: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        level: true,
+                                    },
+                                },
+                                user: {
+                                    select: {
+                                        email: true,
+                                    },
+                                },
+                                grades: {
+                                    include: {
+                                        subject: true,
+                                        term: {
+                                            include: {
+                                                academicYear: true,
+                                            },
+                                        },
+                                    },
+                                    take: 50,
+                                    orderBy: {
+                                        term: {
+                                            academicYear: {
+                                                startDate: 'desc',
+                                            },
+                                        },
+                                    },
+                                },
+                                attendance: {
+                                    include: {
+                                        term: true,
+                                    },
+                                    take: 10,
+                                    orderBy: {
+                                        term: {
+                                            academicYear: {
+                                                startDate: 'desc',
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            orderBy: { lastName: 'asc' },
+        });
+        return parents.map((p) => {
+            const fullName = `${p.firstName} ${p.lastName}`;
+            const wards = p.studentLinks.map((link) => {
+                const student = link.student;
+                const grades = student.grades || [];
+                const totalScore = grades.reduce((sum, g) => sum + (g.totalScore || 0), 0);
+                const averageScore = grades.length
+                    ? Math.round((totalScore / grades.length) * 10) / 10
+                    : 0;
+                const attendance = student.attendance || [];
+                const latestAttendance = attendance[0];
+                const attendancePct = latestAttendance && latestAttendance.totalDays
+                    ? Math.round((latestAttendance.daysPresent / latestAttendance.totalDays) *
+                        100)
+                    : 0;
+                return {
+                    id: student.id,
+                    name: `${student.firstName || ''} ${student.lastName || ''}`.trim() ||
+                        student.user?.email ||
+                        student.id,
+                    averageScore,
+                    attendance: attendancePct,
+                    feesStatus: 'Paid',
+                    balance: 0,
+                    relationship: link.relationship,
+                    isPrimary: link.isPrimary,
+                };
+            });
+            return {
+                id: p.id,
+                name: fullName,
+                phone: p.phone,
+                email: p.email,
+                occupation: p.occupation,
+                wards,
+                appAdopted: !!p.user.lastLoginAt,
+                accessCode: `A-${p.id.slice(0, 4).toUpperCase()}`,
+                isPTAExecutive: false,
+                ptaRole: null,
+                lastContacted: null,
+                lastMessage: null,
+                communicationLogs: [],
+            };
+        });
+    }
+    async searchParents(user, search) {
+        let departmentId;
+        if (user?.role === client_1.Role.HOD) {
+            const staff = await this.prisma.staffProfile.findUnique({
+                where: { userId: user.id },
+            });
+            departmentId = staff?.departmentId || undefined;
+        }
+        const where = {};
+        if (departmentId) {
+            where.studentLinks = {
+                some: {
+                    student: {
+                        currentClass: { departmentId },
+                    },
+                },
+            };
+        }
+        const parents = await this.prisma.parentProfile.findMany({
+            where,
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                phone: true,
+                email: true,
+                user: {
+                    select: {
+                        email: true,
+                        isActive: true,
+                    },
+                },
+            },
+            orderBy: { lastName: 'asc' },
+            take: 20,
+        });
+        if (!search)
+            return parents;
+        const q = search.toLowerCase();
+        return parents.filter((p) => {
+            const fullName = `${p.firstName || ''} ${p.lastName || ''}`.toLowerCase();
+            return (fullName.includes(q) ||
+                (p.phone || '').includes(q) ||
+                (p.email || '').toLowerCase().includes(q));
+        });
+    }
+    async getStaffProfile(staffId, requester) {
+        const staffProfile = await this.prisma.staffProfile.findFirst({
+            where: { OR: [{ id: staffId }, { userId: staffId }] },
+            include: {
+                user: {
+                    select: {
+                        email: true,
+                        phone: true,
+                        role: true,
+                        isActive: true,
+                        lastLoginAt: true,
+                    },
+                },
+                department: true,
+                teachingAssignments: {
+                    include: { subject: true, classSection: true },
+                },
+            },
+        });
+        if (!staffProfile) {
+            throw new Error('Staff profile not found');
+        }
+        if (requester.role === client_1.Role.TEACHER) {
+            const requesterStaff = await this.prisma.staffProfile.findUnique({
+                where: { userId: requester.id },
+                select: { id: true },
+            });
+            if (!requesterStaff || requesterStaff.id !== staffProfile.id) {
+                throw new Error('You do not have access to this staff profile');
+            }
+        }
+        return staffProfile;
+    }
+    async batchImportStudents(students) {
+        const results = { success: 0, failed: 0, errors: [] };
+        for (const s of students) {
+            try {
+                const dto = {
+                    indexNumber: s.indexNumber || s.index_number,
+                    firstName: s.firstName || s.first_name,
+                    lastName: s.lastName || s.last_name,
+                    middleName: s.middleName || s.middle_name,
+                    gender: (s.gender || 'MALE').toUpperCase(),
+                    dateOfBirth: s.dateOfBirth || s.date_of_birth || s.dob,
+                    email: s.email,
+                    password: s.password || 'Student@123!',
+                };
+                await this.createStudent(dto);
+                results.success++;
+            }
+            catch (err) {
+                results.failed++;
+                results.errors.push({
+                    indexNumber: s.indexNumber,
+                    error: err.message || 'Unknown error',
+                });
+            }
+        }
+        return results;
+>>>>>>> qhojoblinks/main
     }
 };
 exports.UsersService = UsersService;

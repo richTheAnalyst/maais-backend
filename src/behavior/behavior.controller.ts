@@ -1,30 +1,42 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { BehaviorService } from './behavior.service'
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
+import { BehaviorService } from './behavior.service';
+import { Roles, CurrentUser } from '../common/decorators/roles.decorator';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
 
-
+@ApiTags('Behavior')
 @Controller('students')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class BehaviorController {
-    constructor(private readonly behaviorService: BehaviorService) {}
+  constructor(private readonly behaviorService: BehaviorService) {}
 
-@Post(':id/behavior')
-createBahavior(
-    @Param('id')studentId: string,
+  @Post(':id/behavior')
+  @Roles(Role.TEACHER)
+  @ApiOperation({ summary: 'Create behavior observation for a student' })
+  createBahavior(
+    @Param('id') studentId: string,
     @Body() body: any,
-){
+    @CurrentUser('id') userId: string,
+  ) {
     return this.behaviorService.createBehavior({
-        ...body,
-        studentId,
-    })
-}
+      ...body,
+      studentId,
+      teacherId: userId,
+    });
+  }
 
-@Get(':id/behavior')
-getBehavior(
-    @Param('id')studentId: string,
-) {
-    return this.behaviorService.getStudentBehavior(
-        studentId,
-    )
-}
+  @Get(':id/behavior')
+  @Roles(Role.STUDENT)
+  @ApiOperation({ summary: 'Get behavior observations for a student' })
+  getBehavior(
+    @Param('id') studentId: string,
+    @CurrentUser('id') userId: string,
+    @CurrentUser('role') role: Role,
+  ) {
+    return this.behaviorService.getStudentBehavior(studentId, userId, role);
+  }
 
   /* @Get(':id/traits')
   getTraits(

@@ -8,13 +8,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PrismaService = void 0;
 const common_1 = require("@nestjs/common");
 const client_1 = require("@prisma/client");
 const adapter_neon_1 = require("@prisma/adapter-neon");
 const serverless_1 = require("@neondatabase/serverless");
-const ws_1 = require("ws");
+const ws_1 = __importDefault(require("ws"));
 serverless_1.neonConfig.webSocketConstructor = ws_1.default;
 let PrismaService = class PrismaService extends client_1.PrismaClient {
     constructor() {
@@ -39,11 +42,21 @@ let PrismaService = class PrismaService extends client_1.PrismaClient {
             throw new Error('cleanDatabase() cannot be called in production!');
         }
         const tables = [
-            'audit_logs', 'grade_corrections', 'grade_entries',
-            'attendance_records', 'promotion_records', 'report_cards',
-            'transcripts', 'notifications', 'refresh_tokens',
-            'teaching_assignments', 'student_parent_links',
-            'student_profiles', 'parent_profiles', 'staff_profiles', 'users',
+            'audit_logs',
+            'grade_corrections',
+            'grade_entries',
+            'attendance_records',
+            'promotion_records',
+            'report_cards',
+            'transcripts',
+            'notifications',
+            'refresh_tokens',
+            'teaching_assignments',
+            'student_parent_links',
+            'student_profiles',
+            'parent_profiles',
+            'staff_profiles',
+            'users',
         ];
         for (const t of tables) {
             await this.$executeRawUnsafe(`TRUNCATE TABLE "${t}" CASCADE`);

@@ -6,9 +6,10 @@ export class GenerateReportCardDto {
   @IsString()
   studentId: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
-  termId: string;
+  termId?: string;
 }
 
 export class BatchGenerateDto {
@@ -22,7 +23,10 @@ export class BatchGenerateDto {
 }
 
 export class BuildTranscriptDto {
-  @ApiProperty({ example: 'MSHTS/2024/001', description: 'Student ID or index number' })
+  @ApiProperty({
+    example: 'MSHTS/2024/001',
+    description: 'Student ID or index number',
+  })
   @IsString()
   studentIdOrIndex: string;
 }
